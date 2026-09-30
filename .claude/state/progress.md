@@ -63,5 +63,5 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 - Passing features: 0
 - Blocked features: none
 - Verification runs this session: 0
-- Commit: 328aa09
+- Commit: 4d92f5f
 - Next best step: finish recon-001

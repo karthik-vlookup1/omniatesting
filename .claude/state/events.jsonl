@@ -150,3 +150,36 @@
 {"ts":"2026-09-30T15:52:29.944Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
 {"ts":"2026-09-30T15:53:49.066Z","type":"hook.output","hook":"post-edit","stdoutSha1":null,"stderrSha1":"210b0d2945d61cca13e00cca95b749d775785136","exitCode":2}
 {"ts":"2026-09-30T15:53:49.575Z","type":"hook.output","hook":"post-edit","stdoutSha1":null,"stderrSha1":"aa1a97c74d33544007facdcd93c9a14425205d55","exitCode":2}
+{"ts":"2026-09-30T15:54:02.236Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-09-30T15:54:13.903Z","type":"hook.output","hook":"post-edit","stdoutSha1":null,"stderrSha1":"0a50ffad426d22c749b69e33e4bdc3ba6a0f9e62","exitCode":2}
+{"ts":"2026-09-30T15:54:29.989Z","type":"hook.output","hook":"post-edit","stdoutSha1":null,"stderrSha1":"1adc08d8b66047e06d5b6cb0ae52161a6c7510fe","exitCode":2}
+{"ts":"2026-09-30T15:54:30.455Z","type":"hook.output","hook":"post-edit","stdoutSha1":null,"stderrSha1":"1ff23c511e1cd736554b01ddfbc8f6425cf90efe","exitCode":2}
+{"ts":"2026-09-30T15:54:30.940Z","type":"hook.output","hook":"post-edit","stdoutSha1":null,"stderrSha1":"2d6875008028cf279cfaeef6f0ee4c6bbdc605fa","exitCode":2}
+{"ts":"2026-09-30T15:55:14.649Z","type":"hook.output","hook":"post-edit","stdoutSha1":null,"stderrSha1":"4a6e1b3605fc4b8b2a70e7c7983230f59b652959","exitCode":2}
+{"ts":"2026-09-30T15:55:43.084Z","type":"hook.output","hook":"post-edit","stdoutSha1":null,"stderrSha1":"6c7f5008f9673f75872a869fc394c685daa9e3f0","exitCode":2}
+{"ts":"2026-09-30T15:55:43.618Z","type":"hook.output","hook":"post-edit","stdoutSha1":null,"stderrSha1":"c0deb0d6e062379cd279eeb3fc45887a7a342112","exitCode":2}
+{"ts":"2026-09-30T15:55:44.237Z","type":"hook.output","hook":"post-edit","stdoutSha1":null,"stderrSha1":"9b83b75f4b8225ef8291f56b4e70ececf34fbeab","exitCode":2}
+{"ts":"2026-09-30T15:55:44.928Z","type":"hook.output","hook":"post-edit","stdoutSha1":null,"stderrSha1":"3ae8290dff022d5b3d8ac04d862e4a3006ce644b","exitCode":2}
+{"ts":"2026-09-30T15:56:18.642Z","type":"handoff","sessionNum":4,"commit":"4d92f5f","sessionId":"8be97820-d6de-4130-b738-1be94a834123"}
+{"ts":"2026-09-30T15:56:18.953Z","type":"exit","cleanupOk":true,"featureListOk":true,"progressUpdated":true,"dirty":true,"overallOk":false,"checklist":[{"id":"startup-path","status":"fail"},{"id":"verification-path","status":"fail"},{"id":"progress-recorded","status":"pass"},{"id":"feature-state-truthful","status":"pass"},{"id":"no-undocumented-changes","status":"pass"},{"id":"next-session-continues","status":"fail"}]}
+{"ts":"2026-09-30T15:56:18.953Z","type":"exit.check","check":"startup-path","ok":false,"status":"fail","detail":"No init.sh, init.ps1, or commands.start configured — there is no documented way to start this project."}
+{"ts":"2026-09-30T15:56:18.954Z","type":"exit.check","check":"verification-path","ok":false,"status":"fail","detail":"ERROR: no verification has been run yet for \"recon-001\".\n  WHY: the harness cannot confirm the code works without a recorded verification run.\n  FIX: hx verify recon-001"}
+{"ts":"2026-09-30T15:56:18.954Z","type":"exit.check","check":"progress-recorded","ok":true,"status":"pass","detail":"Progress log updated recently."}
+{"ts":"2026-09-30T15:56:18.954Z","type":"exit.check","check":"feature-state-truthful","ok":true,"status":"pass","detail":"No feature marked passing without recorded evidence."}
+{"ts":"2026-09-30T15:56:18.955Z","type":"exit.check","check":"no-undocumented-changes","ok":true,"status":"pass","detail":"No undocumented drift, debug code, or test weakening found in changed files."}
+{"ts":"2026-09-30T15:56:18.955Z","type":"exit.check","check":"next-session-continues","ok":false,"status":"fail","detail":"startup path is broken"}
+{"ts":"2026-09-30T15:56:18.957Z","type":"hook.output","hook":"stop","stdoutSha1":null,"stderrSha1":"c641b896d3cd35b5880548b82dad2b3f9f24e6ef","exitCode":2}
+{"ts":"2026-09-30T15:56:32.073Z","type":"verify","id":"recon-001","allPassed":false,"rootCauseLevel":"static","commit":"4d92f5f","diffHash":"c9a1d90170a1c1f2fabde16167dfc9dddc253240"}
+{"ts":"2026-09-30T15:56:32.262Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-09-30T15:56:38.477Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-09-30T15:56:44.517Z","type":"hook.output","hook":"post-edit","stdoutSha1":null,"stderrSha1":"3ae8290dff022d5b3d8ac04d862e4a3006ce644b","exitCode":2}
+{"ts":"2026-09-30T15:56:52.397Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-09-30T15:57:10.125Z","type":"evaluate","featureId":"recon-001","verdict":"Block","scores":{"Correctness":"n/a","Verification":2,"Scope discipline":0,"Reliability":2,"Maintainability":"n/a","Handoff readiness":1},"divergences":[]}
+{"ts":"2026-09-30T15:57:10.232Z","type":"verify","id":"recon-001","allPassed":true,"commit":"4d92f5f","diffHash":"cbf82169f14e1945a122621c47f87e268c89bbd1"}
+{"ts":"2026-09-30T15:57:10.484Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-09-30T15:57:28.835Z","type":"evaluate","featureId":"recon-001","verdict":"Block","scores":{"Correctness":"n/a","Verification":2,"Scope discipline":0,"Reliability":2,"Maintainability":"n/a","Handoff readiness":1},"divergences":[]}
+{"ts":"2026-09-30T15:57:28.937Z","type":"verify","id":"recon-001","allPassed":true,"commit":"4d92f5f","diffHash":"cbf82169f14e1945a122621c47f87e268c89bbd1"}
+{"ts":"2026-09-30T15:57:29.205Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-09-30T15:58:56.151Z","type":"hook.output","hook":"post-edit","stdoutSha1":null,"stderrSha1":"de6bcf8431b82b57b67691df004af0d9688c3dd4","exitCode":2}
+{"ts":"2026-09-30T15:58:56.716Z","type":"hook.output","hook":"post-edit","stdoutSha1":null,"stderrSha1":"b90a44fc856ce83b7017f13dd62b88d9b1692c04","exitCode":2}
+{"ts":"2026-09-30T15:59:08.137Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}

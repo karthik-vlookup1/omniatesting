@@ -47,7 +47,50 @@
         }
       ],
       "status": "in_progress",
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run lint",
+          "exitCode": 0,
+          "commit": "4d92f5f",
+          "testedAt": "2026-09-30T15:56:29.672Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run typecheck",
+          "exitCode": 2,
+          "commit": "4d92f5f",
+          "testedAt": "2026-09-30T15:56:31.921Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run lint",
+          "exitCode": 0,
+          "commit": "4d92f5f",
+          "testedAt": "2026-09-30T15:56:58.796Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run typecheck",
+          "exitCode": 0,
+          "commit": "4d92f5f",
+          "testedAt": "2026-09-30T15:57:02.543Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run lint",
+          "exitCode": 0,
+          "testedAt": "2026-09-30T15:57:17.317Z",
+          "commit": "4d92f5f"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run typecheck",
+          "exitCode": 0,
+          "testedAt": "2026-09-30T15:57:21.391Z",
+          "commit": "4d92f5f"
+        }
+      ],
       "notes": "",
       "dependsOn": [],
       "contractHash": "55ad39df3eec54b7"
