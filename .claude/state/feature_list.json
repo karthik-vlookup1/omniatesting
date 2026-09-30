@@ -46,7 +46,7 @@
           "cmd": "npm run typecheck"
         }
       ],
-      "status": "in_progress",
+      "status": "passing",
       "evidence": [
         {
           "kind": "cmd",
@@ -80,15 +80,29 @@
           "kind": "cmd",
           "cmd": "npm run lint",
           "exitCode": 0,
-          "testedAt": "2026-09-30T15:57:17.317Z",
-          "commit": "4d92f5f"
+          "commit": "4d92f5f",
+          "testedAt": "2026-09-30T15:57:17.317Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run typecheck",
           "exitCode": 0,
-          "testedAt": "2026-09-30T15:57:21.391Z",
-          "commit": "4d92f5f"
+          "commit": "4d92f5f",
+          "testedAt": "2026-09-30T15:57:21.391Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run lint",
+          "exitCode": 0,
+          "testedAt": "2026-09-30T15:59:25.996Z",
+          "commit": "8f841a3"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run typecheck",
+          "exitCode": 0,
+          "testedAt": "2026-09-30T15:59:29.437Z",
+          "commit": "8f841a3"
         }
       ],
       "notes": "",

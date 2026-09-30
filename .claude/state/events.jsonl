@@ -183,3 +183,8 @@
 {"ts":"2026-09-30T15:58:56.151Z","type":"hook.output","hook":"post-edit","stdoutSha1":null,"stderrSha1":"de6bcf8431b82b57b67691df004af0d9688c3dd4","exitCode":2}
 {"ts":"2026-09-30T15:58:56.716Z","type":"hook.output","hook":"post-edit","stdoutSha1":null,"stderrSha1":"b90a44fc856ce83b7017f13dd62b88d9b1692c04","exitCode":2}
 {"ts":"2026-09-30T15:59:08.137Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-09-30T15:59:18.395Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-09-30T15:59:35.441Z","type":"evaluate","featureId":"recon-001","verdict":"Revise","scores":{"Correctness":"n/a","Verification":2,"Scope discipline":2,"Reliability":2,"Maintainability":"n/a","Handoff readiness":1},"divergences":[]}
+{"ts":"2026-09-30T15:59:35.527Z","type":"verify","id":"recon-001","allPassed":true,"commit":"8f841a3","diffHash":"da39a3ee5e6b4b0d3255bfef95601890afd80709"}
+{"ts":"2026-09-30T15:59:35.527Z","type":"feature.pass","id":"recon-001","commit":"8f841a3"}
+{"ts":"2026-09-30T15:59:35.773Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
