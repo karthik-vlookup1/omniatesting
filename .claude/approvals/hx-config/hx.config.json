@@ -8,6 +8,12 @@
   "vcrGate": "warn",
   "debugCodeGate": { "mode": "warn", "paths": [] },
   "testGuard": "warn",
+  "commands": {
+    "install": "npm ci",
+    "start": "docker compose up -d --wait db && npm run db:migrate && npm run dev:server",
+    "check": "npm run lint && npm run typecheck",
+    "verify": "npm run lint && npm run typecheck && npm run db:test"
+  },
   "handsOff": ["docs/reference/**", "db/migrations/001_*", "db/migrations/002_*"],
   "protectedPaths": ["fixtures/private/**"],
   "allowEdit": [".env.example"],
