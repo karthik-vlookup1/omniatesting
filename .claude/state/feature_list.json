@@ -46,10 +46,11 @@
           "cmd": "npm run typecheck"
         }
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": [],
       "notes": "",
-      "dependsOn": []
+      "dependsOn": [],
+      "contractHash": "55ad39df3eec54b7"
     },
     {
       "id": "recon-002",

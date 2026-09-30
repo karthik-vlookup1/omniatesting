@@ -9,8 +9,8 @@
 
 ## Changed This Session
 
-- Commit: d937ee0
-- Files changed: README.md, START_HERE.md, db/migrations/001_baseline.sql, db/migrations/002_matching_layer.sql, db/tests/001_baseline_scenarios.sql, db/tests/002_matching_scenarios.sql, docs/ARCHITECTURE.md, docs/BUILD_BRIEF.md, docs/omnia-features.json, docs/reference/rental-income-flow.md
+- Commit: 328aa09
+- Files changed: README.md
 
 ## Broken Or Unverified
 
@@ -23,9 +23,9 @@
 ## Next Best Step
 
 - Highest-priority unfinished feature: recon-001
-- Why it is next: highest priority (p1) among not_started features with no unmet dependencies
-- What counts as passing: npm run lint && npm run typecheck
-- What must not change: stay within package.json, package-lock.json, docker-compose.yml, .github/**, server/package.json, server/tsconfig*.json, web/package.json, web/tsconfig*.json, web/vite.config.ts, README.md, docs/ARCHITECTURE.md, .env.example, eslint.config.*, vitest.config.*, playwright.config.*; avoid server/src/db/migrate.ts, scripts/db-test.*, package.json, server/package.json, server/src/lib/crypto*, server/src/config/**, server/test/unit/crypto*, server/test/unit/config*, server/test/int/crypto*, server/src/api/auth/**, server/src/services/auth*, server/src/db/context*, server/src/api/app.ts, web/src/app/**, web/src/features/auth/**, server/test/**/auth*, e2e/auth*, server/src/{domain,services,api}/{branch,bank-account,landlord,property}*/**, web/src/features/{branches,bank-accounts,landlords,properties}/**, server/test/**/property*, e2e/property*, server/src/{domain,services,api}/{tenant,tenancy}*/**, web/src/features/{tenants,tenancies}/**, server/test/**/tenan*, e2e/tenan*, server/src/{domain,services,api}/{rent,benefit,payer-split,payment-method}*/**, server/src/jobs/generate-charges*, web/src/features/rent-terms/**, server/test/**/rent*, e2e/rent*, server/src/{domain,services,api}/payer-account*/**, web/src/features/payer-accounts/**, server/test/**/payer-account*, server/src/jobs/letmc-import/**, server/src/api/imports/letmc*, web/src/features/letmc-import/**, fixtures/letmc/**, server/test/**/letmc*, server/src/{domain,services,api}/ingest/**, web/src/features/{upload,csv-profiles}/**, fixtures/banks/**, server/test/**/ingest*, server/src/{services,api}/matching/**, server/test/**/matching*, web/src/features/review/**, e2e/review*, server/src/{domain,services,api}/{receipt,allocation,remittance,adjustment}*/**, web/src/features/receipts/**, server/test/**/receipt*, server/src/{services,api}/export/statement*, web/src/features/export/**, server/test/**/export-statement*, server/src/{services,api,jobs}/vico/**, web/src/features/vico/**, server/test/**/vico*, server/src/{services,api,jobs}/xero/**, web/src/features/xero/**, server/test/**/xero*, server/src/{services,api}/reports/**, web/src/features/dashboard/**, e2e/dashboard* (belongs to other features)
+- Why it is next: feature "recon-001" is already active (WIP=1) — finish or block it first
+- What counts as passing: (n/a)
+- What must not change: (n/a)
 
 ## Commands
 

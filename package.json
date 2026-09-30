@@ -1,0 +1,38 @@
+{
+  "name": "omnia-recon",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Omnia Recon: rent reconciliation for Omnia Housing (PERN).",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "workspaces": [
+    "server",
+    "web"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "npm run typecheck -w server && npm run typecheck -w web",
+    "test:unit": "vitest run --project unit",
+    "test:int": "vitest run --project int",
+    "test:e2e": "playwright test",
+    "dev:server": "npm run dev -w server",
+    "dev:web": "npm run dev -w web",
+    "db:migrate": "tsx server/src/db/migrate.ts",
+    "db:test": "tsx scripts/db-test.ts",
+    "user:create": "tsx server/src/jobs/create-user.ts"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^22.20.4",
+    "eslint": "^10.11.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.7",
+    "globals": "^17.12.0",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.71.0",
+    "vitest": "^5.0.3"
+  }
+}

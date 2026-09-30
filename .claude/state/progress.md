@@ -53,3 +53,15 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 - Verification runs this session: 0
 - Commit: d937ee0
 - Next best step: recon-001 — Monorepo scaffold: npm workspaces, docker compose Postgres 16, lint/typecheck/test scripts, README, ARCHITECTURE.md
+
+### Session 004
+
+<!-- hx-session: 8be97820-d6de-4130-b738-1be94a834123 -->
+
+- Date: 2026-09-30
+- Active feature: recon-001
+- Passing features: 0
+- Blocked features: none
+- Verification runs this session: 0
+- Commit: 328aa09
+- Next best step: finish recon-001

@@ -1,0 +1,24 @@
+# Local development database only. Credentials here are for a throwaway local container
+# and hold synthetic data; production settings come from the environment, never this file.
+services:
+  db:
+    image: postgres:16
+    container_name: omnia-recon-db
+    environment:
+      POSTGRES_USER: omnia
+      POSTGRES_PASSWORD: omnia_local_dev
+      POSTGRES_DB: omnia
+    ports:
+      - "${OMNIA_DB_PORT:-5432}:5432"
+    volumes:
+      - omnia-db-data:/var/lib/postgresql/data
+      # SQL files are mounted read-only so `npm run db:test` can run them with the container's psql.
+      - ./db:/omnia-db:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U omnia -d omnia"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  omnia-db-data:
