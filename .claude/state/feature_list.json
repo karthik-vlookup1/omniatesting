@@ -94,15 +94,15 @@
           "kind": "cmd",
           "cmd": "npm run lint",
           "exitCode": 0,
-          "testedAt": "2026-09-30T15:59:25.996Z",
-          "commit": "8f841a3"
+          "commit": "8f841a3",
+          "testedAt": "2026-09-30T15:59:25.996Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run typecheck",
           "exitCode": 0,
-          "testedAt": "2026-09-30T15:59:29.437Z",
-          "commit": "8f841a3"
+          "commit": "8f841a3",
+          "testedAt": "2026-09-30T15:59:29.437Z"
         }
       ],
       "notes": "",
@@ -127,12 +127,13 @@
           "cmd": "npm run db:test"
         }
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": [],
       "notes": "",
       "dependsOn": [
         "recon-001"
-      ]
+      ],
+      "contractHash": "aa3d2e462cb0eb05"
     },
     {
       "id": "recon-003",
