@@ -1,0 +1,479 @@
+{
+  "project": "omnia-recon",
+  "last_updated": "2026-09-30",
+  "rules": {
+    "single_active_feature": true,
+    "passing_requires_evidence": true,
+    "do_not_skip_verification": true
+  },
+  "status_legend": {
+    "not_started": "Work has not begun.",
+    "in_progress": "The feature is the current active task (only one at a time).",
+    "blocked": "Work cannot continue until a documented blocker is resolved.",
+    "passing": "Required verification has passed and evidence is recorded by hx verify."
+  },
+  "features": [
+    {
+      "id": "recon-001",
+      "priority": 1,
+      "area": "phase-0-foundation",
+      "title": "Monorepo scaffold: npm workspaces, docker compose Postgres 16, lint/typecheck/test scripts, README, ARCHITECTURE.md",
+      "user_visible_behavior": "On a clean clone: docker compose up -d db && npm ci && npm run lint && npm run typecheck all exit 0.",
+      "scope": [
+        "package.json",
+        "package-lock.json",
+        "docker-compose.yml",
+        ".github/**",
+        "server/package.json",
+        "server/tsconfig*.json",
+        "web/package.json",
+        "web/tsconfig*.json",
+        "web/vite.config.ts",
+        "README.md",
+        "docs/ARCHITECTURE.md",
+        ".env.example",
+        "eslint.config.*",
+        "vitest.config.*",
+        "playwright.config.*"
+      ],
+      "verification": [
+        {
+          "level": "static",
+          "cmd": "npm run lint"
+        },
+        {
+          "level": "static",
+          "cmd": "npm run typecheck"
+        }
+      ],
+      "status": "not_started",
+      "evidence": [],
+      "notes": "",
+      "dependsOn": []
+    },
+    {
+      "id": "recon-002",
+      "priority": 2,
+      "area": "phase-0-foundation",
+      "title": "Migration runner + db:test running the provided 001/002 migrations and SQL tests",
+      "user_visible_behavior": "npm run db:test applies 001+002 to a fresh DB and both SQL test files print their ALL ... PASSED line.",
+      "scope": [
+        "server/src/db/migrate.ts",
+        "scripts/db-test.*",
+        "package.json",
+        "server/package.json"
+      ],
+      "verification": [
+        {
+          "level": "integration",
+          "cmd": "npm run db:test"
+        }
+      ],
+      "status": "not_started",
+      "evidence": [],
+      "notes": "",
+      "dependsOn": [
+        "recon-001"
+      ]
+    },
+    {
+      "id": "recon-003",
+      "priority": 3,
+      "area": "phase-0-foundation",
+      "title": "Config + crypto lib: env validation (Zod), HMAC hash matching secure_hash(), AES-256-GCM encrypt/decrypt, masking helpers",
+      "user_visible_behavior": "TS hash of an NI/account equals SQL secure_hash() for the same key; missing env vars fail fast with a clear message.",
+      "scope": [
+        "server/src/lib/crypto*",
+        "server/src/config/**",
+        "server/test/unit/crypto*",
+        "server/test/unit/config*",
+        "server/test/int/crypto*"
+      ],
+      "verification": [
+        {
+          "level": "unit",
+          "cmd": "npm run test:unit -- crypto config"
+        },
+        {
+          "level": "integration",
+          "cmd": "npm run test:int -- crypto"
+        }
+      ],
+      "status": "not_started",
+      "evidence": [],
+      "notes": "",
+      "dependsOn": [
+        "recon-001"
+      ]
+    },
+    {
+      "id": "recon-004",
+      "priority": 4,
+      "area": "phase-0-foundation",
+      "title": "Auth + roles (admin/accounts/staff/readonly) + per-request audit context (SET LOCAL app.user_email) + app shell with login",
+      "user_visible_behavior": "",
+      "scope": [
+        "server/src/api/auth/**",
+        "server/src/services/auth*",
+        "server/src/db/context*",
+        "server/src/api/app.ts",
+        "web/src/app/**",
+        "web/src/features/auth/**",
+        "server/test/**/auth*",
+        "e2e/auth*"
+      ],
+      "verification": [
+        {
+          "level": "integration",
+          "cmd": "npm run test:int -- auth"
+        },
+        {
+          "level": "e2e",
+          "cmd": "npm run test:e2e -- auth"
+        }
+      ],
+      "status": "not_started",
+      "evidence": [],
+      "notes": "",
+      "dependsOn": [
+        "recon-002",
+        "recon-003"
+      ]
+    },
+    {
+      "id": "recon-101",
+      "priority": 101,
+      "area": "phase-1-tenants",
+      "title": "Branches, bank accounts, landlords, properties: API + UI (list, search, create, edit)",
+      "user_visible_behavior": "",
+      "scope": [
+        "server/src/{domain,services,api}/{branch,bank-account,landlord,property}*/**",
+        "web/src/features/{branches,bank-accounts,landlords,properties}/**",
+        "server/test/**/property*",
+        "e2e/property*"
+      ],
+      "verification": [
+        {
+          "level": "integration",
+          "cmd": "npm run test:int -- property"
+        },
+        {
+          "level": "e2e",
+          "cmd": "npm run test:e2e -- property"
+        }
+      ],
+      "status": "not_started",
+      "evidence": [],
+      "notes": "",
+      "dependsOn": [
+        "recon-004"
+      ]
+    },
+    {
+      "id": "recon-102",
+      "priority": 102,
+      "area": "phase-1-tenants",
+      "title": "Tenants + tenancies: TID, RG/MG/IRG, joint tenants, NI stored encrypted+hashed+last3, search by TID/name/NI; tenancy end flow",
+      "user_visible_behavior": "Staff search a tenant by TID, name or full NI; NI is never shown in full except to admin/accounts; ending a tenancy requires an end date.",
+      "scope": [
+        "server/src/{domain,services,api}/{tenant,tenancy}*/**",
+        "web/src/features/{tenants,tenancies}/**",
+        "server/test/**/tenan*",
+        "e2e/tenan*"
+      ],
+      "verification": [
+        {
+          "level": "integration",
+          "cmd": "npm run test:int -- tenan"
+        },
+        {
+          "level": "e2e",
+          "cmd": "npm run test:e2e -- tenan"
+        }
+      ],
+      "status": "not_started",
+      "evidence": [],
+      "notes": "",
+      "dependsOn": [
+        "recon-101"
+      ]
+    },
+    {
+      "id": "recon-103",
+      "priority": 103,
+      "area": "phase-1-tenants",
+      "title": "Rent terms: rent schedules, benefit awards (LHA/UC/HB), payer splits, payment methods; nightly charge generation job + rent account view per tenancy",
+      "user_visible_behavior": "On a tenancy page staff set rent + cycle, add an HB award of a fixed amount and see the tenant/council split per period and the running balance per payer.",
+      "scope": [
+        "server/src/{domain,services,api}/{rent,benefit,payer-split,payment-method}*/**",
+        "server/src/jobs/generate-charges*",
+        "web/src/features/rent-terms/**",
+        "server/test/**/rent*",
+        "e2e/rent*"
+      ],
+      "verification": [
+        {
+          "level": "integration",
+          "cmd": "npm run test:int -- rent"
+        },
+        {
+          "level": "e2e",
+          "cmd": "npm run test:e2e -- rent"
+        }
+      ],
+      "status": "not_started",
+      "evidence": [],
+      "notes": "",
+      "dependsOn": [
+        "recon-102"
+      ]
+    },
+    {
+      "id": "recon-104",
+      "priority": 104,
+      "area": "phase-1-tenants",
+      "title": "Known payer accounts: add/link landlord, relative or tenant accounts (hash + last4) to a tenancy or landlord",
+      "user_visible_behavior": "",
+      "scope": [
+        "server/src/{domain,services,api}/payer-account*/**",
+        "web/src/features/payer-accounts/**",
+        "server/test/**/payer-account*"
+      ],
+      "verification": [
+        {
+          "level": "integration",
+          "cmd": "npm run test:int -- payer-account"
+        }
+      ],
+      "status": "not_started",
+      "evidence": [],
+      "notes": "",
+      "dependsOn": [
+        "recon-102",
+        "recon-003"
+      ]
+    },
+    {
+      "id": "recon-105",
+      "priority": 105,
+      "area": "phase-1-tenants",
+      "title": "LetMC import: tenants, tenancies, properties, landlords + opening balances at a cutover date; dry-run report before commit",
+      "user_visible_behavior": "Import a (synthetic) LetMC export in dry-run; see counts, duplicates and rejects; commit; arrears appear as opening_balance charges, credits as negative adjustments.",
+      "scope": [
+        "server/src/jobs/letmc-import/**",
+        "server/src/api/imports/letmc*",
+        "web/src/features/letmc-import/**",
+        "fixtures/letmc/**",
+        "server/test/**/letmc*"
+      ],
+      "verification": [
+        {
+          "level": "integration",
+          "cmd": "npm run test:int -- letmc"
+        }
+      ],
+      "status": "not_started",
+      "evidence": [],
+      "notes": "",
+      "dependsOn": [
+        "recon-103"
+      ]
+    },
+    {
+      "id": "recon-201",
+      "priority": 201,
+      "area": "phase-2-matching",
+      "title": "Bank CSV ingest: upload, profile by header name, dedupe, raw row kept, extraction of TID/NI/payer account; CSV profile admin screen",
+      "user_visible_behavior": "Uploading each of 7 synthetic bank files (columns reordered/renamed per bank) imports the expected rows; re-upload is rejected; an overlapping file inserts only new lines; an unknown layout fails naming the missing fields.",
+      "scope": [
+        "server/src/{domain,services,api}/ingest/**",
+        "web/src/features/{upload,csv-profiles}/**",
+        "fixtures/banks/**",
+        "server/test/**/ingest*"
+      ],
+      "verification": [
+        {
+          "level": "unit",
+          "cmd": "npm run test:unit -- ingest"
+        },
+        {
+          "level": "integration",
+          "cmd": "npm run test:int -- ingest"
+        }
+      ],
+      "status": "not_started",
+      "evidence": [],
+      "notes": "",
+      "dependsOn": [
+        "recon-104"
+      ]
+    },
+    {
+      "id": "recon-202",
+      "priority": 202,
+      "area": "phase-2-matching",
+      "title": "Matching service: auto_match on every ingested line, match summary per import, API for suggestions / confirm / remember / reject",
+      "user_visible_behavior": "After upload the summary shows N matched automatically, N for review, N yet to take, N excluded.",
+      "scope": [
+        "server/src/{services,api}/matching/**",
+        "server/test/**/matching*"
+      ],
+      "verification": [
+        {
+          "level": "integration",
+          "cmd": "npm run test:int -- matching"
+        }
+      ],
+      "status": "not_started",
+      "evidence": [],
+      "notes": "",
+      "dependsOn": [
+        "recon-201"
+      ]
+    },
+    {
+      "id": "recon-203",
+      "priority": 203,
+      "area": "phase-2-matching",
+      "title": "Review queue UI: suggestions with confidence + reason, accept / pick another tenancy / remember payer, yet-to-take list with manual match",
+      "user_visible_behavior": "",
+      "scope": [
+        "web/src/features/review/**",
+        "e2e/review*"
+      ],
+      "verification": [
+        {
+          "level": "e2e",
+          "cmd": "npm run test:e2e -- review"
+        }
+      ],
+      "status": "not_started",
+      "evidence": [],
+      "notes": "",
+      "dependsOn": [
+        "recon-202"
+      ]
+    },
+    {
+      "id": "recon-204",
+      "priority": 204,
+      "area": "phase-2-matching",
+      "title": "Receipt operations: split a bulk council payment / upload remittance, manual allocation override, reverse a receipt, adjustments (write-off, refund)",
+      "user_visible_behavior": "",
+      "scope": [
+        "server/src/{domain,services,api}/{receipt,allocation,remittance,adjustment}*/**",
+        "web/src/features/receipts/**",
+        "server/test/**/receipt*"
+      ],
+      "verification": [
+        {
+          "level": "integration",
+          "cmd": "npm run test:int -- receipt"
+        }
+      ],
+      "status": "not_started",
+      "evidence": [],
+      "notes": "",
+      "dependsOn": [
+        "recon-202"
+      ]
+    },
+    {
+      "id": "recon-301",
+      "priority": 301,
+      "area": "phase-3-outputs",
+      "title": "Filled-in bank statement CSV download (replaces the Google Sheet) with filters by bank/date/status",
+      "user_visible_behavior": "",
+      "scope": [
+        "server/src/{services,api}/export/statement*",
+        "web/src/features/export/**",
+        "server/test/**/export-statement*"
+      ],
+      "verification": [
+        {
+          "level": "integration",
+          "cmd": "npm run test:int -- export-statement"
+        }
+      ],
+      "status": "not_started",
+      "evidence": [],
+      "notes": "",
+      "dependsOn": [
+        "recon-202"
+      ]
+    },
+    {
+      "id": "recon-302",
+      "priority": 302,
+      "area": "phase-3-outputs",
+      "title": "Vico export from v_vico_export: file download (TID, amount, constant sort code/account), marks each receipt exported once via external_refs",
+      "user_visible_behavior": "",
+      "scope": [
+        "server/src/{services,api,jobs}/vico/**",
+        "web/src/features/vico/**",
+        "server/test/**/vico*"
+      ],
+      "verification": [
+        {
+          "level": "integration",
+          "cmd": "npm run test:int -- vico"
+        }
+      ],
+      "status": "not_started",
+      "evidence": [],
+      "notes": "",
+      "dependsOn": [
+        "recon-202"
+      ]
+    },
+    {
+      "id": "recon-303",
+      "priority": 303,
+      "area": "phase-3-outputs",
+      "title": "Xero sync: OAuth2, contact mapping, one draft invoice per receipt (ledger code + branch tracking), status read-back, idempotent outbox worker; field map from integration_settings",
+      "user_visible_behavior": "Against a mocked Xero API: one invoice per receipt, retries never duplicate, APPROVED/VOIDED flows back. A real sandbox run is a manual step.",
+      "scope": [
+        "server/src/{services,api,jobs}/xero/**",
+        "web/src/features/xero/**",
+        "server/test/**/xero*"
+      ],
+      "verification": [
+        {
+          "level": "integration",
+          "cmd": "npm run test:int -- xero"
+        }
+      ],
+      "status": "not_started",
+      "evidence": [],
+      "notes": "",
+      "dependsOn": [
+        "recon-202"
+      ]
+    },
+    {
+      "id": "recon-401",
+      "priority": 401,
+      "area": "phase-4-reporting",
+      "title": "Dashboard: today's imports per bank, auto-match rate, review backlog, balances per payer, arrears ageing, tenant rent statement (PDF/CSV)",
+      "user_visible_behavior": "",
+      "scope": [
+        "server/src/{services,api}/reports/**",
+        "web/src/features/dashboard/**",
+        "e2e/dashboard*"
+      ],
+      "verification": [
+        {
+          "level": "e2e",
+          "cmd": "npm run test:e2e -- dashboard"
+        }
+      ],
+      "status": "not_started",
+      "evidence": [],
+      "notes": "",
+      "dependsOn": [
+        "recon-203",
+        "recon-301"
+      ]
+    }
+  ]
+}

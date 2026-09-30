@@ -1,0 +1,37 @@
+{
+  "name": "maker-checker-graph",
+  "state": {
+    "requirements": { "reducer": "overwrite" },
+    "code": { "reducer": "overwrite" },
+    "review": { "reducer": "overwrite" },
+    "attempts": { "reducer": "sum", "initial": 0 },
+    "approved": { "reducer": "overwrite" }
+  },
+  "start": "research",
+  "nodes": [
+    { "id": "research", "type": "agent", "role": "research", "writes": ["requirements"] },
+    { "id": "implement", "type": "agent", "role": "implement", "writes": ["code"], "reads": ["requirements"] },
+    {
+      "id": "verify",
+      "type": "agent",
+      "role": "verify",
+      "writes": ["review", "attempts"],
+      "reads": ["code"],
+      "capField": "attempts",
+      "capValue": 3,
+      "capRoute": "approve"
+    },
+    { "id": "approve", "type": "human", "writes": ["approved"] },
+    { "id": "merge", "type": "command", "cmd": "echo merged", "writes": [] }
+  ],
+  "approvalBefore": ["approve"],
+  "routing": [
+    { "from": "research", "to": "implement" },
+    { "from": "implement", "to": "verify" },
+    { "from": "verify", "when": { "field": "review", "equals": "pass" }, "to": "approve" },
+    { "from": "verify", "when": { "field": "review", "equals": "needs-info" }, "to": "research" },
+    { "from": "verify", "default": true, "to": "implement" },
+    { "from": "approve", "when": { "field": "approved", "equals": true }, "to": "merge" },
+    { "from": "approve", "default": true, "to": "implement" }
+  ]
+}

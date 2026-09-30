@@ -1,0 +1,96 @@
+{"ts":"2026-09-30T13:56:42.996Z","type":"start","initCheckFailures":4,"nextFeatureId":null,"activeFeatureId":null,"baselineSmoke":null,"branch":"main","head":"d937ee0","dirtyCount":2,"configHash":"fe4fe4ebbc515cbd9cf4f677498689875f52df30","recentDecisionKeys":[],"recentLessonKeys":[]}
+{"ts":"2026-09-30T13:56:43.103Z","type":"rules.baseline","signatures":[]}
+{"ts":"2026-09-30T13:56:43.118Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-09-30T13:56:43.120Z","type":"hook.output","hook":"session-start","stdoutSha1":"ccea8509d747119fc679df39ab3cdc9c10eed29f","stderrSha1":null,"exitCode":0}
+{"ts":"2026-09-30T13:57:02.643Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-09-30T13:57:09.337Z","type":"handoff","sessionNum":1,"commit":"d937ee0","sessionId":"c05a654e-b387-4221-b17f-ff2e81aa596f"}
+{"ts":"2026-09-30T13:57:09.449Z","type":"exit","cleanupOk":true,"featureListOk":true,"progressUpdated":true,"dirty":true,"overallOk":false,"checklist":[{"id":"startup-path","status":"fail"},{"id":"verification-path","status":"warn"},{"id":"progress-recorded","status":"pass"},{"id":"feature-state-truthful","status":"pass"},{"id":"no-undocumented-changes","status":"pass"},{"id":"next-session-continues","status":"fail"}]}
+{"ts":"2026-09-30T13:57:09.449Z","type":"exit.check","check":"startup-path","ok":false,"status":"fail","detail":"No init.sh, init.ps1, or commands.start configured — there is no documented way to start this project."}
+{"ts":"2026-09-30T13:57:09.450Z","type":"exit.check","check":"verification-path","ok":true,"status":"warn","detail":"No active feature or issue, and nothing has been verified yet — nothing to check."}
+{"ts":"2026-09-30T13:57:09.450Z","type":"exit.check","check":"progress-recorded","ok":true,"status":"pass","detail":"Progress log updated recently."}
+{"ts":"2026-09-30T13:57:09.450Z","type":"exit.check","check":"feature-state-truthful","ok":true,"status":"pass","detail":"No feature marked passing without recorded evidence."}
+{"ts":"2026-09-30T13:57:09.450Z","type":"exit.check","check":"no-undocumented-changes","ok":true,"status":"pass","detail":"No undocumented drift, debug code, or test weakening found in changed files."}
+{"ts":"2026-09-30T13:57:09.450Z","type":"exit.check","check":"next-session-continues","ok":false,"status":"fail","detail":"startup path is broken"}
+{"ts":"2026-09-30T13:57:09.452Z","type":"hook.output","hook":"stop","stdoutSha1":null,"stderrSha1":"ffef7a5af002214ec779ea2b3cc73233b08d87e3","exitCode":2}
+{"ts":"2026-09-30T13:57:14.851Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-09-30T14:05:46.813Z","type":"start","initCheckFailures":4,"nextFeatureId":null,"activeFeatureId":null,"baselineSmoke":null,"branch":"main","head":"d937ee0","dirtyCount":3,"configHash":"fe4fe4ebbc515cbd9cf4f677498689875f52df30","recentDecisionKeys":[],"recentLessonKeys":[]}
+{"ts":"2026-09-30T14:05:46.912Z","type":"rules.baseline","signatures":[]}
+{"ts":"2026-09-30T14:05:46.922Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-09-30T14:05:46.923Z","type":"hook.output","hook":"session-start","stdoutSha1":"b396651bff15c60aedf4a9de88a9a7c186769615","stderrSha1":null,"exitCode":0}
+{"ts":"2026-09-30T14:05:47.416Z","type":"handoff","sessionNum":2,"commit":"d937ee0","sessionId":"hx-doctor-probe"}
+{"ts":"2026-09-30T14:05:47.544Z","type":"exit","cleanupOk":true,"featureListOk":true,"progressUpdated":true,"dirty":true,"overallOk":false,"checklist":[{"id":"startup-path","status":"fail"},{"id":"verification-path","status":"warn"},{"id":"progress-recorded","status":"pass"},{"id":"feature-state-truthful","status":"pass"},{"id":"no-undocumented-changes","status":"pass"},{"id":"next-session-continues","status":"fail"}]}
+{"ts":"2026-09-30T14:05:47.544Z","type":"exit.check","check":"startup-path","ok":false,"status":"fail","detail":"No init.sh, init.ps1, or commands.start configured — there is no documented way to start this project."}
+{"ts":"2026-09-30T14:05:47.544Z","type":"exit.check","check":"verification-path","ok":true,"status":"warn","detail":"No active feature or issue, and nothing has been verified yet — nothing to check."}
+{"ts":"2026-09-30T14:05:47.544Z","type":"exit.check","check":"progress-recorded","ok":true,"status":"pass","detail":"Progress log updated recently."}
+{"ts":"2026-09-30T14:05:47.544Z","type":"exit.check","check":"feature-state-truthful","ok":true,"status":"pass","detail":"No feature marked passing without recorded evidence."}
+{"ts":"2026-09-30T14:05:47.544Z","type":"exit.check","check":"no-undocumented-changes","ok":true,"status":"pass","detail":"No undocumented drift, debug code, or test weakening found in changed files."}
+{"ts":"2026-09-30T14:05:47.544Z","type":"exit.check","check":"next-session-continues","ok":false,"status":"fail","detail":"startup path is broken"}
+{"ts":"2026-09-30T14:05:47.546Z","type":"hook.output","hook":"stop","stdoutSha1":null,"stderrSha1":"ffef7a5af002214ec779ea2b3cc73233b08d87e3","exitCode":2}
+{"ts":"2026-09-30T14:05:47.786Z","type":"handoff","sessionNum":2,"commit":"d937ee0","sessionId":"hx-doctor-probe"}
+{"ts":"2026-09-30T14:05:47.787Z","type":"hook.output","hook":"session-end","stdoutSha1":"668f291c23ab9ac6b672f10674068f9bb6b1c2ee","stderrSha1":null,"exitCode":0}
+{"ts":"2026-09-30T14:05:48.017Z","type":"handoff","sessionNum":2,"commit":"d937ee0","sessionId":"hx-doctor-probe"}
+{"ts":"2026-09-30T14:05:48.018Z","type":"pre-compact"}
+{"ts":"2026-09-30T14:05:48.019Z","type":"hook.output","hook":"pre-compact","stdoutSha1":"c09bccaa9b9641ec289cb09b798152e3a5e90832","stderrSha1":null,"exitCode":0}
+{"ts":"2026-09-30T14:10:19.533Z","type":"start","initCheckFailures":4,"nextFeatureId":null,"activeFeatureId":null,"baselineSmoke":null,"branch":"main","head":"d937ee0","dirtyCount":3,"configHash":"fe4fe4ebbc515cbd9cf4f677498689875f52df30","recentDecisionKeys":[],"recentLessonKeys":[]}
+{"ts":"2026-09-30T14:10:19.645Z","type":"rules.baseline","signatures":[]}
+{"ts":"2026-09-30T14:10:19.659Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-09-30T14:10:19.660Z","type":"hook.output","hook":"session-start","stdoutSha1":"0e20eed474141a6733b142ccfabaa57b558954a9","stderrSha1":null,"exitCode":0}
+{"ts":"2026-09-30T14:10:20.202Z","type":"handoff","sessionNum":3,"commit":"d937ee0","sessionId":"1975b355-5442-4765-b08e-2c658d59cdbc"}
+{"ts":"2026-09-30T14:10:20.203Z","type":"hook.output","hook":"session-end","stdoutSha1":"668f291c23ab9ac6b672f10674068f9bb6b1c2ee","stderrSha1":null,"exitCode":0}
+{"ts":"2026-09-30T14:10:37.311Z","type":"handoff","sessionNum":1,"commit":"d937ee0","sessionId":"c05a654e-b387-4221-b17f-ff2e81aa596f"}
+{"ts":"2026-09-30T14:10:37.312Z","type":"hook.output","hook":"session-end","stdoutSha1":"668f291c23ab9ac6b672f10674068f9bb6b1c2ee","stderrSha1":null,"exitCode":0}
+{"ts":"2026-09-30T14:10:53.410Z","type":"start","initCheckFailures":4,"nextFeatureId":null,"activeFeatureId":null,"baselineSmoke":null,"branch":"main","head":"d937ee0","dirtyCount":3,"configHash":"fe4fe4ebbc515cbd9cf4f677498689875f52df30","recentDecisionKeys":[],"recentLessonKeys":[]}
+{"ts":"2026-09-30T14:10:53.526Z","type":"rules.baseline","signatures":[]}
+{"ts":"2026-09-30T14:10:53.541Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-09-30T14:10:53.541Z","type":"hook.output","hook":"session-start","stdoutSha1":"b2564a9e023b60cf2d0048d771c16379259bfe4a","stderrSha1":null,"exitCode":0}
+{"ts":"2026-09-30T14:11:30.883Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-09-30T14:11:35.387Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-09-30T14:11:41.398Z","type":"start","initCheckFailures":4,"nextFeatureId":null,"activeFeatureId":null,"baselineSmoke":null,"branch":"main","head":"d937ee0","dirtyCount":3,"configHash":"fe4fe4ebbc515cbd9cf4f677498689875f52df30","recentDecisionKeys":[],"recentLessonKeys":[]}
+{"ts":"2026-09-30T14:11:41.491Z","type":"rules.baseline","signatures":[]}
+{"ts":"2026-09-30T14:11:41.503Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-09-30T14:11:41.504Z","type":"hook.output","hook":"session-start","stdoutSha1":"ee708217847f17863cf4ea485492bb9e30983fb2","stderrSha1":null,"exitCode":0}
+{"ts":"2026-09-30T14:11:41.997Z","type":"handoff","sessionNum":2,"commit":"d937ee0","sessionId":"hx-doctor-probe"}
+{"ts":"2026-09-30T14:11:42.117Z","type":"exit","cleanupOk":true,"featureListOk":true,"progressUpdated":true,"dirty":true,"overallOk":false,"checklist":[{"id":"startup-path","status":"fail"},{"id":"verification-path","status":"warn"},{"id":"progress-recorded","status":"pass"},{"id":"feature-state-truthful","status":"pass"},{"id":"no-undocumented-changes","status":"pass"},{"id":"next-session-continues","status":"fail"}]}
+{"ts":"2026-09-30T14:11:42.117Z","type":"exit.check","check":"startup-path","ok":false,"status":"fail","detail":"No init.sh, init.ps1, or commands.start configured — there is no documented way to start this project."}
+{"ts":"2026-09-30T14:11:42.117Z","type":"exit.check","check":"verification-path","ok":true,"status":"warn","detail":"No active feature or issue, and nothing has been verified yet — nothing to check."}
+{"ts":"2026-09-30T14:11:42.117Z","type":"exit.check","check":"progress-recorded","ok":true,"status":"pass","detail":"Progress log updated recently."}
+{"ts":"2026-09-30T14:11:42.117Z","type":"exit.check","check":"feature-state-truthful","ok":true,"status":"pass","detail":"No feature marked passing without recorded evidence."}
+{"ts":"2026-09-30T14:11:42.118Z","type":"exit.check","check":"no-undocumented-changes","ok":true,"status":"pass","detail":"No undocumented drift, debug code, or test weakening found in changed files."}
+{"ts":"2026-09-30T14:11:42.118Z","type":"exit.check","check":"next-session-continues","ok":false,"status":"fail","detail":"startup path is broken"}
+{"ts":"2026-09-30T14:11:42.119Z","type":"hook.output","hook":"stop","stdoutSha1":"bdcd2a340d6839011bbe84fc2f25c2faf274d611","stderrSha1":null,"exitCode":0}
+{"ts":"2026-09-30T14:11:42.331Z","type":"handoff","sessionNum":2,"commit":"d937ee0","sessionId":"hx-doctor-probe"}
+{"ts":"2026-09-30T14:11:42.332Z","type":"hook.output","hook":"session-end","stdoutSha1":"668f291c23ab9ac6b672f10674068f9bb6b1c2ee","stderrSha1":null,"exitCode":0}
+{"ts":"2026-09-30T14:11:42.548Z","type":"handoff","sessionNum":2,"commit":"d937ee0","sessionId":"hx-doctor-probe"}
+{"ts":"2026-09-30T14:11:42.548Z","type":"pre-compact"}
+{"ts":"2026-09-30T14:11:42.549Z","type":"hook.output","hook":"pre-compact","stdoutSha1":"c09bccaa9b9641ec289cb09b798152e3a5e90832","stderrSha1":null,"exitCode":0}
+{"ts":"2026-09-30T14:11:43.286Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-09-30T14:11:55.804Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-09-30T14:12:09.437Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-09-30T14:12:17.525Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-09-30T14:12:23.999Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-09-30T14:12:31.337Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-09-30T14:12:37.187Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-09-30T14:13:17.843Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-09-30T14:13:21.117Z","type":"pre-tool.deny","tool":"Bash","reason":"ERROR: command segment \"n=$(grep -n 'architecture: external_exports.object' .claude/bin/hx.cjs\" references .claude/bin/hx.cjs (protected path, write).\nWHY: this file is harness/build configuration, not project code.\nFIX: if intentional, set HX_ALLOW_PROTECTED=1, or add it to \"allowEdit\" in .claude/hx.config.json."}
+{"ts":"2026-09-30T14:13:44.331Z","type":"pre-tool.deny","tool":"Bash","reason":"ERROR: command segment \"`node .claude/bin/hx.cjs doctor` (the \"hx.config.json validates\" line must say PASS).\" references .claude/bin/hx.cjs (protected path, write).\nWHY: this file is harness/build configuration, not project code.\nFIX: if intentional, set HX_ALLOW_PROTECTED=1, or add it to \"allowEdit\" in .claude/hx.config.json."}
+{"ts":"2026-09-30T14:14:06.492Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-09-30T14:14:11.223Z","type":"start","initCheckFailures":4,"nextFeatureId":"recon-001","activeFeatureId":null,"baselineSmoke":null,"branch":"main","head":"d937ee0","dirtyCount":5,"configHash":"fe4fe4ebbc515cbd9cf4f677498689875f52df30","recentDecisionKeys":[],"recentLessonKeys":[]}
+{"ts":"2026-09-30T14:14:11.320Z","type":"rules.baseline","signatures":[]}
+{"ts":"2026-09-30T14:14:11.330Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-09-30T14:14:11.330Z","type":"hook.output","hook":"session-start","stdoutSha1":"adba3f079bb9dea835c4fd7d9bee87bd877b6232","stderrSha1":null,"exitCode":0}
+{"ts":"2026-09-30T14:14:11.853Z","type":"handoff","sessionNum":2,"commit":"d937ee0","sessionId":"hx-doctor-probe"}
+{"ts":"2026-09-30T14:14:11.976Z","type":"exit","cleanupOk":true,"featureListOk":true,"progressUpdated":true,"dirty":true,"overallOk":false,"checklist":[{"id":"startup-path","status":"fail"},{"id":"verification-path","status":"warn"},{"id":"progress-recorded","status":"pass"},{"id":"feature-state-truthful","status":"pass"},{"id":"no-undocumented-changes","status":"pass"},{"id":"next-session-continues","status":"fail"}]}
+{"ts":"2026-09-30T14:14:11.976Z","type":"exit.check","check":"startup-path","ok":false,"status":"fail","detail":"No init.sh, init.ps1, or commands.start configured — there is no documented way to start this project."}
+{"ts":"2026-09-30T14:14:11.976Z","type":"exit.check","check":"verification-path","ok":true,"status":"warn","detail":"No active feature or issue, and nothing has been verified yet — nothing to check."}
+{"ts":"2026-09-30T14:14:11.976Z","type":"exit.check","check":"progress-recorded","ok":true,"status":"pass","detail":"Progress log updated recently."}
+{"ts":"2026-09-30T14:14:11.976Z","type":"exit.check","check":"feature-state-truthful","ok":true,"status":"pass","detail":"No feature marked passing without recorded evidence."}
+{"ts":"2026-09-30T14:14:11.976Z","type":"exit.check","check":"no-undocumented-changes","ok":true,"status":"pass","detail":"No undocumented drift, debug code, or test weakening found in changed files."}
+{"ts":"2026-09-30T14:14:11.976Z","type":"exit.check","check":"next-session-continues","ok":false,"status":"fail","detail":"startup path is broken"}
+{"ts":"2026-09-30T14:14:11.978Z","type":"hook.output","hook":"stop","stdoutSha1":null,"stderrSha1":"ffef7a5af002214ec779ea2b3cc73233b08d87e3","exitCode":2}
+{"ts":"2026-09-30T14:14:12.208Z","type":"handoff","sessionNum":2,"commit":"d937ee0","sessionId":"hx-doctor-probe"}
+{"ts":"2026-09-30T14:14:12.224Z","type":"quality.update","domainCount":5,"layerCount":0,"promoted":0,"demoted":0}
+{"ts":"2026-09-30T14:14:12.226Z","type":"hook.output","hook":"session-end","stdoutSha1":"a09b2424444cf9727c8255e99120ea0cdbc558ee","stderrSha1":null,"exitCode":0}
+{"ts":"2026-09-30T14:14:12.474Z","type":"handoff","sessionNum":2,"commit":"d937ee0","sessionId":"hx-doctor-probe"}
+{"ts":"2026-09-30T14:14:12.474Z","type":"pre-compact"}
+{"ts":"2026-09-30T14:14:12.475Z","type":"hook.output","hook":"pre-compact","stdoutSha1":"c09bccaa9b9641ec289cb09b798152e3a5e90832","stderrSha1":null,"exitCode":0}
+{"ts":"2026-09-30T14:14:13.442Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}

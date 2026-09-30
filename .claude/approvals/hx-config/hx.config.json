@@ -1,0 +1,26 @@
+{
+  "stateDir": ".claude/state",
+  "issuesDir": ".claude/issues",
+  "autonomy": "review",
+  "maxAttempts": 3,
+  "routes": [],
+  "stopGate": "block",
+  "vcrGate": "warn",
+  "debugCodeGate": { "mode": "warn", "paths": [] },
+  "testGuard": "warn",
+  "handsOff": ["docs/reference/**", "db/migrations/001_*", "db/migrations/002_*"],
+  "protectedPaths": ["fixtures/private/**"],
+  "allowEdit": [".env.example"],
+  "architecture": {
+    "layers": [
+      { "name": "lib",      "glob": "server/src/lib/**" },
+      { "name": "config",   "glob": "server/src/config/**" },
+      { "name": "db",       "glob": "server/src/db/**" },
+      { "name": "domain",   "glob": "server/src/domain/**" },
+      { "name": "services", "glob": "server/src/services/**" },
+      { "name": "jobs",     "glob": "server/src/jobs/**" },
+      { "name": "api",      "glob": "server/src/api/**" }
+    ]
+  },
+  "logging": { "allowedFiles": ["server/src/lib/logger.ts"] }
+}
