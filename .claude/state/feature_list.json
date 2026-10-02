@@ -330,22 +330,22 @@
           "kind": "cmd",
           "cmd": "npm run lint",
           "exitCode": 0,
-          "testedAt": "2026-10-02T13:16:33.401Z",
-          "commit": "814764f"
+          "commit": "814764f",
+          "testedAt": "2026-10-02T13:16:33.401Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run typecheck",
           "exitCode": 0,
-          "testedAt": "2026-10-02T13:16:39.390Z",
-          "commit": "814764f"
+          "commit": "814764f",
+          "testedAt": "2026-10-02T13:16:39.390Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:unit -- src/features/users src/data/users",
           "exitCode": 0,
-          "testedAt": "2026-10-02T13:16:57.121Z",
-          "commit": "814764f"
+          "commit": "814764f",
+          "testedAt": "2026-10-02T13:16:57.121Z"
         }
       ],
       "notes": "",
@@ -380,12 +380,35 @@
           "cmd": "npm run test:unit -- src/features/imports src/data/imports"
         }
       ],
-      "status": "not_started",
-      "evidence": [],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run lint",
+          "exitCode": 0,
+          "testedAt": "2026-10-02T13:27:16.568Z",
+          "commit": "4f6c7d1"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run typecheck",
+          "exitCode": 0,
+          "testedAt": "2026-10-02T13:27:24.527Z",
+          "commit": "4f6c7d1"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:unit -- src/features/imports src/data/imports",
+          "exitCode": 0,
+          "testedAt": "2026-10-02T13:27:50.742Z",
+          "commit": "4f6c7d1"
+        }
+      ],
       "notes": "",
       "dependsOn": [
         "fe-003"
-      ]
+      ],
+      "contractHash": "fb3240eb12be597a"
     },
     {
       "id": "fe-102",
