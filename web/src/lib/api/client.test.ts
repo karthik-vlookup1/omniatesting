@@ -95,11 +95,30 @@ describe('apiRequest', () => {
     expect(err.retryAfter).toBe(120);
   });
 
-  it('maps a non-JSON 502 to internal', async () => {
-    mockFetch(new Response('<html>Bad gateway</html>', { status: 502, headers: { 'Content-Type': 'text/html' } }));
+  it.each([502, 503, 504])('maps a non-JSON %i from a proxy to network (API unreachable)', async (status) => {
+    mockFetch(new Response('', { status, headers: { 'Content-Type': 'text/plain' } }));
+    const err = (await apiRequest('/auth/me').catch((e: unknown) => e)) as ApiError;
+    expect(err.code).toBe('network');
+    expect(err.status).toBe(status);
+  });
+
+  it('keeps the code of a JSON error envelope sent with a 502', async () => {
+    mockFetch(jsonResponse(502, { error: { code: 'conflict', message: 'Upstream conflict' } }));
+    const err = (await apiRequest('/auth/me').catch((e: unknown) => e)) as ApiError;
+    expect(err.code).toBe('conflict');
+    expect(err.message).toBe('Upstream conflict');
+  });
+
+  it('keeps a JSON 503 from the API itself as internal', async () => {
+    mockFetch(jsonResponse(503, { status: 'unavailable' }));
+    const err = (await apiRequest('/health').catch((e: unknown) => e)) as ApiError;
+    expect(err.code).toBe('internal');
+  });
+
+  it('maps a non-JSON 500 to internal', async () => {
+    mockFetch(new Response('<html>Error</html>', { status: 500, headers: { 'Content-Type': 'text/html' } }));
     const err = (await apiRequest('/auth/me').catch((e: unknown) => e)) as ApiError;
     expect(err.code).toBe('internal');
-    expect(err.status).toBe(502);
   });
 
   it('maps a network failure to code network', async () => {

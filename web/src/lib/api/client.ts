@@ -111,6 +111,10 @@ async function toApiError(response: Response): Promise<ApiError> {
   let code: ApiErrorCode = response.status >= 500 ? 'internal' : 'unknown';
   let message = '';
   let details: unknown;
+  // The API always answers in JSON. A non-JSON 502/503/504 comes from a proxy in front of it
+  // (the Vite dev proxy, a load balancer), meaning the API itself could not be reached.
+  const isJson = (response.headers.get('Content-Type') ?? '').includes('application/json');
+  if (!isJson && [502, 503, 504].includes(response.status)) code = 'network';
   try {
     const payload: unknown = await response.json();
     const envelope = (payload as { error?: { code?: unknown; message?: unknown; details?: unknown } })?.error;

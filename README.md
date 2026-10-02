@@ -24,6 +24,23 @@ npm run dev        # http://localhost:5173 — /api is proxied to http://localho
 
 Set `OMNIA_API_URL` to proxy to a different API, e.g. `OMNIA_API_URL=http://localhost:4000 npm run dev`.
 
+### Preview mode (no backend)
+
+```sh
+npm run dev:preview   # http://localhost:5173 — no backend, Docker or database needed
+```
+
+A built-in stand-in for the backend's existing `/api/auth` endpoints, so the UI can be explored
+before the API is running. Sign in with a sample account (shown in the orange **Preview mode**
+pill at the bottom of the screen; password `preview-password`):
+`admin@preview.test`, `accounts@preview.test`, `staff@preview.test`, `readonly@preview.test`.
+
+- It exists only in the dev server: `vite build` never includes it.
+- It imitates only the backend's `/api/auth` endpoints, in the same order of checks (CSRF header,
+  body validation, then credentials) and with the same error responses. Every other `/api` path
+  answers `404 not_found`. The backend's admin-only `/api/users` is not imitated yet.
+- Nothing is stored; a reload keeps you signed in for that browser tab only.
+
 ## Scripts
 
 | Script | What it does |

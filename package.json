@@ -12,6 +12,7 @@
   ],
   "scripts": {
     "dev": "npm run dev -w web",
+    "dev:preview": "npm run dev:preview -w web",
     "build": "npm run build -w web",
     "preview": "npm run preview -w web",
     "lint": "eslint .",
