@@ -36,7 +36,7 @@ export function PreviewBanner() {
           <Text fz="sm" fw={600} mb={4}>
             Sample accounts
           </Text>
-          <Text fz="xs" c="slate.6" mb="sm">
+          <Text fz="xs" c="dimmed" mb="sm">
             Password for every account: <Code>{PREVIEW_PASSWORD}</Code>. Only sign-in and the account
             menu work: they imitate the real <Code>/api/auth</Code> endpoints. Nothing is saved.
           </Text>
@@ -48,7 +48,7 @@ export function PreviewBanner() {
                     <Code>{a.email}</Code>
                   </Table.Td>
                   <Table.Td>
-                    <Badge size="xs" variant="light" color={a.role === 'readonly' ? 'slate' : 'brand'}>
+                    <Badge size="xs" variant="light" color={a.role === 'readonly' ? 'slate' : 'blue'}>
                       {ROLE_LABEL[a.role]}
                     </Badge>
                   </Table.Td>

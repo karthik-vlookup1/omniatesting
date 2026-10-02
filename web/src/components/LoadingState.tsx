@@ -25,7 +25,7 @@ export function LoadingState({ label = 'Loading…', variant = 'spinner', rows =
     <Center mih={fullScreen ? '100vh' : 200} role="status" aria-live="polite">
       <Stack align="center" gap="sm">
         <Loader size="sm" aria-hidden />
-        <Text fz="sm" c="slate.6">
+        <Text fz="sm" c="dimmed">
           {label}
         </Text>
       </Stack>

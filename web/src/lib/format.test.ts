@@ -21,8 +21,8 @@ describe('formatMoney', () => {
 
 describe('dates', () => {
   it('formats en-GB dates', () => {
-    expect(formatDate('2026-10-02')).toBe('2 Oct 2026');
-    expect(formatDateTime('2026-10-02T14:05:00')).toBe('2 Oct 2026, 14:05');
+    expect(formatDate('2026-10-02')).toBe('02/10/2026');
+    expect(formatDateTime('2026-10-02T14:05:00')).toBe('02/10/2026, 14:05');
     expect(formatDate(null)).toBe('—');
     expect(formatDate('not a date')).toBe('—');
   });

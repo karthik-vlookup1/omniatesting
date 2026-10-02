@@ -29,7 +29,7 @@ export function AppLayout() {
         left={8}
         px="sm"
         py={6}
-        bg="white"
+        bg="var(--mantine-color-body)"
         style={{ zIndex: 1000, borderRadius: 4 }}
         onFocus={(e) => (e.currentTarget.style.top = '8px')}
         onBlur={(e) => (e.currentTarget.style.top = '-48px')}
@@ -49,7 +49,7 @@ export function AppLayout() {
                 <ThemeIcon size={28} radius="md" aria-hidden>
                   <IconChecks size={18} />
                 </ThemeIcon>
-                <Text fw={650} fz="md" c="slate.9">
+                <Text fw={650} fz="md">
                   Omnia Recon
                 </Text>
               </Group>

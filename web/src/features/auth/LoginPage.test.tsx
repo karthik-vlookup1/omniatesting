@@ -48,12 +48,12 @@ describe('LoginPage', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('The e-mail or password is incorrect');
   });
 
-  it('explains a locked account', async () => {
-    installFakeAuthApi({ loginError: { status: 423, code: 'account_locked', message: 'Too many failed attempts. Try again later.' } });
+  it('answers a locked account exactly like a wrong password (no lockout disclosure)', async () => {
+    installFakeAuthApi({ loginError: { status: 401, code: 'invalid_credentials', message: 'E-mail or password is incorrect' } });
     renderApp('/login');
     await signIn(STAFF_USER.email, VALID_PASSWORD);
-    expect(await screen.findByText('Account temporarily locked')).toBeInTheDocument();
-    expect(screen.getByRole('alert')).toHaveTextContent('unlocks automatically after 15 minutes');
+    expect(await screen.findByText('Sign-in failed')).toBeInTheDocument();
+    expect(screen.queryByText(/locked out|Account temporarily locked/i)).toBeNull();
   });
 
   it('explains rate limiting using Retry-After', async () => {

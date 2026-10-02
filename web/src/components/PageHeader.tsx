@@ -25,11 +25,11 @@ export function PageHeader({ title, description, actions, meta, breadcrumbs }: P
         <Breadcrumbs separatorMargin={6} fz="xs" aria-label="Breadcrumb">
           {breadcrumbs.map((c) =>
             c.to ? (
-              <Anchor key={c.label} component={Link} to={c.to} fz="xs" c="slate.6">
+              <Anchor key={c.label} component={Link} to={c.to} fz="xs" c="dimmed">
                 {c.label}
               </Anchor>
             ) : (
-              <Text key={c.label} fz="xs" c="slate.7" aria-current="page">
+              <Text key={c.label} fz="xs" c="dimmed" aria-current="page">
                 {c.label}
               </Text>
             ),
@@ -43,7 +43,7 @@ export function PageHeader({ title, description, actions, meta, breadcrumbs }: P
             {meta}
           </Group>
           {description && (
-            <Text c="slate.6" fz="sm" maw={760}>
+            <Text c="dimmed" fz="sm" maw={760}>
               {description}
             </Text>
           )}

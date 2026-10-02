@@ -21,10 +21,10 @@ describe('protected routes', () => {
   it('shows the app shell with the user and role for a valid session', async () => {
     installFakeAuthApi({ sessionUser: STAFF_USER });
     renderApp('/');
-    expect(await screen.findByRole('heading', { level: 1, name: 'Overview' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { level: 1, name: 'Home' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Account menu for Sam Taylor' })).toBeInTheDocument();
     expect(screen.getAllByText('Staff').length).toBeGreaterThan(0);
-    expect(screen.getByRole('link', { name: 'Overview' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute('aria-current', 'page');
   });
 
   it('shows the not-found page inside the shell for unknown paths', async () => {
@@ -34,11 +34,11 @@ describe('protected routes', () => {
     expect(screen.getByRole('button', { name: 'Account menu for Sam Taylor' })).toBeInTheDocument();
   });
 
-  it('describes read-only access honestly on the overview', async () => {
+  it('describes read-only access honestly on Home', async () => {
     installFakeAuthApi({ sessionUser: { ...STAFF_USER, role: 'readonly', fullName: 'Robin Reader' } });
     renderApp('/');
     expect(await screen.findByText('View only: you cannot change data')).toBeInTheDocument();
-    expect(screen.getByText('NI numbers are shown masked (last 3 characters)')).toBeInTheDocument();
+    expect(screen.getByText('NI numbers are shown masked')).toBeInTheDocument();
   });
 
   it('offers a retry when the server cannot be reached', async () => {
@@ -46,6 +46,19 @@ describe('protected routes', () => {
     renderApp('/');
     expect(await screen.findByText('Cannot reach Omnia Recon')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Try again' })).toBeInTheDocument();
+  });
+});
+
+describe('header', () => {
+  it('shows the current user and role, and offers light / dark / auto appearance', async () => {
+    installFakeAuthApi({ sessionUser: STAFF_USER });
+    const user = userEvent.setup();
+    renderApp('/');
+    expect(await screen.findByTestId('current-user')).toHaveTextContent('Sam Taylor');
+    await user.click(screen.getByRole('button', { name: 'Account menu for Sam Taylor' }));
+    const dark = await screen.findByRole('radio', { name: 'Dark' });
+    await user.click(dark);
+    await waitFor(() => expect(document.documentElement).toHaveAttribute('data-mantine-color-scheme', 'dark'));
   });
 });
 
@@ -67,7 +80,7 @@ describe('session expiry', () => {
     const api = installFakeAuthApi({ sessionUser: STAFF_USER });
     const user = userEvent.setup();
     const { router } = renderApp('/');
-    await screen.findByRole('heading', { level: 1, name: 'Overview' });
+    await screen.findByRole('heading', { level: 1, name: 'Home' });
 
     api.expireSession();
     await apiRequest('/auth/me').catch(() => undefined);
@@ -79,7 +92,7 @@ describe('session expiry', () => {
     await user.type(screen.getByLabelText(/Password/), 'correct horse battery');
     await user.click(screen.getByRole('button', { name: 'Sign in' }));
     await waitFor(() => expect(router.state.location.pathname).toBe('/'));
-    expect(await screen.findByRole('heading', { level: 1, name: 'Overview' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { level: 1, name: 'Home' })).toBeInTheDocument();
   });
 });
 

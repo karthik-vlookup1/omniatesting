@@ -19,7 +19,7 @@ export function FilterBar({ children, onReset, active, actions }: FilterBarProps
         <Group align="flex-end" gap="sm" wrap="wrap" style={{ flex: '1 1 auto' }}>
           {children}
           {active && onReset && (
-            <Button variant="subtle" color="slate.7" leftSection={<IconFilterOff size={15} aria-hidden />} onClick={onReset}>
+            <Button variant="subtle" color="gray" leftSection={<IconFilterOff size={15} aria-hidden />} onClick={onReset}>
               Clear filters
             </Button>
           )}

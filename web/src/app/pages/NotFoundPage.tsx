@@ -13,7 +13,7 @@ export function NotFoundPage() {
       description="This address does not match any page in Omnia Recon. It may have been mistyped or the page may have moved."
       action={
         <Button component={Link} to="/" variant="default">
-          Go to overview
+          Go to Home
         </Button>
       }
     />

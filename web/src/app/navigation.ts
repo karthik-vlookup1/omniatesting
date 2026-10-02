@@ -1,4 +1,4 @@
-import { IconLayoutDashboard, type Icon } from '@tabler/icons-react';
+import { IconHome, type Icon } from '@tabler/icons-react';
 import type { Capability } from '../data/auth';
 
 export interface NavItem {
@@ -7,7 +7,7 @@ export interface NavItem {
   icon: Icon;
   /** Hidden from roles without this capability (the route is guarded separately). */
   capability?: Capability;
-  /** Match child paths too (e.g. /imports/123 highlights Imports). */
+  /** Match child paths too (e.g. /review?status=… or /imports/123). */
   matchPrefix?: boolean;
 }
 
@@ -17,12 +17,18 @@ export interface NavSection {
 }
 
 /**
- * The sidebar. A screen is added here only when its feature ships, so the navigation never
- * offers somewhere that does not exist yet.
+ * The sidebar, in the order of FRONTEND_REFERENCE.md §4:
+ * Home · Upload statement · Review queue · Tenancies · Vico export · Xero · CSV profiles · Users.
+ * A screen is added here only when its feature ships, so navigation never offers somewhere that
+ * does not exist yet. The Home page reads this list to show which workflow stages are available.
  */
 export const NAV_SECTIONS: NavSection[] = [
   {
     label: null,
-    items: [{ label: 'Overview', to: '/', icon: IconLayoutDashboard }],
+    items: [{ label: 'Home', to: '/', icon: IconHome }],
   },
 ];
+
+export function navItems(): NavItem[] {
+  return NAV_SECTIONS.flatMap((s) => s.items);
+}

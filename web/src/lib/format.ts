@@ -42,18 +42,18 @@ export function formatPercent(value: number | string | null | undefined): string
   return n === null ? EMPTY : `${Math.round(n * 100)}%`;
 }
 
-/** 2 Oct 2026 */
+/** 02/10/2026 (en-GB, FRONTEND_REFERENCE.md §2) */
 export function formatDate(value: string | Date | null | undefined): string {
   if (!value) return EMPTY;
   const d = dayjs(value);
-  return d.isValid() ? d.format('D MMM YYYY') : EMPTY;
+  return d.isValid() ? d.format('DD/MM/YYYY') : EMPTY;
 }
 
-/** 2 Oct 2026, 14:05 */
+/** 02/10/2026, 14:05 */
 export function formatDateTime(value: string | Date | null | undefined): string {
   if (!value) return EMPTY;
   const d = dayjs(value);
-  return d.isValid() ? d.format('D MMM YYYY, HH:mm') : EMPTY;
+  return d.isValid() ? d.format('DD/MM/YYYY, HH:mm') : EMPTY;
 }
 
 /** "3 minutes ago" */

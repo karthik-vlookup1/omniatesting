@@ -16,7 +16,7 @@ const LABEL = { ni: 'NI number', account: 'Payer account' } as const;
 export function MaskedValue({ value, kind }: MaskedValueProps) {
   if (!value) {
     return (
-      <Text span c="slate.5" fz="sm" aria-label={`${LABEL[kind]} not recorded`}>
+      <Text span c="dimmed" fz="sm" aria-label={`${LABEL[kind]} not recorded`}>
         {EMPTY_VALUE}
       </Text>
     );
@@ -24,7 +24,7 @@ export function MaskedValue({ value, kind }: MaskedValueProps) {
   return (
     <Tooltip label={`${LABEL[kind]} — masked for data protection`}>
       <Group gap={4} wrap="nowrap" component="span" display="inline-flex">
-        <IconLock size={12} stroke={1.75} color="var(--mantine-color-slate-5)" aria-hidden />
+        <IconLock size={12} stroke={1.75} color="var(--mantine-color-dimmed)" aria-hidden />
         <Text span ff="monospace" fz="sm" aria-label={`${LABEL[kind]}, masked: ${value}`}>
           {value}
         </Text>

@@ -20,14 +20,14 @@ export function StatCard({ label, value, hint, icon, tone = 'neutral', to }: Sta
     <Card padding="md" h="100%">
       <Group justify="space-between" align="flex-start" wrap="nowrap" gap="sm">
         <Stack gap={4} miw={0}>
-          <Text fz="xs" fw={600} c="slate.6" tt="uppercase" style={{ letterSpacing: '0.04em' }}>
+          <Text fz="xs" fw={600} c="dimmed" tt="uppercase" style={{ letterSpacing: '0.04em' }}>
             {label}
           </Text>
-          <Text fz={26} fw={650} lh={1.15} className="tabular" c="slate.9">
+          <Text fz={26} fw={650} lh={1.15} className="tabular">
             {value}
           </Text>
           {hint && (
-            <Text fz="xs" c="slate.6">
+            <Text fz="xs" c="dimmed">
               {hint}
             </Text>
           )}

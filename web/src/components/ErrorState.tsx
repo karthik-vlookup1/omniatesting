@@ -34,7 +34,7 @@ export function ErrorState({ error, title = 'Could not load this information', o
             <span />
           )}
           {requestId && (
-            <Text fz="xs" c="slate.6" ff="monospace">
+            <Text fz="xs" c="dimmed" ff="monospace">
               Ref {requestId}
             </Text>
           )}

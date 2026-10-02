@@ -1,15 +1,23 @@
-/* Global rules that Mantine's theme cannot express. Keep this file small. */
+/* Global rules that Mantine's theme cannot express. Keep this file small.
+   Surfaces and borders are semantic so both colour schemes stay legible. */
 
-:root {
+:root,
+:root[data-mantine-color-scheme='light'] {
   --app-surface: var(--mantine-color-slate-0);
+  --app-surface-subtle: var(--mantine-color-slate-0);
   --app-border: var(--mantine-color-slate-2);
-  --app-text-muted: var(--mantine-color-slate-6);
+  --app-border-subtle: var(--mantine-color-slate-1);
 }
 
-html,
+:root[data-mantine-color-scheme='dark'] {
+  --app-surface: var(--mantine-color-dark-8);
+  --app-surface-subtle: var(--mantine-color-dark-6);
+  --app-border: var(--mantine-color-dark-4);
+  --app-border-subtle: var(--mantine-color-dark-5);
+}
+
 body {
   background: var(--app-surface);
-  color: var(--mantine-color-slate-9);
 }
 
 /* Numbers line up in every column. */
@@ -19,7 +27,7 @@ body {
 
 /* A clear keyboard focus indicator on custom interactive elements (Mantine handles its own). */
 [data-focusable]:focus-visible {
-  outline: 2px solid var(--mantine-color-brand-6);
+  outline: 2px solid var(--mantine-primary-color-filled);
   outline-offset: 2px;
 }
 

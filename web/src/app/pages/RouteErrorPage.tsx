@@ -16,7 +16,7 @@ export function RouteErrorPage() {
     <Center mih="100dvh" p="lg">
       <Stack maw={460} gap="sm" ta="center" align="center" role="alert">
         <Title order={1}>{notFound ? 'Page not found' : chunkFailed ? 'Omnia Recon has been updated' : 'Something went wrong'}</Title>
-        <Text c="slate.6" fz="sm">
+        <Text c="dimmed" fz="sm">
           {chunkFailed
             ? 'A newer version is available. Reload the page to continue.'
             : 'This page could not be displayed. Reloading usually fixes it. If it keeps happening, tell an administrator what you were doing.'}

@@ -148,8 +148,8 @@ function DataTableInner<T>({
                       width: col.width,
                       textAlign: align,
                       whiteSpace: 'nowrap',
-                      background: 'var(--mantine-color-slate-0)',
-                      color: 'var(--mantine-color-slate-7)',
+                      background: 'var(--app-surface-subtle)',
+                      color: 'var(--mantine-color-dimmed)',
                       fontSize: 'var(--mantine-font-size-xs)',
                       fontWeight: 600,
                       textTransform: 'uppercase',
@@ -190,7 +190,7 @@ function DataTableInner<T>({
                     aria-selected={clickable ? selected : undefined}
                     onClick={clickable ? () => onRowClick?.(row) : undefined}
                     onKeyDown={clickable ? (e) => onKeyDown(e, row) : undefined}
-                    bg={selected ? 'var(--mantine-color-brand-0)' : undefined}
+                    bg={selected ? 'var(--mantine-primary-color-light)' : undefined}
                     style={{
                       cursor: clickable ? 'pointer' : undefined,
                       boxShadow: tone ? `inset 3px 0 0 var(--mantine-color-${TONE_COLOR[tone]}-6)` : undefined,

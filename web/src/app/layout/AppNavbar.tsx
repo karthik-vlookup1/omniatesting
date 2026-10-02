@@ -21,7 +21,7 @@ export function AppNavbar() {
           return (
             <Stack key={section.label ?? i} gap={2}>
               {section.label && (
-                <Text fz="xs" fw={600} c="slate.6" tt="uppercase" px="sm" pb={4} style={{ letterSpacing: '0.05em' }}>
+                <Text fz="xs" fw={600} c="dimmed" tt="uppercase" px="sm" pb={4} style={{ letterSpacing: '0.05em' }}>
                   {section.label}
                 </Text>
               )}

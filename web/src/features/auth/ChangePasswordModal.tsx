@@ -68,7 +68,7 @@ function ChangePasswordForm({ onDone }: { onDone: () => void }) {
       )}
     >
       <Stack gap="md">
-        <Text fz="sm" c="slate.6">
+        <Text fz="sm" c="dimmed">
           At least {PASSWORD_MIN_LENGTH} characters. A short phrase of unrelated words works well.
         </Text>
         <PasswordInput

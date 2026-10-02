@@ -45,3 +45,8 @@
 {"ts":"2026-10-02T11:28:48.310Z","type":"issue.start","id":"ISSUE-0001","attempt":2}
 {"ts":"2026-10-02T11:31:02.748Z","type":"issue.verify","id":"ISSUE-0001","allPassed":true,"commands":[{"cmd":"npm run lint","exitCode":0,"passed":true},{"cmd":"npm run typecheck","exitCode":0,"passed":true},{"cmd":"npm run test:unit -- src/dev src/lib","exitCode":0,"passed":true},{"cmd":"npm run build","exitCode":0,"passed":true}],"diffHash":"ae46515df8ff6be69600418ba538776831a487ee","journeyOk":null,"debugLogBlank":true}
 {"ts":"2026-10-02T11:31:02.749Z","type":"issue.resolved-pending-review","id":"ISSUE-0001"}
+{"ts":"2026-10-02T12:27:16.425Z","type":"issue.create","id":"ISSUE-0002","source":"manual"}
+{"ts":"2026-10-02T12:27:16.629Z","type":"issue.triage","id":"ISSUE-0002","skill":"issue-solve"}
+{"ts":"2026-10-02T12:27:16.823Z","type":"issue.start","id":"ISSUE-0002","attempt":1}
+{"ts":"2026-10-02T12:33:00.793Z","type":"issue.verify","id":"ISSUE-0002","allPassed":true,"commands":[{"cmd":"npm run lint","exitCode":0,"passed":true},{"cmd":"npm run typecheck","exitCode":0,"passed":true},{"cmd":"npm run test:unit","exitCode":0,"passed":true},{"cmd":"npm run build","exitCode":0,"passed":true}],"diffHash":"52d07875672e9dbaabc5c49842270bfddb6da3a9","journeyOk":null,"debugLogBlank":true}
+{"ts":"2026-10-02T12:33:00.794Z","type":"issue.resolved-pending-review","id":"ISSUE-0002"}

@@ -15,6 +15,14 @@ bank CSV → import batch → parse / normalise → bank transactions → auto_m
 match decisions or ledger codes. It displays what the server returns (including confidence and
 reason for each suggestion), collects input, sends actions and shows the server's response.
 
+## 1a. The contract
+
+`Omnia_recon-backend/docs/FRONTEND_REFERENCE.md` (backend commit `6a8f415`) is the UI and API
+contract: endpoints and shapes, roles, navigation order, screen specs and visual rules (blue
+primary, light/dark/auto, en-GB `02/10/2026` dates, status colours). This repo keeps its own file
+layout (`lib/api` client, `data/<domain>`, `features/<feature>`) and Vitest unit tests instead of
+the backend repo's `web/src` files and Playwright, as recorded in `.claude/state/decisions.md`.
+
 ## 2. Stack
 
 React 19, TypeScript (strict), Vite 8, Mantine 9, TanStack Query 5, React Router 7,

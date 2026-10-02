@@ -13,7 +13,7 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useDocumentTitle } from '@mantine/hooks';
-import { IconAlertCircle, IconChecks, IconClockHour4, IconLock, IconShieldCheck } from '@tabler/icons-react';
+import { IconAlertCircle, IconChecks, IconClockHour4, IconShieldCheck } from '@tabler/icons-react';
 import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { LoadingState } from '../../components';
 import { useLogin, useSession } from '../../data/auth';
@@ -23,17 +23,13 @@ import { safeNextPath } from './redirect';
 function loginErrorView(err: unknown): { title: string; body: string; icon: React.ReactNode } {
   if (isApiError(err)) {
     switch (err.code) {
+      // A locked account answers exactly like a wrong password (backend auth.service.ts), so the
+      // page never reveals whether an e-mail has an account.
       case 'invalid_credentials':
         return {
           title: 'Sign-in failed',
-          body: 'The e-mail or password is incorrect. Check both and try again.',
+          body: 'The e-mail or password is incorrect. Check both and try again. After several failed attempts the account is locked for 15 minutes.',
           icon: <IconAlertCircle size={18} aria-hidden />,
-        };
-      case 'account_locked':
-        return {
-          title: 'Account temporarily locked',
-          body: 'Too many failed attempts. The account unlocks automatically after 15 minutes, or an administrator can reset your password.',
-          icon: <IconLock size={18} aria-hidden />,
         };
       case 'too_many_requests': {
         const minutes = err.retryAfter ? Math.max(1, Math.ceil(err.retryAfter / 60)) : null;
@@ -79,14 +75,14 @@ export function LoginPage() {
     <Box mih="100dvh" style={{ display: 'flex' }}>
       <Box
         visibleFrom="md"
-        bg="brand.9"
+        bg="blue.9"
         c="white"
         p={48}
         style={{ flex: '0 0 42%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
       >
         <Group gap="sm">
           <ThemeIcon size={36} radius="md" color="white" variant="white" aria-hidden>
-            <IconChecks size={22} color="var(--mantine-color-brand-9)" />
+            <IconChecks size={22} color="var(--mantine-color-blue-9)" />
           </ThemeIcon>
           <Text fw={650} fz="lg">
             Omnia Recon
@@ -96,12 +92,12 @@ export function LoginPage() {
           <Title order={2} fz={28} lh={1.25} c="white">
             Rent reconciliation for Omnia Housing
           </Title>
-          <Text c="brand.1" fz="md" lh={1.6}>
+          <Text c="blue.1" fz="md" lh={1.6}>
             Upload each bank statement once. Every line is matched to a tenancy, anything uncertain is
             queued for review, and receipts flow on to the bank statement, Vico and Xero.
           </Text>
         </Stack>
-        <Group gap="xs" c="brand.2">
+        <Group gap="xs" c="blue.2">
           <IconShieldCheck size={16} aria-hidden />
           <Text fz="xs">Authorised Omnia staff only. All activity is audited.</Text>
         </Group>
@@ -120,7 +116,7 @@ export function LoginPage() {
 
           <Stack gap={4}>
             <Title order={1}>Sign in</Title>
-            <Text c="slate.6" fz="sm">
+            <Text c="dimmed" fz="sm">
               Use your Omnia Recon account.
             </Text>
           </Stack>
@@ -169,7 +165,7 @@ export function LoginPage() {
             </form>
           </Paper>
 
-          <Text fz="xs" c="slate.6" ta="center">
+          <Text fz="xs" c="dimmed" ta="center">
             Forgotten your password? Ask an Omnia Recon administrator to reset it.
           </Text>
         </Stack>

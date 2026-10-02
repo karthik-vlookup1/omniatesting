@@ -14,7 +14,7 @@ export function ForbiddenPage() {
       description="Your role does not include this area. If you need it for your work, ask an Omnia Recon administrator."
       action={
         <Button component={Link} to="/" variant="default">
-          Go to overview
+          Go to Home
         </Button>
       }
     />

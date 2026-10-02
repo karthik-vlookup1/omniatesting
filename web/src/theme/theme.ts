@@ -21,25 +21,12 @@ import {
 
 /**
  * One theme for the whole product. Values are chosen for a dense, data-heavy finance tool:
- * a deep navy primary (trust, contrast), a neutral slate surface hierarchy, compact type and
- * small radii. Semantic tones (success / warning / danger / info / neutral) live in `tones.ts`.
+ * Mantine blue as the primary (FRONTEND_REFERENCE.md §7) at an AA-contrast shade, a neutral
+ * slate scale, compact type and small radii. Works in light and dark colour schemes.
+ * Semantic tones (success / warning / danger / info / neutral) live in `tones.ts`.
  */
 
-// Deep navy. Shade 7 is the primary in light mode: >= 7:1 contrast against white.
-const brand: MantineColorsTuple = [
-  '#eef3f9',
-  '#dce5f0',
-  '#b6c9de',
-  '#8dabcb',
-  '#6b91ba',
-  '#5581b0',
-  '#4878ab',
-  '#386696',
-  '#2e5a86',
-  '#1c3d5a',
-];
-
-// Cool neutral used for surfaces, borders and secondary text.
+// Cool neutral used for light-mode surfaces, borders and the neutral tone.
 const slate: MantineColorsTuple = [
   '#f6f8fa',
   '#eef1f5',
@@ -54,9 +41,10 @@ const slate: MantineColorsTuple = [
 ];
 
 export const theme = createTheme({
-  primaryColor: 'brand',
-  primaryShade: 7,
-  colors: { brand, slate },
+  primaryColor: 'blue',
+  // Shade 8 on white is 4.6:1, shade 5 on dark-7 keeps AA in dark mode.
+  primaryShade: { light: 8, dark: 5 },
+  colors: { slate },
   white: '#ffffff',
   black: '#1f2733',
   autoContrast: true,
@@ -99,7 +87,7 @@ export const theme = createTheme({
   components: {
     AppShell: AppShell.extend({ defaultProps: { padding: 'lg' } }),
     Button: Button.extend({ defaultProps: { size: 'sm', radius: 'sm' } }),
-    ActionIcon: ActionIcon.extend({ defaultProps: { variant: 'subtle', color: 'slate.7', radius: 'sm' } }),
+    ActionIcon: ActionIcon.extend({ defaultProps: { variant: 'subtle', color: 'gray', radius: 'sm' } }),
     TextInput: TextInput.extend({ defaultProps: { size: 'sm' } }),
     PasswordInput: PasswordInput.extend({ defaultProps: { size: 'sm' } }),
     Select: Select.extend({ defaultProps: { size: 'sm', allowDeselect: false } }),
@@ -117,7 +105,7 @@ export const theme = createTheme({
         fz: 'sm',
         highlightOnHover: true,
         tabularNums: true,
-        borderColor: 'var(--mantine-color-slate-1)',
+        borderColor: 'var(--app-border-subtle)',
       },
     }),
     Tooltip: Tooltip.extend({ defaultProps: { withArrow: true, openDelay: 300, multiline: true, maw: 360 } }),
@@ -132,7 +120,7 @@ export const theme = createTheme({
   other: {
     /** Fixed widths so every page lines up. */
     contentMaxWidth: 1440,
-    navbarWidth: 248,
+    navbarWidth: 220,
     headerHeight: 56,
   },
 });

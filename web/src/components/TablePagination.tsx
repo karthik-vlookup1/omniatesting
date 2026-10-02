@@ -17,7 +17,7 @@ export function TablePagination({ page, pageSize, total, onPageChange }: TablePa
   const to = Math.min(total, page * pageSize);
   return (
     <Group justify="space-between" mt="sm" gap="sm" wrap="wrap">
-      <Text fz="xs" c="slate.6" className="tabular" aria-live="polite">
+      <Text fz="xs" c="dimmed" className="tabular" aria-live="polite">
         Showing {formatCount(from)}–{formatCount(to)} of {formatCount(total)}
       </Text>
       {pages > 1 && (
