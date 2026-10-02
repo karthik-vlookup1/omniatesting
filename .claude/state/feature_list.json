@@ -452,15 +452,15 @@
           "kind": "cmd",
           "cmd": "npm run test:unit -- ingest",
           "exitCode": 0,
-          "testedAt": "2026-10-02T11:32:13.078Z",
-          "commit": "c65c474"
+          "commit": "c65c474",
+          "testedAt": "2026-10-02T11:32:13.078Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:int -- ingest",
           "exitCode": 0,
-          "testedAt": "2026-10-02T11:32:17.256Z",
-          "commit": "c65c474"
+          "commit": "c65c474",
+          "testedAt": "2026-10-02T11:32:17.256Z"
         }
       ],
       "notes": "",
@@ -482,7 +482,10 @@
         "server/src/api/app.ts",
         "web/src/app/App.tsx",
         "web/src/app/Shell.tsx",
-        "db/migrations/004_*"
+        "db/migrations/004_*",
+        "server/src/api/ingest/routes.ts",
+        "web/src/features/upload/**",
+        "server/test/int/ingest.test.ts"
       ],
       "verification": [
         {
@@ -490,12 +493,28 @@
           "cmd": "npm run test:int -- matching"
         }
       ],
-      "status": "not_started",
-      "evidence": [],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- matching",
+          "exitCode": 1,
+          "commit": "1ec3bc0",
+          "testedAt": "2026-10-02T12:03:55.678Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- matching",
+          "exitCode": 0,
+          "testedAt": "2026-10-02T12:04:06.714Z",
+          "commit": "1ec3bc0"
+        }
+      ],
       "notes": "",
       "dependsOn": [
         "recon-201"
-      ]
+      ],
+      "contractHash": "aeb1e3051d3b6f5c"
     },
     {
       "id": "recon-203",

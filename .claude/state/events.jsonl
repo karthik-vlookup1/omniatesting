@@ -416,3 +416,9 @@
 {"ts":"2026-10-02T11:32:18.872Z","type":"evaluate","featureId":"recon-201","verdict":"Accept","scores":{"Correctness":"n/a","Verification":2,"Scope discipline":2,"Reliability":2,"Maintainability":"n/a","Handoff readiness":2},"divergences":[]}
 {"ts":"2026-10-02T11:32:19.052Z","type":"verify","id":"recon-201","allPassed":true,"commit":"c65c474","diffHash":"5e9ae482fcbb8b18955a5f6d4f9a06363940d1a6"}
 {"ts":"2026-10-02T11:32:19.052Z","type":"feature.pass","id":"recon-201","commit":"c65c474"}
+{"ts":"2026-10-02T11:32:54.411Z","type":"feature.start","id":"recon-202","vcrWarning":null}
+{"ts":"2026-10-02T12:03:54.694Z","type":"contract.changed","id":"recon-202","reason":"user-approved: 004 migration, same-request auto-match (ingest routes, upload page, ingest test) and app/web shell mounts added to scope"}
+{"ts":"2026-10-02T12:03:55.850Z","type":"verify","id":"recon-202","allPassed":false,"rootCauseLevel":"integration","commit":"1ec3bc0","diffHash":"ab975a9717cd1a853b9c0875c66f941e0e73afd1"}
+{"ts":"2026-10-02T12:04:06.841Z","type":"evaluate","featureId":"recon-202","verdict":"Accept","scores":{"Correctness":"n/a","Verification":2,"Scope discipline":2,"Reliability":"n/a","Maintainability":"n/a","Handoff readiness":2},"divergences":[]}
+{"ts":"2026-10-02T12:04:06.933Z","type":"verify","id":"recon-202","allPassed":true,"commit":"1ec3bc0","diffHash":"ab975a9717cd1a853b9c0875c66f941e0e73afd1"}
+{"ts":"2026-10-02T12:04:06.933Z","type":"feature.pass","id":"recon-202","commit":"1ec3bc0"}

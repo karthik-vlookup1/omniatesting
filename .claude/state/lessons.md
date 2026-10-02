@@ -84,3 +84,13 @@ dead end a future session might otherwise walk into again.
 
 - Source: manual (recon-201)
 - The SHA pre-check runs before insert, so a concurrent duplicate hit 23505 -> 500. Map 23505 on import_batches_file_sha256_key to 409.
+
+## 2026-10-02: Synthetic names 'Test TenantN' make fuzzy tier suggest many tenancies
+
+- Source: manual (recon-202)
+- word_similarity >= 0.5 for every Test Tenant1..20, all capped 0.6 - tests must not assume a single fuzzy suggestion; real data is more distinctive
+
+## 2026-10-02: Re-running suggest_matches on a line reuses UNIQUE(txn,tenancy,method) + ON CONFLICT DO NOTHING
+
+- Source: manual (recon-202)
+- Old rejected suggestions block re-insert, so a re-included line falls through to yet_to_take; reopen/delete exclusion-rejected suggestions before auto_match

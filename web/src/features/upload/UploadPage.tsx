@@ -2,7 +2,7 @@ import { Alert, Button, FileInput, Group, List, Select, Stack, Table, Text, Titl
 import { IconFileTypeCsv, IconUpload } from '@tabler/icons-react';
 import { useState } from 'react';
 import { hasRole, useCurrentUser } from '../auth/useAuth';
-import { UploadError, useBankAccounts, useImports, useUpload, type ImportResult } from './api';
+import { UploadError, useBankAccounts, useImports, useUpload, type UploadOutcome } from './api';
 
 /** Upload a bank statement CSV for one bank account; shows what was imported and recent imports. */
 export function UploadPage() {
@@ -12,7 +12,7 @@ export function UploadPage() {
   const upload = useUpload();
   const [bankAccountId, setBankAccountId] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
-  const [result, setResult] = useState<ImportResult | null>(null);
+  const [outcome, setOutcome] = useState<UploadOutcome | null>(null);
   const canUpload = hasRole(user?.role, 'accounts', 'staff');
 
   const options = (banks.data ?? [])
@@ -21,12 +21,12 @@ export function UploadPage() {
 
   const submit = () => {
     if (!bankAccountId || !file) return;
-    setResult(null);
+    setOutcome(null);
     upload.mutate(
       { bankAccountId, file },
       {
         onSuccess: (r) => {
-          setResult(r);
+          setOutcome(r);
           setFile(null);
         },
       },
@@ -61,22 +61,7 @@ export function UploadPage() {
       )}
 
       {upload.isError && <UploadErrorAlert error={upload.error} />}
-      {result && (
-        <Alert color="green" title="Statement imported" role="status">
-          <List size="sm" spacing={2}>
-            <List.Item>
-              {result.rowsInserted} new lines, {result.rowsDuplicate} already imported, {result.rowsSkipped} blank/footer rows
-              skipped
-            </List.Item>
-            <List.Item>
-              {result.moneyIn} money in, {result.moneyOut} money out · {result.periodFrom} to {result.periodTo}
-            </List.Item>
-            <List.Item>
-              Identifiers found: {result.withTid} TID, {result.withNi} NI number, {result.withPayerAccount} payer account
-            </List.Item>
-          </List>
-        </Alert>
-      )}
+      {outcome && <UploadSummary outcome={outcome} />}
 
       <Title order={4} mt="md">
         Recent imports
@@ -133,6 +118,30 @@ function UploadErrorAlert({ error }: { error: Error }) {
           If the bank changed its export, update its CSV profile (CSV profiles page).
         </Text>
       )}
+    </Alert>
+  );
+}
+
+function UploadSummary({ outcome: { import: r, matching: m } }: { outcome: UploadOutcome }) {
+  return (
+    <Alert color="green" title="Statement imported" role="status">
+      <List size="sm" spacing={2}>
+        <List.Item>
+          {r.rowsInserted} new lines, {r.rowsDuplicate} already imported, {r.rowsSkipped} blank/footer rows skipped ·{' '}
+          {r.periodFrom} to {r.periodTo}
+        </List.Item>
+        {m ? (
+          <List.Item data-testid="match-summary">
+            {m.autoMatched} matched automatically, {m.needsReview} for review, {m.yetToTake} yet to take, {m.excluded}{' '}
+            excluded
+          </List.Item>
+        ) : (
+          <List.Item>Matching did not run; the lines will be matched when matching is run again.</List.Item>
+        )}
+        <List.Item>
+          Identifiers found: {r.withTid} TID, {r.withNi} NI number, {r.withPayerAccount} payer account
+        </List.Item>
+      </List>
     </Alert>
   );
 }

@@ -4,7 +4,9 @@
  * /api/bank-accounts/defaults            POST create the 7 default banks + profiles (admin)
  * /api/bank-accounts/:id/profile         POST save a new profile version (admin, accounts)
  * /api/imports                           GET recent imports (signed in)
- *                                        POST multipart: bankAccountId + file (writers)
+ *                                        POST multipart: bankAccountId + file (writers); the new
+ *                                        lines are auto-matched straight away and the response
+ *                                        carries the match summary
  */
 import { Router } from 'express';
 import multer from 'multer';
@@ -20,6 +22,7 @@ import {
   listImports,
   saveProfileVersion,
 } from '../../services/ingest/ingest.service.js';
+import { autoMatchPending, batchSummary } from '../../services/matching/matching.service.js';
 import { requireAuth, requireRole, requireWriter } from '../auth/middleware.js';
 
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
@@ -72,7 +75,7 @@ export function bankAccountsRouter({ pool }: { pool: Pool }): Router {
   return router;
 }
 
-export function importsRouter({ pool, hashKey }: { pool: Pool; hashKey: string }): Router {
+export function importsRouter({ pool, hashKey, threshold }: { pool: Pool; hashKey: string; threshold: number }): Router {
   const router = Router();
   const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: MAX_FILE_BYTES, files: 1 } });
   router.use(requireAuth);
@@ -102,8 +105,16 @@ export function importsRouter({ pool, hashKey }: { pool: Pool; hashKey: string }
         content: req.file.buffer,
         userId: req.user!.id,
       });
-      req.log.info({ import: { ...result } }, 'bank csv imported');
-      res.status(201).json({ import: result });
+      // The import is committed first; if matching fails the lines stay 'new' and can be re-run.
+      let matching = null;
+      try {
+        await autoMatchPending(req.db, threshold, result.batchId);
+        matching = await batchSummary(pool, result.batchId);
+      } catch (err) {
+        req.log.error({ err, batchId: result.batchId }, 'auto-match after import failed');
+      }
+      req.log.info({ import: { ...result }, matching }, 'bank csv imported');
+      res.status(201).json({ import: result, matching });
     },
   );
 

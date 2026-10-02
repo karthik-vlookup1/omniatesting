@@ -145,7 +145,9 @@ describe('importing the 7 synthetic layouts', () => {
         WHERE bt.description = 'Received money from TEST TENANT8'`,
     );
     expect(r.raw).toMatchObject({ 'TransferWise ID': 'TRANSFER-900001', 'Payment Reference': 'T9008 SEPT' });
-    expect(r).toMatchObject({ profile_ok: true, status: 'new' });
+    expect(r.profile_ok).toBe(true);
+    // Upload runs matching straight away (recon-202), so no line is left 'new'.
+    expect(['matched', 'needs_review', 'yet_to_take']).toContain(r.status);
   });
 });
 

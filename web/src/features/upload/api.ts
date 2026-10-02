@@ -55,6 +55,23 @@ export interface ImportResult {
   moneyOut: number;
 }
 
+export interface MatchSummary {
+  lines: number;
+  autoMatched: number;
+  matched: number;
+  partiallyMatched: number;
+  needsReview: number;
+  yetToTake: number;
+  excluded: number;
+  unprocessed: number;
+}
+
+export interface UploadOutcome {
+  import: ImportResult;
+  /** null when matching failed after the import; the lines can be matched again later. */
+  matching: MatchSummary | null;
+}
+
 export interface ImportBatch {
   id: string;
   bankCode: string;
@@ -97,7 +114,7 @@ export function useImports() {
   });
 }
 
-async function uploadStatement({ bankAccountId, file }: { bankAccountId: string; file: File }): Promise<ImportResult> {
+async function uploadStatement({ bankAccountId, file }: { bankAccountId: string; file: File }): Promise<UploadOutcome> {
   const form = new FormData();
   form.append('bankAccountId', bankAccountId);
   form.append('file', file);
@@ -110,6 +127,7 @@ async function uploadStatement({ bankAccountId, file }: { bankAccountId: string;
   });
   const body = (await res.json().catch(() => ({}))) as {
     import?: ImportResult;
+    matching?: MatchSummary | null;
     error?: { message?: string; details?: { missingFields?: string[]; rowErrors?: { line: number; error: string }[] } };
   };
   if (!res.ok || !body.import) {
@@ -119,7 +137,7 @@ async function uploadStatement({ bankAccountId, file }: { bankAccountId: string;
       body.error?.details?.rowErrors,
     );
   }
-  return body.import;
+  return { import: body.import, matching: body.matching ?? null };
 }
 
 export function useUpload() {
