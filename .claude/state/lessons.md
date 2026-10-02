@@ -99,3 +99,13 @@ dead end a future session might otherwise walk into again.
 
 - Source: manual (recon-203)
 - Table.Tr onClick alone is mouse-only; put a button with an aria-label in the row so keyboard and screen-reader users can open it
+
+## 2026-10-02: Python edits on Windows must use encoding='utf-8'
+
+- Source: manual (recon-302)
+- open() defaults to cp1252, so inserted non-ASCII (em dash) became byte 0x97 and broke UTF-8
+
+## 2026-10-02: Receipt queries must LEFT JOIN bank_transactions
+
+- Source: manual (recon-302)
+- receipts.bank_transaction_id can be NULL (manual/legacy); an inner join silently drops them from the Vico export

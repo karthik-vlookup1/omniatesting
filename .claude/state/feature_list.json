@@ -541,8 +541,8 @@
           "kind": "cmd",
           "cmd": "npm run test:e2e -- review",
           "exitCode": 0,
-          "testedAt": "2026-10-02T12:21:45.761Z",
-          "commit": "6a8f415"
+          "commit": "6a8f415",
+          "testedAt": "2026-10-02T12:21:45.761Z"
         }
       ],
       "notes": "",
@@ -619,12 +619,21 @@
           "cmd": "npm run test:int -- vico"
         }
       ],
-      "status": "not_started",
-      "evidence": [],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- vico",
+          "exitCode": 0,
+          "testedAt": "2026-10-02T12:35:16.528Z",
+          "commit": "cf4d9b9"
+        }
+      ],
       "notes": "",
       "dependsOn": [
         "recon-202"
-      ]
+      ],
+      "contractHash": "229ae36fd9b5ace0"
     },
     {
       "id": "recon-303",

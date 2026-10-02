@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { LoginPage } from '../features/auth/LoginPage';
 import { RequireAuth } from '../features/auth/RequireAuth';
+import { VicoPage } from '../features/vico/VicoPage';
 import { ReviewPage } from '../features/review/ReviewPage';
 import { CsvProfilesPage } from '../features/csv-profiles/CsvProfilesPage';
 import { TenanciesPage } from '../features/tenancies/TenanciesPage';
@@ -23,6 +24,7 @@ export function App() {
         <Route path="tenancies" element={<TenanciesPage />} />
         <Route path="upload" element={<UploadPage />} />
         <Route path="review" element={<ReviewPage />} />
+        <Route path="vico" element={<VicoPage />} />
         <Route path="csv-profiles" element={<CsvProfilesPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

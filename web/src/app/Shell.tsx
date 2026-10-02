@@ -1,8 +1,8 @@
 import { AppShell, Badge, Burger, Button, Group, NavLink, Text, Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconHome, IconListCheck, IconLogout, IconSettings, IconUpload, IconUsers } from '@tabler/icons-react';
+import { IconFileExport, IconHome, IconListCheck, IconLogout, IconSettings, IconUpload, IconUsers } from '@tabler/icons-react';
 import { Outlet, NavLink as RouterLink, useNavigate } from 'react-router-dom';
-import { useCurrentUser, useLogout } from '../features/auth/useAuth';
+import { hasRole, useCurrentUser, useLogout } from '../features/auth/useAuth';
 import { useOpenCount } from '../features/review/api';
 
 /** Signed-in layout: header with the user and sign-out, a navbar, and the routed page. */
@@ -58,6 +58,9 @@ export function Shell() {
             ) : null
           }
         />
+        {hasRole(user?.role, 'accounts') && (
+          <NavLink component={RouterLink} to="/vico" label="Vico export" leftSection={<IconFileExport size={16} />} />
+        )}
         <NavLink component={RouterLink} to="/tenancies" label="Tenancies" leftSection={<IconUsers size={16} />} />
         <NavLink component={RouterLink} to="/csv-profiles" label="CSV profiles" leftSection={<IconSettings size={16} />} />
       </AppShell.Navbar>
