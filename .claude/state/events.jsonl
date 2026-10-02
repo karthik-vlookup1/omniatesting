@@ -70,3 +70,8 @@
 {"ts":"2026-10-02T13:50:20.074Z","type":"evaluate","featureId":"fe-103","verdict":"Revise","scores":{"Correctness":"n/a","Verification":2,"Scope discipline":2,"Reliability":2,"Maintainability":"n/a","Handoff readiness":1},"divergences":[]}
 {"ts":"2026-10-02T13:50:20.230Z","type":"verify","id":"fe-103","allPassed":true,"commit":"6952eea","diffHash":"2b3687917519401a1d43beaabee907909da65197","attestNote":"lint 0/0; typecheck 0; review tests 2 files 14/14 exit 0 on 3/3 runs (accept top suggestion sends {remember:false,suggestionId} only and moves to next line, part payment amount validated in pence then sent, remember only with payer account, yet-to-take leads with tenancy picker and confirms by TID with payer tenant, server refusal inline, reject last suggestion -> yet to take + picker, exclude needs reason, include again, a hotkey, money out exclude-only, readonly no actions); full suite exit 0","attestNoteChars":499}
 {"ts":"2026-10-02T13:50:20.230Z","type":"feature.pass","id":"fe-103","commit":"6952eea"}
+{"ts":"2026-10-02T13:50:41.339Z","type":"issue.create","id":"ISSUE-0003","source":"manual"}
+{"ts":"2026-10-02T13:50:46.479Z","type":"issue.triage","id":"ISSUE-0003","skill":"issue-solve"}
+{"ts":"2026-10-02T13:50:46.646Z","type":"issue.start","id":"ISSUE-0003","attempt":1}
+{"ts":"2026-10-02T13:53:32.461Z","type":"issue.verify","id":"ISSUE-0003","allPassed":true,"commands":[{"cmd":"npm run lint","exitCode":0,"passed":true},{"cmd":"npm run typecheck","exitCode":0,"passed":true},{"cmd":"npm run test:unit","exitCode":0,"passed":true}],"diffHash":"a8e7d53bca3295d54b1013c6c93bd2b29f49fa3e","journeyOk":null,"debugLogBlank":true}
+{"ts":"2026-10-02T13:53:32.462Z","type":"issue.resolved-pending-review","id":"ISSUE-0003"}

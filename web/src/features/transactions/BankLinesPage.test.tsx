@@ -2,6 +2,7 @@ import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { STAFF_USER, installFakeAuthApi, renderApp } from '../../app/testing';
+import type { AuthUser } from '../../data/auth';
 import type { BankLine } from '../../data/transactions';
 
 function json(status: number, body: unknown) {
@@ -47,8 +48,8 @@ const MATCHED = [
 const OUT = [line(5, { status: 'excluded', amount: '-12.00', remaining: '-12.00', exclusionReason: 'Bank charge', suggestions: [] })];
 
 /** Fake of GET /api/matching/lines(/:id) and /api/bank-accounts, filtering like the backend. */
-function installFakeLinesApi(options: { open?: BankLine[]; total?: number } = {}) {
-  installFakeAuthApi({ sessionUser: STAFF_USER });
+function installFakeLinesApi(options: { open?: BankLine[]; total?: number; user?: AuthUser } = {}) {
+  installFakeAuthApi({ sessionUser: options.user ?? STAFF_USER });
   const authFetch = globalThis.fetch;
   const open = options.open ?? OPEN;
   const all = [...open, ...MATCHED, ...OUT];
@@ -143,8 +144,9 @@ describe('Review queue list', { timeout: 15_000 }, () => {
 });
 
 describe('Line drawer (read-only)', { timeout: 15_000 }, () => {
-  it('opens a line with its facts and suggestions, without actions', async () => {
-    installFakeLinesApi();
+  // Since fe-103 writers get review actions here; read-only users must still get none.
+  it('opens a line with its facts and suggestions, without actions for read-only users', async () => {
+    installFakeLinesApi({ user: { ...STAFF_USER, role: 'readonly' } });
     const { router } = renderApp('/review');
     const user = userEvent.setup();
     await user.click(await screen.findByRole('row', { name: /BGC RENT LINE 1/ }));
