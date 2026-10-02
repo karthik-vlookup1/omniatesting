@@ -85,3 +85,7 @@ PreCompact refreshes them before context is squeezed. If you want a fresh handof
   mechanical check for this).
 - Attest what was observed, with numbers, not the plan restated (source: `hx verify --attest`
   warns under 40 characters; `attestMinChars` refuses).
+
+## Autonomous loop
+
+@../AUTONOMOUS_LOOP.md
