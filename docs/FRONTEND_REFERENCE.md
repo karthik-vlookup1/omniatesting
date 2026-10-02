@@ -71,7 +71,7 @@ Final navigation order:
 | `/upload` | Upload statement | IconUpload | all (upload form writers only) | 201/202 BUILT |
 | `/review` | Review queue | IconListCheck | all (actions writers only) | **203 next** |
 | `/tenancies` | Tenancies | IconUsers | all | 102 BUILT |
-| `/vico` | Vico export | IconFileExport | admin, accounts | 302 PLANNED |
+| `/vico` | Vico export | IconFileExport | admin, accounts | 302 BUILT |
 | `/xero` | Xero | IconBuildingBank | admin, accounts | 303 PLANNED |
 | `/csv-profiles` | CSV profiles | IconSettings | all (edit admin/accounts) | 201 BUILT |
 | `/users` | Users | IconUserCog | admin | 004 API built, UI to build |
@@ -125,7 +125,9 @@ Tenancy = { tid, status: 'pending'|'active'|'ended', startDate, endDate|null,
 SyncSummary = { dryRun, fetched, rejected: {tid|null, reason}[],
   tenancies: {inserted, updated, reactivated, ended}, tenants: {inserted, updated},
   rentChanges, ni: {missing, invalid, conflicts}, namesMissing,
-  managementType: {IRG, RG, defaultedToRG} }
+  managementType: {RG, MG, IRG, fromOwnerFlag} }
+// RG/MG/IRG comes from the building's Xero tracking suffix (*IRG, *MN = MG, branch code = RG);
+// fromOwnerFlag = buildings with no suffix, typed from the Veco owner flag instead.
 ```
 
 Existing page: search box + status segmented control, results table, detail drawer. Admin sees
@@ -259,25 +261,36 @@ No changes needed for 203. Later (103) the detail drawer gains a rent account ta
 Per bank: current profile version, header aliases per canonical field (tags input), required fields,
 amount mode, date format, skip rows, notes → **Save new version**. Admin: **Install default banks** when empty.
 
-### 6.5 Vico export — `/vico` (recon-302, PLANNED)
+### 6.5 Vico export — `/vico` (recon-302, BUILT; admin + accounts)
 
-Backend view `v_vico_export` lists confirmed receipts not yet exported (TID, amount, constant sort code
-and account). Planned API — confirm when 302 lands:
+Replaces the "G-Sheet VECO" step of the accounts procedure. File layout (CSV, CRLF):
+`Sort code,Account number,Date,Amount,Standing order reference,MG/RG` — sort code as 6 digits, date
+DD/MM/YYYY, amount 2dp, standing order reference = TID, MG/RG = the tenancy's management type.
 
-- `GET /api/vico/pending` → `{ rows: { receiptId, tid, amount, txnDate, bankCode }[], total, totalAmount }`
-- `POST /api/vico/exports` `{ receiptIds?: string[] }` → file download (`text/csv`, `Content-Disposition`), marks each receipt exported **once** (re-export of the same receipt is refused).
-- `GET /api/vico/exports` → history `{ exports: { id, createdAt, createdBy, rows, totalAmount, fileName }[] }`, each re-downloadable.
+| Method & path | Who | Body | Response |
+| --- | --- | --- | --- |
+| `GET /vico/settings` | admin, accounts | — | `{ settings: { sortCode|null, accountNumber|null } }` |
+| `PUT /vico/settings` | admin | `{ sortCode, accountNumber }` (6 and 8 digits) | `{ settings }` |
+| `GET /vico/pending` | admin, accounts | — | `{ rows: { receiptId, tid, tenantName|null, amount, receivedOn, bankCode|null, managementType }[], total, totalAmount }` |
+| `POST /vico/exports` | admin, accounts | `{ receiptIds?: uuid[] (1–5000) }` (omit = all pending) | CSV download; headers `X-Vico-Export-Id`, `X-Vico-Rows`, `X-Vico-Total`. 409 if settings missing, nothing pending, or any id already exported |
+| `GET /vico/exports` | admin, accounts | — | `{ exports: { exportId, fileName, createdAt, rows, totalAmount }[] }` (newest 100) |
+| `GET /vico/exports/:id/file` | admin, accounts | — | the earlier file, rebuilt with today's bank details |
 
-Screen: pending table with total, **Download Vico file** (confirm modal showing count + total), history table below.
+Screen: bank-details card (admin edits), pending table with total and **Download Vico file** (confirm modal
+sends the ids shown), history with **Download** again.
 
 ### 6.6 Xero — `/xero` (recon-303, PLANNED)
 
-Posts one Xero invoice per confirmed receipt through Sam's Omnia Xero OHL bridge (contact upsert, ledger
-code + property tracking from `dim_PropertyXeroMap`, `externalRef` idempotency). Target is **Demo
-Company** until a person explicitly switches to live. Planned API — confirm when 303 lands:
+Replaces the "Rental Income sheet → Xero" step of the accounts procedure, through Sam's Omnia Xero OHL
+bridge. **One invoice per bank account per bank date** (not per receipt): contact = the bank (e.g. "Apollo
+HSBC"), invoice number `<bank> DDMMYY`, reference "Rental Income", issue = due = the bank date; **one line
+per receipt**: item code = TID, description = tenant name, qty 1, unit amount, account code by management
+type (RG `001`, MG `001B`, IRG `001G`), No VAT, tracking *Properties* = the building's Xero option and
+*Branch* = office code for RG / "Managed" / "IRG". `externalRef` idempotency. Target is **Demo Company**
+until a person explicitly switches to live. Planned API — confirm when 303 lands:
 
 - `GET /api/xero/status` → `{ configured: boolean, targetEnv: 'demo'|'live', bridgeReachable: boolean }`
-- `GET /api/xero/outbox?status=pending|sent|failed` → `{ items: { id, receiptId, tid, amount, status, attempts, lastError|null, xeroInvoiceId|null, updatedAt }[], total }`
+- `GET /api/xero/outbox?status=pending|sent|failed` → `{ items: { id, invoiceNumber, bankCode, date, lines, total, status, attempts, lastError|null, xeroInvoiceId|null, updatedAt }[], total }`
 - `POST /api/xero/outbox/run` → `{ sent, failed }`; `POST /api/xero/outbox/:id/retry`
 - Posting to a non-demo target is refused unless the body carries `confirm_live: true`.
 

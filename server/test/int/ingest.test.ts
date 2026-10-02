@@ -327,3 +327,27 @@ describe('concurrent uploads', () => {
     expect(n.n).toBe(1);
   });
 });
+
+describe('real export layouts', () => {
+  it('the HSBC account accepts the business export layout (signed Amount, 02-Oct-26 dates)', async () => {
+    // An earlier test saved a renamed-header version; go back to the shipped HSBC profile.
+    const { profile } = DEFAULT_BANKS.find((b) => b.code === 'HSBC')!;
+    const saved = await post(`/api/bank-accounts/${bankIds.HSBC}/profile`, 'accounts').send({
+      headerAliases: profile.headerAliases,
+      requiredFields: profile.requiredFields,
+      amountMode: profile.amountMode,
+      dateFormat: profile.dateFormat,
+      skipRows: profile.skipRows,
+    });
+    expect(saved.status).toBe(201);
+    const res = await upload('staff', 'HSBC', 'hsbc_business.csv');
+    expect(res.status).toBe(201);
+    expect(res.body.import).toMatchObject({
+      rowsInserted: 5,
+      periodFrom: '2026-10-02',
+      periodTo: '2026-10-02',
+      withTid: 2,
+      moneyOut: 1,
+    });
+  });
+});

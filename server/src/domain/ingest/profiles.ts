@@ -48,6 +48,11 @@ export interface ResolveResult {
   columns: ColumnMap;
   /** Required fields (including the amount columns the amount mode needs) with no matching header. */
   missing: CanonicalField[];
+  /**
+   * The amount layout this file actually has. Banks change exports between one signed Amount column and
+   * Paid in / Paid out; when the profile's layout is absent but the other one is fully there, use it.
+   */
+  amountMode: AmountMode;
 }
 
 /** Finds each canonical field's column index. The first alias that matches a header wins. */
@@ -69,13 +74,19 @@ export function resolveColumns(headers: string[], profile: CsvProfile): ResolveR
     }
   }
 
+  const hasSigned = columns.amount !== undefined;
+  const hasSplit = columns.paid_in !== undefined || columns.paid_out !== undefined;
+  let amountMode = profile.amountMode;
+  // Switch to split only when both directions are there, so a file never imports one side and drops the other.
+  const hasBothSplit = columns.paid_in !== undefined && columns.paid_out !== undefined;
+  if (amountMode === 'signed' && !hasSigned && hasBothSplit) amountMode = 'split_in_out';
+  if (amountMode === 'split_in_out' && !hasSplit && hasSigned) amountMode = 'signed';
+
   const required = new Set<CanonicalField>(profile.requiredFields);
-  if (profile.amountMode === 'signed') required.add('amount');
+  if (amountMode === 'signed') required.add('amount');
   const missing = [...required].filter((f) => columns[f] === undefined);
-  if (profile.amountMode === 'split_in_out' && columns.paid_in === undefined && columns.paid_out === undefined) {
-    missing.push('paid_in', 'paid_out');
-  }
-  return { columns, missing };
+  if (amountMode === 'split_in_out' && !hasSplit) missing.push('paid_in', 'paid_out');
+  return { columns, missing, amountMode };
 }
 
 export interface DefaultBank {
@@ -105,6 +116,8 @@ export const DEFAULT_BANKS: DefaultBank[] = [
       headerAliases: {
         txn_date: ['Date'],
         description: ['Description'],
+        // Business exports have one signed Amount (with a Type column: CR / BP / DD); others split it.
+        amount: ['Amount'],
         paid_in: ['Paid in'],
         paid_out: ['Paid out'],
         balance: ['Balance'],

@@ -17,4 +17,6 @@ column order, header names, amount style and date format:
 | other_recon_format.csv | OTHER | the earlier Recon app's format incl. Current Tenancy ID |
 
 Test-only files: `hsbc_overlap.csv` (shares 2 lines with hsbc.csv), `hsbc_wrong_layout.csv`,
-`hsbc_bad_rows.csv`.
+`hsbc_bad_rows.csv`, and `hsbc_business.csv`: the layout of the real Apollo HSBC export shown in the
+accounts procedure (Date, Type CR/BP, Description, one signed Amount, Balance; dates like 02-Oct-26),
+which the HSBC profile must also read. Values are invented.

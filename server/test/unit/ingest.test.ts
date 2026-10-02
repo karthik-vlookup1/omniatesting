@@ -113,12 +113,42 @@ describe('the 7 default bank layouts', () => {
   });
 });
 
+describe('real export layouts', () => {
+  it('the HSBC profile also reads the business export: Type column, one signed Amount, 02-Oct-26 dates', () => {
+    const r = ok(parseFixture('HSBC', 'hsbc_business.csv'));
+    expect(r.lines.map((l) => [l.txnDate, l.amount, l.description])).toEqual([
+      ['2026-10-02', '-9448.60', 'OMNIA HOUSING TEST TRANSFER'],
+      ['2026-10-02', '194.96', 'TEST TENANT1 RENT OCTOBER'],
+      ['2026-10-02', '1045.00', 'T9001'],
+      ['2026-10-02', '1045.00', 'ZZ11ZZ TEST TENANT2'],
+      ['2026-10-02', '875.00', 'T9003'],
+    ]);
+  });
+
+  it('uses whichever amount layout the file has, and still names what is missing when it has neither', () => {
+    const signed: CsvProfile = { ...profileFor('HSBC'), amountMode: 'signed' };
+    expect(resolveColumns(['Date', 'Description', 'Paid in', 'Paid out'], signed)).toMatchObject({
+      amountMode: 'split_in_out',
+      missing: [],
+    });
+    expect(resolveColumns(['Date', 'Description', 'Amount'], profileFor('HSBC'))).toMatchObject({
+      amountMode: 'signed',
+      missing: [],
+    });
+    expect(resolveColumns(['Date', 'Description', 'Balance'], profileFor('HSBC')).missing).toEqual(['paid_in', 'paid_out']);
+    expect(resolveColumns(['Date', 'Description'], signed).missing).toEqual(['amount']);
+    // Only one direction present: stay signed and refuse, rather than silently drop the other side.
+    expect(resolveColumns(['Date', 'Description', 'Paid in'], signed)).toMatchObject({ amountMode: 'signed', missing: ['amount'] });
+  });
+});
+
 describe('rejections name the problem', () => {
   it('an unknown layout names the missing fields', () => {
     const r = parseFixture('HSBC', 'hsbc_wrong_layout.csv');
     expect(r).toMatchObject({ ok: false, code: 'layout_mismatch' });
     if (!r.ok) {
-      expect(r.missingFields).toEqual(expect.arrayContaining(['txn_date', 'description', 'paid_in', 'paid_out']));
+      // It has an Amount column, so only the date and description are missing.
+      expect(r.missingFields).toEqual(['txn_date', 'description']);
       expect(r.message).toContain('Found headers: Posting Date, Narrative, Amount');
     }
   });
@@ -233,6 +263,17 @@ describe('senior-tester: weird CSV, money and masking edges', () => {
     expect(formatPence(parseMoney('0', 'x'))).toBe('0.00');
   });
 
+  it('accepts month-name dates under any profile format, as spreadsheet exports show them', () => {
+    expect(parseDate('02-Oct-26', 'DD/MM/YYYY')).toBe('2026-10-02');
+    expect(parseDate('01-Jan-25', 'YYYY-MM-DD')).toBe('2025-01-01');
+    expect(parseDate('2 October 2026', 'DD/MM/YY')).toBe('2026-10-02');
+    expect(parseDate('30-Sept-2026', 'DD/MM/YYYY')).toBe('2026-09-30');
+    expect(() => parseDate('31-Sep-26', 'DD/MM/YYYY')).toThrow('does not exist');
+    expect(() => parseDate('02-Foo-26', 'DD/MM/YYYY')).toThrow('unknown month');
+    expect(() => parseDate('02-Octo-26', 'DD/MM/YYYY')).toThrow('unknown month');
+    expect(() => parseDate('02-Oct-026', 'DD/MM/YYYY')).toThrow('not in the format');
+  });
+
   it('strict 2-digit vs 4-digit years and impossible dates', () => {
     expect(() => parseDate('01/09/26', 'DD/MM/YYYY')).toThrow('not in the format');
     expect(() => parseDate('01/09/2026', 'DD/MM/YY')).toThrow('not in the format');
@@ -257,5 +298,45 @@ describe('senior-tester: weird CSV, money and masking edges', () => {
       '2026-09-01,R,N,1.00,00-00-10,12340010,12340010\n';
     const r = parseBankCsv(csv, profileFor('REDSTONE'), opts);
     if (r.ok) expect(JSON.stringify(r.lines[0]!.rawRow)).not.toContain('12340010');
+  });
+});
+
+describe('amount auto-switch and month-name dates cannot mis-read a file (tester)', () => {
+  const parseWith = (csv: string, profile: CsvProfile) => parseBankCsv(csv, profile, { bankAccountId: BANK_ID, hashKey: HASH_KEY });
+
+  it('a file with both Amount and Paid in/out keeps the profile layout, and Balance is never read as the amount', () => {
+    const csv = 'Date,Description,Amount,Paid in,Paid out,Balance\r\n02/10/2026,T9001,999.99,10.00,,500.00\r\n';
+    const split = ok(parseWith(csv, profileFor('HSBC')));
+    expect(split.lines[0]!.amount).toBe('10.00');
+    const signed = ok(parseWith(csv, { ...profileFor('HSBC'), amountMode: 'signed' }));
+    expect(signed.lines[0]!.amount).toBe('999.99');
+    // No amount column at all: refused, Balance is not used instead.
+    const r = parseWith('Date,Description,Balance\r\n02/10/2026,T9001,500.00\r\n', profileFor('HSBC'));
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.code).toBe('layout_mismatch');
+  });
+
+  it('Mar and May are distinct; 2-digit years are 20xx; full and abbreviated names agree', () => {
+    expect(parseDate('01-Mar-25', 'DD/MM/YYYY')).toBe('2025-03-01');
+    expect(parseDate('01-May-25', 'DD/MM/YYYY')).toBe('2025-05-01');
+    expect(parseDate('1 March 2025', 'DD/MM/YYYY')).toBe('2025-03-01');
+    expect(parseDate('02-OCT-26 10:15', 'DD/MM/YYYY')).toBe('2026-10-02');
+    expect(parseDate('31-Dec-99', 'DD/MM/YYYY')).toBe('2099-12-31');
+    expect(() => parseDate('29-Feb-25', 'DD/MM/YYYY')).toThrow('does not exist');
+    // Month-year or text that only looks like a date is still refused.
+    expect(() => parseDate('Oct-26', 'DD/MM/YYYY')).toThrow();
+    expect(() => parseDate('Total 02-Oct-26', 'DD/MM/YYYY')).toThrow();
+    // Numeric dates still follow the profile strictly.
+    expect(() => parseDate('2026-10-02', 'DD/MM/YYYY')).toThrow('not in the format');
+  });
+
+  it('a "Closing balance" footer is skipped, but a month-name dated row with no amount is an error', () => {
+    const head = 'Date,Type,Description,Amount,Balance\r\n02-Oct-26,CR,T9001,10.00,20.00\r\n';
+    const footer = ok(parseWith(head + 'Closing balance,,,,20.00\r\n', profileFor('HSBC')));
+    expect(footer.lines).toHaveLength(1);
+    expect(footer.skipped).toBe(1);
+    const r = parseWith(head + '03-Oct-26,CR,T9002,,20.00\r\n', profileFor('HSBC'));
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.code).toBe('bad_rows');
   });
 });

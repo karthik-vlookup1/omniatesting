@@ -80,7 +80,10 @@ export function parseBankCsv(
   if (parsedRecords.length === 0) return { ok: false, code: 'empty_file', message: 'The file has no header row' };
 
   const headers = parsedRecords[0]!.record.map((h) => h.trim());
-  const { columns, missing } = resolveColumns(headers, profile);
+  const resolved = resolveColumns(headers, profile);
+  const { columns, missing } = resolved;
+  // From here on, read amounts the way this file is laid out.
+  profile = { ...profile, amountMode: resolved.amountMode };
   if (missing.length > 0) {
     return {
       ok: false,
@@ -283,11 +286,22 @@ const MONTHS: Record<string, number> = {
   JAN: 1, FEB: 2, MAR: 3, APR: 4, MAY: 5, JUN: 6, JUL: 7, AUG: 8, SEP: 9, OCT: 10, NOV: 11, DEC: 12,
 };
 
-/** Parses a date strictly in the profile's format and returns YYYY-MM-DD. A trailing time is ignored. */
+/**
+ * Parses a date strictly in the profile's format and returns YYYY-MM-DD. A trailing time is ignored.
+ * A date with a month name ("02-Oct-26", "1 Jan 2025", "02 October 2026") can't be misread, so it is
+ * accepted whatever the profile's format: spreadsheet exports often switch to it.
+ */
 export function parseDate(text: string, format: string): string {
   const t = text.trim().replace(/[ T]\d{1,2}:\d{2}(:\d{2})?$/, '');
   let ymd: [number, number, number] | null = null;
-  let m: RegExpExecArray | null;
+  let m: RegExpExecArray | null = /^(\d{1,2})[ -]([A-Za-z]{3,9})[ -](\d{2}|\d{4})$/.exec(t);
+  if (m) {
+    const month = MONTHS[m[2]!.slice(0, 3).toUpperCase()];
+    const fullName = m[2]!.length === 3 || FULL_MONTHS.includes(m[2]!.toUpperCase());
+    if (!month || !fullName) throw new Error(`date "${text}" has an unknown month`);
+    const year = m[3]!.length === 2 ? 2000 + Number(m[3]) : Number(m[3]);
+    return checkedDate(text, [year, month, Number(m[1])]);
+  }
   switch (format) {
     case 'DD/MM/YYYY':
     case 'DD-MM-YYYY':
@@ -315,7 +329,13 @@ export function parseDate(text: string, format: string): string {
       throw new Error(`unsupported date format ${format}`);
   }
   if (!ymd) throw new Error(`date "${text}" is not in the format ${format}`);
-  const [y, mo, d] = ymd;
+  return checkedDate(text, ymd);
+}
+
+const FULL_MONTHS = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER',
+  'NOVEMBER', 'DECEMBER', 'SEPT'];
+
+function checkedDate(text: string, [y, mo, d]: [number, number, number]): string {
   const date = new Date(Date.UTC(y, mo - 1, d));
   if (date.getUTCFullYear() !== y || date.getUTCMonth() !== mo - 1 || date.getUTCDate() !== d) {
     throw new Error(`date "${text}" does not exist`);
