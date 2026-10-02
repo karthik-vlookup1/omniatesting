@@ -94,3 +94,8 @@ dead end a future session might otherwise walk into again.
 
 - Source: manual (recon-202)
 - Old rejected suggestions block re-insert, so a re-included line falls through to yet_to_take; reopen/delete exclusion-rejected suggestions before auto_match
+
+## 2026-10-02: Table rows need a focusable control
+
+- Source: manual (recon-203)
+- Table.Tr onClick alone is mouse-only; put a button with an aria-label in the row so keyboard and screen-reader users can open it

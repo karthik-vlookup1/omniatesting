@@ -506,8 +506,8 @@
           "kind": "cmd",
           "cmd": "npm run test:int -- matching",
           "exitCode": 0,
-          "testedAt": "2026-10-02T12:04:06.714Z",
-          "commit": "1ec3bc0"
+          "commit": "1ec3bc0",
+          "testedAt": "2026-10-02T12:04:06.714Z"
         }
       ],
       "notes": "",
@@ -535,12 +535,21 @@
           "cmd": "npm run test:e2e -- review"
         }
       ],
-      "status": "not_started",
-      "evidence": [],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:e2e -- review",
+          "exitCode": 0,
+          "testedAt": "2026-10-02T12:21:45.761Z",
+          "commit": "6a8f415"
+        }
+      ],
       "notes": "",
       "dependsOn": [
         "recon-202"
-      ]
+      ],
+      "contractHash": "e7de1f3fb2e89497"
     },
     {
       "id": "recon-204",

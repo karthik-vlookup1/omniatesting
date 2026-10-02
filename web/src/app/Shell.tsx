@@ -1,8 +1,9 @@
 import { AppShell, Badge, Burger, Button, Group, NavLink, Text, Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconHome, IconLogout, IconSettings, IconUpload, IconUsers } from '@tabler/icons-react';
+import { IconHome, IconListCheck, IconLogout, IconSettings, IconUpload, IconUsers } from '@tabler/icons-react';
 import { Outlet, NavLink as RouterLink, useNavigate } from 'react-router-dom';
 import { useCurrentUser, useLogout } from '../features/auth/useAuth';
+import { useOpenCount } from '../features/review/api';
 
 /** Signed-in layout: header with the user and sign-out, a navbar, and the routed page. */
 export function Shell() {
@@ -10,6 +11,7 @@ export function Shell() {
   const { data: user } = useCurrentUser();
   const logoutMutation = useLogout();
   const navigate = useNavigate();
+  const openCount = useOpenCount();
 
   const signOut = () => {
     logoutMutation.mutate(undefined, { onSettled: () => navigate('/login', { replace: true }) });
@@ -43,6 +45,19 @@ export function Shell() {
       <AppShell.Navbar p="xs">
         <NavLink component={RouterLink} to="/" end label="Home" leftSection={<IconHome size={16} />} />
         <NavLink component={RouterLink} to="/upload" label="Upload statement" leftSection={<IconUpload size={16} />} />
+        <NavLink
+          component={RouterLink}
+          to="/review"
+          label="Review queue"
+          leftSection={<IconListCheck size={16} />}
+          rightSection={
+            openCount.data ? (
+              <Badge size="sm" circle={openCount.data < 100} aria-label={`${openCount.data} lines to review`}>
+                {openCount.data}
+              </Badge>
+            ) : null
+          }
+        />
         <NavLink component={RouterLink} to="/tenancies" label="Tenancies" leftSection={<IconUsers size={16} />} />
         <NavLink component={RouterLink} to="/csv-profiles" label="CSV profiles" leftSection={<IconSettings size={16} />} />
       </AppShell.Navbar>
