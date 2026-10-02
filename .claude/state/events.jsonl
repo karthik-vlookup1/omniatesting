@@ -430,3 +430,8 @@
 {"ts":"2026-10-02T12:35:16.711Z","type":"evaluate","featureId":"recon-302","verdict":"Accept","scores":{"Correctness":"n/a","Verification":2,"Scope discipline":2,"Reliability":"n/a","Maintainability":"n/a","Handoff readiness":2},"divergences":[]}
 {"ts":"2026-10-02T12:35:16.827Z","type":"verify","id":"recon-302","allPassed":true,"commit":"cf4d9b9","diffHash":"89d5b4b908d98194c49405d304716f8e74ed293e"}
 {"ts":"2026-10-02T12:35:16.827Z","type":"feature.pass","id":"recon-302","commit":"cf4d9b9"}
+{"ts":"2026-10-02T13:24:00.255Z","type":"issue.create","id":"ISSUE-0001","source":"manual"}
+{"ts":"2026-10-02T13:24:05.083Z","type":"issue.triage","id":"ISSUE-0001","skill":"issue-solve"}
+{"ts":"2026-10-02T13:24:05.277Z","type":"issue.start","id":"ISSUE-0001","attempt":1}
+{"ts":"2026-10-02T13:25:59.268Z","type":"issue.verify","id":"ISSUE-0001","allPassed":true,"commands":[{"cmd":"npm run test:unit -- veco","exitCode":0,"passed":true},{"cmd":"npm run test:int -- veco","exitCode":0,"passed":true}],"diffHash":"31e6671e5411d75ffd50a2cc8f8744c69ab41a04","journeyOk":null,"debugLogBlank":true}
+{"ts":"2026-10-02T13:25:59.268Z","type":"issue.resolved-pending-review","id":"ISSUE-0001"}

@@ -31,7 +31,7 @@ export interface SyncSummary {
   rentChanges: number;
   ni: { missing: number; invalid: number; conflicts: number };
   namesMissing: number;
-  managementType: { IRG: number; RG: number; defaultedToRG: number };
+  managementType: { RG: number; MG: number; IRG: number; fromOwnerFlag: number };
 }
 
 const KEY = ['tenancies'] as const;

@@ -21,6 +21,7 @@ export function vecoRow(n: number, overrides: Partial<VecoTenancyRow> = {}): Vec
     postcode: 'ZZ1 1ZZ',
     branchCode: n % 2 === 0 ? 'TSA' : 'TSB',
     ohgOwned: n % 3 === 0 ? 1 : 0,
+    xeroSuffix: n % 3 === 0 ? 'IRG' : n % 2 === 0 ? 'TSA' : 'TSB',
     ...overrides,
   };
 }

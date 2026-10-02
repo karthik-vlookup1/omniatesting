@@ -57,7 +57,7 @@ describe('first sync', () => {
       tenancies: { inserted: 12, updated: 0, reactivated: 0, ended: 0 },
       rentChanges: 0,
       ni: { missing: 0, invalid: 0, conflicts: 0 },
-      managementType: { IRG: 4, RG: 8, defaultedToRG: 0 },
+      managementType: { RG: 8, MG: 0, IRG: 4, fromOwnerFlag: 0 },
     });
     expect(await count("SELECT count(*) FROM tenancies WHERE status = 'active'")).toBe(12);
     expect(await count('SELECT count(*) FROM tenancy_tenants WHERE is_lead AND left_on IS NULL')).toBe(12);
@@ -115,16 +115,16 @@ describe('repeat syncs', () => {
     ]);
   });
 
-  it('a renamed tenant, moved room and new owner status are updated in place', async () => {
+  it('a renamed tenant, moved room and a building now managed (MG) are updated in place', async () => {
     await sync(vecoRows(5));
     const s = await sync([
       ...vecoRows(4),
-      vecoRow(5, { tenantName: 'Renamed Person', unitRef: 'P9000-9', ohgOwned: 1 }),
+      vecoRow(5, { tenantName: 'Renamed Person', unitRef: 'P9000-9', xeroSuffix: 'MN' }),
     ]);
     expect(s.tenants.updated).toBe(1);
     expect(s.tenancies.updated).toBe(1);
     expect(s.units.inserted).toBe(1);
-    expect(await tenancy('T9005')).toMatchObject({ unit_ref: 'P9000-9', management_type: 'IRG' });
+    expect(await tenancy('T9005')).toMatchObject({ unit_ref: 'P9000-9', management_type: 'MG' });
     expect(await count("SELECT count(*) FROM tenants WHERE first_name = 'Renamed' AND last_name = 'Person'")).toBe(1);
   });
 
@@ -199,12 +199,12 @@ describe('data problems are counted, not guessed', () => {
       vecoRow(2, { ni: 'NOT-AN-NI' }),
       vecoRow(3, { ni: 'AB100003C' }),
       vecoRow(4, { ni: 'AB100003C' }), // a different Veco contact with the same NI
-      vecoRow(5, { tenantName: null, ohgOwned: null }),
+      vecoRow(5, { tenantName: null, ohgOwned: null, xeroSuffix: null }),
       vecoRow(6, { tid: 'bad' }),
     ]);
     expect(s.ni).toEqual({ missing: 1, invalid: 1, conflicts: 1 });
     expect(s.namesMissing).toBe(1);
-    expect(s.managementType.defaultedToRG).toBe(1);
+    expect(s.managementType.fromOwnerFlag).toBe(1);
     expect(s.rejected).toEqual([{ tid: 'bad', reason: expect.stringContaining('tid') as string }]);
     expect(await count('SELECT count(*) FROM tenancies')).toBe(5);
     // T9003 keeps its NI; T9005 has its own default one; T9004's duplicate was not stored.

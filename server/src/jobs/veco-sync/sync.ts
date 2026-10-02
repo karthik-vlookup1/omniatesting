@@ -43,7 +43,8 @@ export interface SyncSummary {
   rentChanges: number;
   ni: { missing: number; invalid: number; conflicts: number };
   namesMissing: number;
-  managementType: { IRG: number; RG: number; defaultedToRG: number };
+  /** fromOwnerFlag: buildings with no Xero suffix, typed from the Veco owner flag instead. */
+  managementType: { RG: number; MG: number; IRG: number; fromOwnerFlag: number };
 }
 
 export class SyncRefusedError extends Error {
@@ -84,7 +85,7 @@ export async function syncTenancies(pool: Pool, rawRows: unknown[], opts: SyncOp
         await linkLeadTenant(client, tenancyId, tenantId, t.startDate, today);
         await syncRent(client, tenancyId, t, today, summary);
         summary.managementType[t.managementType] += 1;
-        if (t.managementTypeDefaulted) summary.managementType.defaultedToRG += 1;
+        if (t.managementTypeDefaulted) summary.managementType.fromOwnerFlag += 1;
       }
       summary.tenancies.ended = await endMissingTenancies(client, presentTids, today);
 
@@ -109,7 +110,7 @@ function emptySummary(dryRun: boolean, fetched: number, rejected: RejectedRow[])
     rentChanges: 0,
     ni: { missing: 0, invalid: 0, conflicts: 0 },
     namesMissing: 0,
-    managementType: { IRG: 0, RG: 0, defaultedToRG: 0 },
+    managementType: { RG: 0, MG: 0, IRG: 0, fromOwnerFlag: 0 },
   };
 }
 

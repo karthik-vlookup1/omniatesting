@@ -26,12 +26,19 @@ SELECT v.TenancyPK              AS tenancyPk,
        p.address_line           AS address,
        p.postcode               AS postcode,
        p.branch_code            AS branchCode,
-       CAST(o.ohg_owned AS int) AS ohgOwned
+       CAST(o.ohg_owned AS int) AS ohgOwned,
+       x.name_suffix            AS xeroSuffix
   FROM vw_ActiveTenancies v
   LEFT JOIN dim_Tenancy d              ON d.tenancy_pk = v.TenancyPK
   LEFT JOIN snap_TenantSearchIndex s   ON s.TenancyPK = v.TenancyPK
   LEFT JOIN dim_Property p             ON p.property_pk = v.PropertyFK
   LEFT JOIN vw_PropertyUltimateOwner o ON o.PropertyPK = v.PropertyFK
+  -- The Xero "Properties" tracking option ends in *IRG, *MN (managed) or a branch code (RG): the
+  -- accounts team's own classification. One option per building; prefer one that has a suffix.
+  OUTER APPLY (SELECT TOP 1 m.name_suffix
+                 FROM dim_PropertyXeroMap m
+                WHERE m.portfolio_ref = p.base_portfolio_ref AND m.match_status = 'matched_active'
+                ORDER BY CASE WHEN m.name_suffix IS NULL THEN 1 ELSE 0 END, m.xero_option_name) x
  ORDER BY v.TenancyRef`;
 
 const FREQUENCIES = {
@@ -45,7 +52,7 @@ const FREQUENCIES = {
 } as const;
 
 export type RentFrequency = (typeof FREQUENCIES)[keyof typeof FREQUENCIES];
-export type ManagementType = 'RG' | 'IRG';
+export type ManagementType = 'RG' | 'MG' | 'IRG';
 
 const text = z.string().trim().min(1);
 const optionalText = z
@@ -69,6 +76,8 @@ export type VecoTenancyRow = {
   postcode: string;
   branchCode: string;
   ohgOwned: number | null;
+  /** Suffix of the building's Xero tracking option: IRG, MN or a branch code. */
+  xeroSuffix?: string | null;
 };
 
 const RowSchema = z.object({
@@ -99,6 +108,7 @@ const RowSchema = z.object({
   postcode: text,
   branchCode: z.string().trim().min(1).transform((v) => v.toUpperCase()),
   ohgOwned: z.coerce.number().int().nullish(),
+  xeroSuffix: optionalText.optional(),
 });
 
 export interface VecoTenancy {
@@ -117,7 +127,7 @@ export interface VecoTenancy {
   postcode: string;
   branchCode: string;
   managementType: ManagementType;
-  /** True when no owner record existed and RG was assumed. */
+  /** True when the building has no Xero suffix and the Veco owner flag was used instead. */
   managementTypeDefaulted: boolean;
 }
 
@@ -166,15 +176,27 @@ export function parseVecoRows(rows: unknown[]): ParsedFeed {
       continue;
     }
     seenTids.add(r.tid);
-    const { ohgOwned, ...rest } = r;
+    const { ohgOwned, xeroSuffix, ...rest } = r;
     valid.push({
       ...rest,
       rent: roundPence(r.rent),
-      managementType: ohgOwned === 1 ? 'IRG' : 'RG',
-      managementTypeDefaulted: ohgOwned == null,
+      managementType: managementTypeOf(xeroSuffix ?? null, ohgOwned ?? null),
+      managementTypeDefaulted: !xeroSuffix,
     });
   }
   return { valid, rejected, presentTids: [...present] };
+}
+
+/**
+ * RG / MG / IRG as the accounts team record it: the Xero property suffix (*IRG, *MN = managed, a branch
+ * code = rent guaranteed). Without one, fall back to Veco's owner flag (OHG-owned = IRG, else RG).
+ */
+export function managementTypeOf(xeroSuffix: string | null, ohgOwned: number | null): ManagementType {
+  const suffix = xeroSuffix?.trim().toUpperCase();
+  if (suffix === 'IRG') return 'IRG';
+  if (suffix === 'MN') return 'MG';
+  if (suffix) return 'RG';
+  return ohgOwned === 1 ? 'IRG' : 'RG';
 }
 
 export async function fetchActiveTenancies(source: SqlSource): Promise<unknown[]> {

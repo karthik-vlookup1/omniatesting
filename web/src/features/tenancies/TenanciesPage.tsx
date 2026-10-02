@@ -174,8 +174,8 @@ function SyncResult({ s }: { s: SyncSummary }) {
         </List.Item>
         <List.Item>{s.rentChanges} rent changes</List.Item>
         <List.Item>
-          Type: {s.managementType.IRG} IRG, {s.managementType.RG} RG ({s.managementType.defaultedToRG} assumed RG — no owner
-          record)
+          Type: {s.managementType.RG} RG, {s.managementType.MG} MG, {s.managementType.IRG} IRG (
+          {s.managementType.fromOwnerFlag} with no Xero property suffix, typed from the Veco owner)
         </List.Item>
         <List.Item>
           NI: {s.ni.missing} missing, {s.ni.invalid} invalid, {s.ni.conflicts} shared with another tenant

@@ -24,10 +24,30 @@ describe('parseVecoRows', () => {
     });
   });
 
-  it('derives RG for non-OHG and for missing owner records, flagging the default', () => {
-    const { valid } = parseVecoRows([vecoRow(1, { ohgOwned: 0 }), vecoRow(2, { ohgOwned: null })]);
+  it('takes the management type from the Xero property suffix: IRG, MN = MG, a branch code = RG', () => {
+    const { valid } = parseVecoRows([
+      vecoRow(1, { xeroSuffix: 'IRG', ohgOwned: 0 }),
+      vecoRow(2, { xeroSuffix: 'MN', ohgOwned: 1 }), // managed, even though OHG owns the building
+      vecoRow(4, { xeroSuffix: 'hl', ohgOwned: 1 }),
+      vecoRow(5, { xeroSuffix: 'GPC', ohgOwned: 0 }),
+    ]);
+    expect(valid.map((v) => [v.tid, v.managementType, v.managementTypeDefaulted])).toEqual([
+      ['T9001', 'IRG', false],
+      ['T9002', 'MG', false],
+      ['T9004', 'RG', false],
+      ['T9005', 'RG', false],
+    ]);
+  });
+
+  it('falls back to the Veco owner flag when the building has no Xero suffix, flagging it', () => {
+    const { valid } = parseVecoRows([
+      vecoRow(1, { xeroSuffix: null, ohgOwned: 1 }),
+      vecoRow(2, { xeroSuffix: 'None', ohgOwned: 0 }),
+      vecoRow(4, { xeroSuffix: undefined, ohgOwned: null }),
+    ]);
     expect(valid.map((v) => [v.managementType, v.managementTypeDefaulted])).toEqual([
-      ['RG', false],
+      ['IRG', true],
+      ['RG', true],
       ['RG', true],
     ]);
   });
