@@ -72,7 +72,7 @@ Final navigation order:
 | `/review` | Review queue | IconListCheck | all (actions writers only) | **203 next** |
 | `/tenancies` | Tenancies | IconUsers | all | 102 BUILT |
 | `/vico` | Vico export | IconFileExport | admin, accounts | 302 BUILT |
-| `/xero` | Xero | IconBuildingBank | admin, accounts | 303 PLANNED |
+| `/xero` | Xero | IconBuildingBank | admin, accounts | 303 BUILT |
 | `/csv-profiles` | CSV profiles | IconSettings | all (edit admin/accounts) | 201 BUILT |
 | `/users` | Users | IconUserCog | admin | 004 API built, UI to build |
 
@@ -279,25 +279,39 @@ DD/MM/YYYY, amount 2dp, standing order reference = TID, MG/RG = the tenancy's ma
 Screen: bank-details card (admin edits), pending table with total and **Download Vico file** (confirm modal
 sends the ids shown), history with **Download** again.
 
-### 6.6 Xero — `/xero` (recon-303, PLANNED)
+### 6.6 Xero — `/xero` (recon-303, BUILT; admin + accounts)
 
-Replaces the "Rental Income sheet → Xero" step of the accounts procedure, through Sam's Omnia Xero OHL
-bridge. **One invoice per bank account per bank date** (not per receipt): contact = the bank (e.g. "Apollo
-HSBC"), invoice number `<bank> DDMMYY`, reference "Rental Income", issue = due = the bank date; **one line
-per receipt**: item code = TID, description = tenant name, qty 1, unit amount, account code by management
-type (RG `001`, MG `001B`, IRG `001G`), No VAT, tracking *Properties* = the building's Xero option and
-*Branch* = office code for RG / "Managed" / "IRG". `externalRef` idempotency. Target is **Demo Company**
-until a person explicitly switches to live. Planned API — confirm when 303 lands:
+Replaces the "Rental Income sheet → Xero" step, through Sam's Omnia Xero OHL bridge. **One invoice per bank
+account per bank date**, one line per confirmed receipt: contact = the bank's Xero contact (admin setting,
+default the bank account name), number `<contact> DDMMYY` (a later batch for the same day gets ` (2)`),
+issue = due = the bank date, account code = the receipt's ledger code (001/001B/001G; back-dated 206/207/208),
+No VAT. With **extended fields** on (admin switch, default off until the bridge is confirmed to accept them):
+invoice number + reference "Rental Income", item code = TID, description = tenant name, tracking
+*Properties* (Xero option from Veco) and *Branch* (office for RG, "Managed", "IRG"); with it off the line
+description is "T6644 Tenant Name".
 
-- `GET /api/xero/status` → `{ configured: boolean, targetEnv: 'demo'|'live', bridgeReachable: boolean }`
-- `GET /api/xero/outbox?status=pending|sent|failed` → `{ items: { id, invoiceNumber, bankCode, date, lines, total, status, attempts, lastError|null, xeroInvoiceId|null, updatedAt }[], total }`
-- `POST /api/xero/outbox/run` → `{ sent, failed }`; `POST /api/xero/outbox/:id/retry`
-- Posting to a non-demo target is refused unless the body carries `confirm_live: true`.
+| Method & path | Who | Body / query | Response |
+| --- | --- | --- | --- |
+| `GET /xero/status` | admin, accounts | — | `{ configured, targetEnv: 'demo'|'live', bridge: { reachable, tenantId|null, error? }|null }` |
+| `GET /xero/settings` / `PUT` (admin) | | `{ contacts: { [bankCode]: string }, extendedFields: boolean }` | `{ settings }` |
+| `GET /xero/pending` | admin, accounts | — | `{ invoices: InvoiceDraft[], receipts, total }` |
+| `POST /xero/stage` | admin, accounts | — | `201 { batches }`; 409 when nothing is pending |
+| `POST /xero/run` | admin, accounts | `{ dryRun?, confirmLive? }` | `{ targetEnv, attempted, sent, failed, dead, results }`; dry run `{ wouldSend }`; 503 `xero_not_configured`; 409 `live_requires_confirmation` |
+| `GET /xero/outbox?status=open|pending|in_flight|done|failed|dead` | admin, accounts | — | `{ items: OutboxItem[], summary: {status: n}, ready }` |
+| `POST /xero/outbox/:id/retry` | admin, accounts | — | `{ item }`; 409 unless failed/dead |
+| `POST /xero/property-map/refresh` | admin | — | `{ summary: { fetched, matched, unmatchedProperties, ambiguous } }`; 503/502 Veco |
 
-Screen: a status card (environment badge **DEMO** yellow / **LIVE** red, bridge reachable), outbox tabs
-(Pending · Sent · Failed), failed rows show `lastError` and attempts (max 5) with **Retry**. "Send now"
-on live requires typing `LIVE` in a confirm modal. If not configured, show an info alert: "Xero bridge
-not configured — set XERO_BRIDGE_URL and the key on the server".
+```ts
+InvoiceDraft = { bankCode|null, contactName, date, invoiceNumber, total,
+  lines: { receiptId, tid, tenantName|null, amount, accountCode, managementType, branch|null, property|null }[] }
+OutboxItem = InvoiceDraft & { id, batchId, status: 'pending'|'in_flight'|'done'|'failed'|'dead', attempts,
+  lastError|null, xeroInvoiceId|null, xeroInvoiceNumber|null, createdAt, updatedAt }
+```
+
+Safety: only `XERO_TARGET_ENV=demo` is demo; anything else is live and every send needs the person to type
+LIVE (`confirmLive`). The background worker runs on demo only. Retries reuse the batch's externalRef (the
+bridge dedupes 30 days); 5 tries then "gave up" until **Retry**. Receipts reversed before sending are dropped.
+Server env: `XERO_BRIDGE_URL`, `XERO_BRIDGE_RECON_KEY`, `XERO_TARGET_ENV`.
 
 ### 6.7 Later (lower priority — don't build yet)
 
