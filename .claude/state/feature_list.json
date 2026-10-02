@@ -386,22 +386,22 @@
           "kind": "cmd",
           "cmd": "npm run lint",
           "exitCode": 0,
-          "testedAt": "2026-10-02T13:27:16.568Z",
-          "commit": "4f6c7d1"
+          "commit": "4f6c7d1",
+          "testedAt": "2026-10-02T13:27:16.568Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run typecheck",
           "exitCode": 0,
-          "testedAt": "2026-10-02T13:27:24.527Z",
-          "commit": "4f6c7d1"
+          "commit": "4f6c7d1",
+          "testedAt": "2026-10-02T13:27:24.527Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:unit -- src/features/imports src/data/imports",
           "exitCode": 0,
-          "testedAt": "2026-10-02T13:27:50.742Z",
-          "commit": "4f6c7d1"
+          "commit": "4f6c7d1",
+          "testedAt": "2026-10-02T13:27:50.742Z"
         }
       ],
       "notes": "",
@@ -436,12 +436,35 @@
           "cmd": "npm run test:unit -- src/features/transactions src/data/transactions"
         }
       ],
-      "status": "not_started",
-      "evidence": [],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run lint",
+          "exitCode": 0,
+          "testedAt": "2026-10-02T13:36:12.522Z",
+          "commit": "5a3735d"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run typecheck",
+          "exitCode": 0,
+          "testedAt": "2026-10-02T13:36:20.484Z",
+          "commit": "5a3735d"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:unit -- src/features/transactions src/data/transactions",
+          "exitCode": 0,
+          "testedAt": "2026-10-02T13:36:31.912Z",
+          "commit": "5a3735d"
+        }
+      ],
       "notes": "",
       "dependsOn": [
         "fe-101"
-      ]
+      ],
+      "contractHash": "eca5842d2af58cbb"
     },
     {
       "id": "fe-103",

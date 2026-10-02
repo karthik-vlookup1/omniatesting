@@ -49,7 +49,15 @@ export const routes: RouteObject[] = [
           },
           {
             path: 'upload',
-            lazy: async () => ({ Component: (await import('../features/imports/UploadPage')).UploadPage }),
+            lazy: async () => {
+              const { UploadPage } = await import('../features/imports/UploadPage');
+              const reviewHref = (batchId: string) => `/review?batchId=${encodeURIComponent(batchId)}`;
+              return { Component: () => <UploadPage reviewHref={reviewHref} /> };
+            },
+          },
+          {
+            path: 'review',
+            lazy: async () => ({ Component: (await import('../features/transactions/BankLinesPage')).BankLinesPage }),
           },
           {
             path: 'users',
