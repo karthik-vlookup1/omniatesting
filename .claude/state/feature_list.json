@@ -173,8 +173,23 @@
           "cmd": "npm run test:int -- crypto"
         }
       ],
-      "status": "in_progress",
-      "evidence": [],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:unit -- crypto config",
+          "exitCode": 0,
+          "testedAt": "2026-10-02T09:23:35.647Z",
+          "commit": "e3c9f73"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- crypto",
+          "exitCode": 0,
+          "testedAt": "2026-10-02T09:23:37.931Z",
+          "commit": "e3c9f73"
+        }
+      ],
       "notes": "",
       "dependsOn": [
         "recon-001"
