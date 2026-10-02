@@ -274,22 +274,22 @@
           "kind": "cmd",
           "cmd": "npm run lint",
           "exitCode": 0,
-          "testedAt": "2026-10-02T11:14:13.780Z",
-          "commit": "2032bad"
+          "commit": "2032bad",
+          "testedAt": "2026-10-02T11:14:13.780Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run typecheck",
           "exitCode": 0,
-          "testedAt": "2026-10-02T11:14:18.780Z",
-          "commit": "2032bad"
+          "commit": "2032bad",
+          "testedAt": "2026-10-02T11:14:18.780Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:unit -- src/features/auth src/app src/data/auth",
           "exitCode": 0,
-          "testedAt": "2026-10-02T11:14:30.682Z",
-          "commit": "2032bad"
+          "commit": "2032bad",
+          "testedAt": "2026-10-02T11:14:30.682Z"
         }
       ],
       "notes": "",
@@ -324,12 +324,35 @@
           "cmd": "npm run test:unit -- src/features/users src/data/users"
         }
       ],
-      "status": "not_started",
-      "evidence": [],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run lint",
+          "exitCode": 0,
+          "testedAt": "2026-10-02T13:16:33.401Z",
+          "commit": "814764f"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run typecheck",
+          "exitCode": 0,
+          "testedAt": "2026-10-02T13:16:39.390Z",
+          "commit": "814764f"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:unit -- src/features/users src/data/users",
+          "exitCode": 0,
+          "testedAt": "2026-10-02T13:16:57.121Z",
+          "commit": "814764f"
+        }
+      ],
       "notes": "",
       "dependsOn": [
         "fe-003"
-      ]
+      ],
+      "contractHash": "b9f31168ab0b9583"
     },
     {
       "id": "fe-101",

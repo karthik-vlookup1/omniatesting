@@ -1,4 +1,4 @@
-import { IconHome, type Icon } from '@tabler/icons-react';
+import { IconHome, IconUserCog, type Icon } from '@tabler/icons-react';
 import type { Capability } from '../data/auth';
 
 export interface NavItem {
@@ -25,7 +25,10 @@ export interface NavSection {
 export const NAV_SECTIONS: NavSection[] = [
   {
     label: null,
-    items: [{ label: 'Home', to: '/', icon: IconHome }],
+    items: [
+      { label: 'Home', to: '/', icon: IconHome },
+      { label: 'Users', to: '/users', icon: IconUserCog, capability: 'manageUsers' },
+    ],
   },
 ];
 

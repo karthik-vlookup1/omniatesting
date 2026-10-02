@@ -50,3 +50,7 @@
 {"ts":"2026-10-02T12:27:16.823Z","type":"issue.start","id":"ISSUE-0002","attempt":1}
 {"ts":"2026-10-02T12:33:00.793Z","type":"issue.verify","id":"ISSUE-0002","allPassed":true,"commands":[{"cmd":"npm run lint","exitCode":0,"passed":true},{"cmd":"npm run typecheck","exitCode":0,"passed":true},{"cmd":"npm run test:unit","exitCode":0,"passed":true},{"cmd":"npm run build","exitCode":0,"passed":true}],"diffHash":"52d07875672e9dbaabc5c49842270bfddb6da3a9","journeyOk":null,"debugLogBlank":true}
 {"ts":"2026-10-02T12:33:00.794Z","type":"issue.resolved-pending-review","id":"ISSUE-0002"}
+{"ts":"2026-10-02T12:33:35.604Z","type":"feature.start","id":"fe-004","vcrWarning":null}
+{"ts":"2026-10-02T13:17:27.911Z","type":"evaluate","featureId":"fe-004","verdict":"Revise","scores":{"Correctness":"n/a","Verification":2,"Scope discipline":2,"Reliability":2,"Maintainability":"n/a","Handoff readiness":1},"divergences":[]}
+{"ts":"2026-10-02T13:17:28.035Z","type":"verify","id":"fe-004","allPassed":true,"commit":"814764f","diffHash":"57bf503e39e257d2afe238a8c5eef67529461f8b","attestNote":"lint 0 errors 0 warnings; typecheck 0 errors; users tests 2 files 12/12 exit 0 on 3/3 runs (list, filter, add with validation + generated 20-char password, 409 on e-mail field, PATCH sends only changed fields, self demote/deactivate disabled, deactivate confirm + reactivate, staff gets forbidden and no nav item); full suite exit 0","attestNoteChars":332}
+{"ts":"2026-10-02T13:17:28.036Z","type":"feature.pass","id":"fe-004","commit":"814764f"}
