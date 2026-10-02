@@ -18,7 +18,7 @@ over time — distinct from the evaluator rubric, which grades one session's out
 
 | Domain | Grade | Verification | Agent Legibility | Test Stability | Key Gaps | Last Updated |
 | --- | --- | --- | --- | --- | --- | --- |
-| phase-0-foundation | C | 1/4 passing | n/a (no automated signal) | n/a (no automated signal) | recon-002 (in_progress), recon-003 (not_started), recon-004 (not_started) | 2026-10-02 |
+| phase-0-foundation | C | 3/4 passing | n/a (no automated signal) | n/a (no automated signal) | recon-004 (in_progress) | 2026-10-02 |
 | phase-1-tenants | D | 0/5 passing | n/a (no automated signal) | n/a (no automated signal) | recon-101 (not_started), recon-102 (not_started), recon-103 (not_started), recon-104 (not_started), recon-105 (not_started) | 2026-10-02 |
 | phase-2-matching | D | 0/4 passing | n/a (no automated signal) | n/a (no automated signal) | recon-201 (not_started), recon-202 (not_started), recon-203 (not_started), recon-204 (not_started) | 2026-10-02 |
 | phase-3-outputs | D | 0/3 passing | n/a (no automated signal) | n/a (no automated signal) | recon-301 (not_started), recon-302 (not_started), recon-303 (not_started) | 2026-10-02 |
@@ -73,6 +73,12 @@ over time — distinct from the evaluator rubric, which grades one session's out
 - Domains demoted: -
 
 ### 2026-10-01
+
+- Changes: regenerated Product Domains and Architectural Layers from feature status, evaluator verdicts, and rule violations (`hx quality update`).
+- Domains promoted: -
+- Domains demoted: -
+
+### 2026-10-02
 
 - Changes: regenerated Product Domains and Architectural Layers from feature status, evaluator verdicts, and rule violations (`hx quality update`).
 - Domains promoted: -

@@ -11,7 +11,7 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 - Repository root: {{PROJECT_ROOT}}
 - Standard startup: `hx start`
 - Standard verification: `hx verify <feature-id>`
-- Current highest-priority unfinished feature: recon-003
+- Current highest-priority unfinished feature: recon-004
 - Current blocker: none
 
 ## Session Log
@@ -71,9 +71,9 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 <!-- hx-session: hx-doctor-probe -->
 
 - Date: 2026-10-02
-- Active feature: recon-002
-- Passing features: 1
+- Active feature: recon-004
+- Passing features: 3
 - Blocked features: none
-- Verification runs this session: 0
-- Commit: c05d131
-- Next best step: recon-003 — Config + crypto lib: env validation (Zod), HMAC hash matching secure_hash(), AES-256-GCM encrypt/decrypt, masking helpers
+- Verification runs this session: 3
+- Commit: 592288a
+- Next best step: finish recon-004

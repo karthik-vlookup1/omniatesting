@@ -179,15 +179,15 @@
           "kind": "cmd",
           "cmd": "npm run test:unit -- crypto config",
           "exitCode": 0,
-          "testedAt": "2026-10-02T09:23:35.647Z",
-          "commit": "e3c9f73"
+          "commit": "e3c9f73",
+          "testedAt": "2026-10-02T09:23:35.647Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:int -- crypto",
           "exitCode": 0,
-          "testedAt": "2026-10-02T09:23:37.931Z",
-          "commit": "e3c9f73"
+          "commit": "e3c9f73",
+          "testedAt": "2026-10-02T09:23:37.931Z"
         }
       ],
       "notes": "",
@@ -222,13 +222,43 @@
           "cmd": "npm run test:e2e -- auth"
         }
       ],
-      "status": "not_started",
-      "evidence": [],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- auth",
+          "exitCode": 0,
+          "commit": "2141b10",
+          "testedAt": "2026-10-02T10:12:22.314Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:e2e -- auth",
+          "exitCode": 0,
+          "commit": "2141b10",
+          "testedAt": "2026-10-02T10:12:36.762Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- auth",
+          "exitCode": 0,
+          "testedAt": "2026-10-02T10:13:17.240Z",
+          "commit": "2141b10"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:e2e -- auth",
+          "exitCode": 0,
+          "testedAt": "2026-10-02T10:13:31.700Z",
+          "commit": "2141b10"
+        }
+      ],
       "notes": "",
       "dependsOn": [
         "recon-002",
         "recon-003"
-      ]
+      ],
+      "contractHash": "7427dc5b91153140"
     },
     {
       "id": "recon-101",

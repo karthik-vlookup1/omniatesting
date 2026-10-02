@@ -342,3 +342,29 @@
 {"ts":"2026-10-02T09:23:39.781Z","type":"evaluate","featureId":"recon-003","verdict":"Accept","scores":{"Correctness":"n/a","Verification":2,"Scope discipline":2,"Reliability":2,"Maintainability":"n/a","Handoff readiness":2},"divergences":[]}
 {"ts":"2026-10-02T09:23:40.032Z","type":"verify","id":"recon-003","allPassed":true,"commit":"e3c9f73","diffHash":"55a07aafe95f7f4a70ab64129b46f3958dcc5521"}
 {"ts":"2026-10-02T09:23:40.033Z","type":"feature.pass","id":"recon-003","commit":"e3c9f73"}
+{"ts":"2026-10-02T09:24:01.996Z","type":"feature.start","id":"recon-004","vcrWarning":null}
+{"ts":"2026-10-02T09:40:59.176Z","type":"start","initCheckFailures":2,"nextFeatureId":null,"activeFeatureId":"recon-004","baselineSmoke":null,"branch":"backend","head":"592288a","dirtyCount":9,"configHash":"fe4fe4ebbc515cbd9cf4f677498689875f52df30","recentDecisionKeys":["2026-09-30|Startup path via init.sh / init.ps1","2026-09-30|Testing deferred by user instruction","2026-09-30|Web entry lives in web/src/app (vite root)"],"recentLessonKeys":["2026-10-02|manual","2026-10-01|manual"]}
+{"ts":"2026-10-02T09:40:59.613Z","type":"rules.baseline","signatures":[]}
+{"ts":"2026-10-02T09:40:59.710Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-10-02T09:40:59.712Z","type":"hook.output","hook":"session-start","stdoutSha1":"8b51869d55db38fcfa949a0d8603649ff0c2bf9f","stderrSha1":null,"exitCode":0}
+{"ts":"2026-10-02T09:41:01.154Z","type":"hook.output","hook":"post-edit","stdoutSha1":null,"stderrSha1":"414567f75238d72b7cb1fa47930c848115d3902a","exitCode":2}
+{"ts":"2026-10-02T09:41:02.040Z","type":"handoff","sessionNum":2,"commit":"592288a","sessionId":"hx-doctor-probe"}
+{"ts":"2026-10-02T09:41:03.190Z","type":"exit","cleanupOk":true,"featureListOk":true,"progressUpdated":true,"dirty":true,"overallOk":false,"checklist":[{"id":"startup-path","status":"pass"},{"id":"verification-path","status":"fail"},{"id":"progress-recorded","status":"pass"},{"id":"feature-state-truthful","status":"pass"},{"id":"no-undocumented-changes","status":"pass"},{"id":"next-session-continues","status":"pass"}]}
+{"ts":"2026-10-02T09:41:03.190Z","type":"exit.check","check":"startup-path","ok":true,"status":"pass","detail":"init.sh/init.ps1 present"}
+{"ts":"2026-10-02T09:41:03.191Z","type":"exit.check","check":"verification-path","ok":false,"status":"fail","detail":"ERROR: the code changed since the last verification run.\n  WHY: a passing verification only proves the code AT THAT TIME worked — edits made since then (through any tool) are unverified.\n  FIX: hx verify recon-004"}
+{"ts":"2026-10-02T09:41:03.191Z","type":"exit.check","check":"progress-recorded","ok":true,"status":"pass","detail":"Progress log updated recently."}
+{"ts":"2026-10-02T09:41:03.192Z","type":"exit.check","check":"feature-state-truthful","ok":true,"status":"pass","detail":"No feature marked passing without recorded evidence."}
+{"ts":"2026-10-02T09:41:03.192Z","type":"exit.check","check":"no-undocumented-changes","ok":true,"status":"pass","detail":"No undocumented drift, debug code, or test weakening found in changed files."}
+{"ts":"2026-10-02T09:41:03.192Z","type":"exit.check","check":"next-session-continues","ok":true,"status":"pass","detail":"Startup path works, no hook errors this session, and no in-progress feature is missing a Next Best Step."}
+{"ts":"2026-10-02T09:41:03.197Z","type":"hook.output","hook":"stop","stdoutSha1":null,"stderrSha1":"e4479b481e3b923b748525695917860ad74d25ee","exitCode":2}
+{"ts":"2026-10-02T09:41:04.006Z","type":"handoff","sessionNum":2,"commit":"592288a","sessionId":"hx-doctor-probe"}
+{"ts":"2026-10-02T09:41:04.070Z","type":"quality.update","domainCount":5,"layerCount":0,"promoted":0,"demoted":0}
+{"ts":"2026-10-02T09:41:04.073Z","type":"hook.output","hook":"session-end","stdoutSha1":"a09b2424444cf9727c8255e99120ea0cdbc558ee","stderrSha1":null,"exitCode":0}
+{"ts":"2026-10-02T09:41:04.918Z","type":"handoff","sessionNum":2,"commit":"592288a","sessionId":"hx-doctor-probe"}
+{"ts":"2026-10-02T09:41:04.920Z","type":"pre-compact"}
+{"ts":"2026-10-02T09:41:04.924Z","type":"hook.output","hook":"pre-compact","stdoutSha1":"699279ed16a8a9934971575b3cad5bb0e02ca9b7","stderrSha1":null,"exitCode":0}
+{"ts":"2026-10-02T10:12:36.959Z","type":"evaluate","featureId":"recon-004","verdict":"Block","scores":{"Correctness":"n/a","Verification":2,"Scope discipline":0,"Reliability":"n/a","Maintainability":"n/a","Handoff readiness":2},"divergences":[]}
+{"ts":"2026-10-02T10:12:37.107Z","type":"verify","id":"recon-004","allPassed":true,"commit":"2141b10","diffHash":"e12b1c6737c237c42d85e7ef29782f38dc9d13e1"}
+{"ts":"2026-10-02T10:13:31.888Z","type":"evaluate","featureId":"recon-004","verdict":"Accept","scores":{"Correctness":"n/a","Verification":2,"Scope discipline":2,"Reliability":"n/a","Maintainability":"n/a","Handoff readiness":2},"divergences":[]}
+{"ts":"2026-10-02T10:13:32.015Z","type":"verify","id":"recon-004","allPassed":true,"commit":"2141b10","diffHash":"a6abc1e0ee73a95577dae52b77ad8df7b47b5d8a"}
+{"ts":"2026-10-02T10:13:32.015Z","type":"feature.pass","id":"recon-004","commit":"2141b10"}

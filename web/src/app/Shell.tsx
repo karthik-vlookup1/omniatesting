@@ -1,0 +1,51 @@
+import { AppShell, Badge, Burger, Button, Group, NavLink, Text, Title } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import { IconHome, IconLogout } from '@tabler/icons-react';
+import { Outlet, NavLink as RouterLink, useNavigate } from 'react-router-dom';
+import { useCurrentUser, useLogout } from '../features/auth/useAuth';
+
+/** Signed-in layout: header with the user and sign-out, a navbar, and the routed page. */
+export function Shell() {
+  const [opened, { toggle }] = useDisclosure();
+  const { data: user } = useCurrentUser();
+  const logoutMutation = useLogout();
+  const navigate = useNavigate();
+
+  const signOut = () => {
+    logoutMutation.mutate(undefined, { onSettled: () => navigate('/login', { replace: true }) });
+  };
+
+  return (
+    <AppShell header={{ height: 56 }} navbar={{ width: 220, breakpoint: 'sm', collapsed: { mobile: !opened } }} padding="md">
+      <AppShell.Header>
+        <Group h="100%" px="md" justify="space-between" wrap="nowrap">
+          <Group gap="sm" wrap="nowrap">
+            <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" aria-label="Toggle navigation" />
+            <Title order={4}>Omnia Recon</Title>
+          </Group>
+          <Group gap="sm" wrap="nowrap">
+            <Text size="sm" visibleFrom="xs" data-testid="current-user">
+              {user?.fullName}
+            </Text>
+            <Badge variant="light">{user?.role}</Badge>
+            <Button
+              variant="subtle"
+              size="xs"
+              leftSection={<IconLogout size={16} />}
+              onClick={signOut}
+              loading={logoutMutation.isPending}
+            >
+              Sign out
+            </Button>
+          </Group>
+        </Group>
+      </AppShell.Header>
+      <AppShell.Navbar p="xs">
+        <NavLink component={RouterLink} to="/" label="Home" leftSection={<IconHome size={16} />} />
+      </AppShell.Navbar>
+      <AppShell.Main>
+        <Outlet />
+      </AppShell.Main>
+    </AppShell>
+  );
+}

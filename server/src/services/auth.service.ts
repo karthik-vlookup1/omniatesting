@@ -142,16 +142,23 @@ export async function login(pool: Pool, input: LoginInput): Promise<LoginResult>
     await burnPasswordCheck(input.password);
     throw invalid;
   }
+  // A locked account answers exactly like a wrong password (same error, same scrypt cost)
+  // so the lockout can't be used to discover which e-mails have accounts.
   if (row.locked_until && row.locked_until.getTime() > Date.now()) {
-    throw new AppError('account_locked', 'Too many failed attempts. Try again later.');
+    await burnPasswordCheck(input.password);
+    throw invalid;
   }
 
   if (!(await verifyPassword(input.password, row.password_hash))) {
+    // An expired lockout starts a fresh run of failures rather than re-locking on the next miss.
     await pool.query(
       `UPDATE app_users
-          SET failed_login_count = failed_login_count + 1,
-              locked_until = CASE WHEN failed_login_count + 1 >= $2
-                                  THEN now() + make_interval(secs => $3) ELSE locked_until END
+          SET failed_login_count = CASE WHEN locked_until <= now() THEN 1 ELSE failed_login_count + 1 END,
+              locked_until = CASE
+                WHEN (CASE WHEN locked_until <= now() THEN 1 ELSE failed_login_count + 1 END) >= $2
+                  THEN now() + make_interval(secs => $3)
+                WHEN locked_until <= now() THEN NULL
+                ELSE locked_until END
         WHERE id = $1`,
       [row.id, MAX_FAILED_LOGINS, LOCKOUT_MS / 1000],
     );
