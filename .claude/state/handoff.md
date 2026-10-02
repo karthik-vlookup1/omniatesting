@@ -5,20 +5,16 @@
 ## Verified Now
 
 - Passing features: recon-001
-- Verification runs this session: 4
+- Verification runs this session: 0
 
 ## Changed This Session
 
-- Commit: 61c6ba2
+- Commit: c05d131
 - Files changed: (none)
 
 ## Broken Or Unverified
 
 - Blocked: none
-
-### Verification failures this session
-
-- `(command not recorded)` exited ? (recon-001)
 
 ## Waiting on a human
 

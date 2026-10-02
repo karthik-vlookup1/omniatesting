@@ -215,3 +215,127 @@
 {"ts":"2026-09-30T16:41:58.077Z","type":"exit.check","check":"next-session-continues","ok":false,"status":"fail","detail":"startup path is broken"}
 {"ts":"2026-09-30T16:41:58.078Z","type":"hook.output","hook":"stop","stdoutSha1":null,"stderrSha1":"1ab22586ae1a094f978fa05a77b063e9e4d04b82","exitCode":2}
 {"ts":"2026-09-30T16:42:04.769Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-09-30T16:42:24.965Z","type":"start","initCheckFailures":2,"nextFeatureId":null,"activeFeatureId":"recon-002","baselineSmoke":null,"branch":"backend","head":"c05d131","dirtyCount":0,"configHash":"fe4fe4ebbc515cbd9cf4f677498689875f52df30","recentDecisionKeys":["2026-09-30|Startup path via init.sh / init.ps1","2026-09-30|Testing deferred by user instruction","2026-09-30|Web entry lives in web/src/app (vite root)"],"recentLessonKeys":[]}
+{"ts":"2026-09-30T16:42:25.078Z","type":"rules.baseline","signatures":[]}
+{"ts":"2026-09-30T16:42:25.099Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-09-30T16:42:25.099Z","type":"hook.output","hook":"session-start","stdoutSha1":"cdd36029ff43b9e0e9f9833926d1f304915f1a2f","stderrSha1":null,"exitCode":0}
+{"ts":"2026-09-30T16:42:25.871Z","type":"handoff","sessionNum":2,"commit":"c05d131","sessionId":"hx-doctor-probe"}
+{"ts":"2026-09-30T16:42:26.165Z","type":"exit","cleanupOk":true,"featureListOk":true,"progressUpdated":true,"dirty":true,"overallOk":true,"checklist":[{"id":"startup-path","status":"pass"},{"id":"verification-path","status":"pass"},{"id":"progress-recorded","status":"pass"},{"id":"feature-state-truthful","status":"pass"},{"id":"no-undocumented-changes","status":"pass"},{"id":"next-session-continues","status":"pass"}]}
+{"ts":"2026-09-30T16:42:26.166Z","type":"exit.check","check":"startup-path","ok":true,"status":"pass","detail":"init.sh/init.ps1 present"}
+{"ts":"2026-09-30T16:42:26.166Z","type":"exit.check","check":"verification-path","ok":true,"status":"pass","detail":"Verified at 2026-09-30T15:59:35.527Z, and the tree has not changed since."}
+{"ts":"2026-09-30T16:42:26.166Z","type":"exit.check","check":"progress-recorded","ok":true,"status":"pass","detail":"Progress log updated recently."}
+{"ts":"2026-09-30T16:42:26.166Z","type":"exit.check","check":"feature-state-truthful","ok":true,"status":"pass","detail":"No feature marked passing without recorded evidence."}
+{"ts":"2026-09-30T16:42:26.166Z","type":"exit.check","check":"no-undocumented-changes","ok":true,"status":"pass","detail":"No undocumented drift, debug code, or test weakening found in changed files."}
+{"ts":"2026-09-30T16:42:26.166Z","type":"exit.check","check":"next-session-continues","ok":true,"status":"pass","detail":"Startup path works, no hook errors this session, and no in-progress feature is missing a Next Best Step."}
+{"ts":"2026-09-30T16:42:26.558Z","type":"handoff","sessionNum":2,"commit":"c05d131","sessionId":"hx-doctor-probe"}
+{"ts":"2026-09-30T16:42:26.596Z","type":"quality.update","domainCount":5,"layerCount":0,"promoted":1,"demoted":0}
+{"ts":"2026-09-30T16:42:26.599Z","type":"hook.output","hook":"session-end","stdoutSha1":"a09b2424444cf9727c8255e99120ea0cdbc558ee","stderrSha1":null,"exitCode":0}
+{"ts":"2026-09-30T16:42:27.230Z","type":"handoff","sessionNum":2,"commit":"c05d131","sessionId":"hx-doctor-probe"}
+{"ts":"2026-09-30T16:42:27.231Z","type":"pre-compact"}
+{"ts":"2026-09-30T16:42:27.232Z","type":"hook.output","hook":"pre-compact","stdoutSha1":"c09bccaa9b9641ec289cb09b798152e3a5e90832","stderrSha1":null,"exitCode":0}
+{"ts":"2026-09-30T16:42:27.515Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-09-30T16:48:21.465Z","type":"handoff","sessionNum":4,"commit":"c05d131","sessionId":"8be97820-d6de-4130-b738-1be94a834123"}
+{"ts":"2026-09-30T16:48:21.493Z","type":"quality.update","domainCount":5,"layerCount":0,"promoted":0,"demoted":0}
+{"ts":"2026-09-30T16:48:21.499Z","type":"hook.output","hook":"session-end","stdoutSha1":"a09b2424444cf9727c8255e99120ea0cdbc558ee","stderrSha1":null,"exitCode":0}
+{"ts":"2026-10-01T08:54:03.290Z","type":"start","initCheckFailures":2,"nextFeatureId":null,"activeFeatureId":"recon-002","baselineSmoke":null,"branch":"backend","head":"c05d131","dirtyCount":6,"configHash":"fe4fe4ebbc515cbd9cf4f677498689875f52df30","recentDecisionKeys":["2026-09-30|Startup path via init.sh / init.ps1","2026-09-30|Testing deferred by user instruction","2026-09-30|Web entry lives in web/src/app (vite root)"],"recentLessonKeys":[]}
+{"ts":"2026-10-01T08:54:03.454Z","type":"rules.baseline","signatures":[]}
+{"ts":"2026-10-01T08:54:03.482Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-10-01T08:54:03.483Z","type":"hook.output","hook":"session-start","stdoutSha1":"6e1b0d470e871fb6ccd00c3a1e27f35ddf6afa7d","stderrSha1":null,"exitCode":0}
+{"ts":"2026-10-01T09:01:15.778Z","type":"start","initCheckFailures":2,"nextFeatureId":null,"activeFeatureId":"recon-002","baselineSmoke":null,"branch":"backend","head":"c05d131","dirtyCount":6,"configHash":"fe4fe4ebbc515cbd9cf4f677498689875f52df30","recentDecisionKeys":["2026-09-30|Startup path via init.sh / init.ps1","2026-09-30|Testing deferred by user instruction","2026-09-30|Web entry lives in web/src/app (vite root)"],"recentLessonKeys":[]}
+{"ts":"2026-10-01T09:01:15.883Z","type":"rules.baseline","signatures":[]}
+{"ts":"2026-10-01T09:01:15.903Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-10-01T09:01:15.904Z","type":"hook.output","hook":"session-start","stdoutSha1":"d493a816278b5d1ded18333ec1ef6fe1f44be545","stderrSha1":null,"exitCode":0}
+{"ts":"2026-10-01T09:01:16.493Z","type":"handoff","sessionNum":2,"commit":"c05d131","sessionId":"hx-doctor-probe"}
+{"ts":"2026-10-01T09:01:16.741Z","type":"exit","cleanupOk":true,"featureListOk":true,"progressUpdated":true,"dirty":true,"overallOk":true,"checklist":[{"id":"startup-path","status":"pass"},{"id":"verification-path","status":"pass"},{"id":"progress-recorded","status":"pass"},{"id":"feature-state-truthful","status":"pass"},{"id":"no-undocumented-changes","status":"pass"},{"id":"next-session-continues","status":"pass"}]}
+{"ts":"2026-10-01T09:01:16.741Z","type":"exit.check","check":"startup-path","ok":true,"status":"pass","detail":"init.sh/init.ps1 present"}
+{"ts":"2026-10-01T09:01:16.741Z","type":"exit.check","check":"verification-path","ok":true,"status":"pass","detail":"Verified at 2026-09-30T15:59:35.527Z, and the tree has not changed since."}
+{"ts":"2026-10-01T09:01:16.741Z","type":"exit.check","check":"progress-recorded","ok":true,"status":"pass","detail":"Progress log updated recently."}
+{"ts":"2026-10-01T09:01:16.741Z","type":"exit.check","check":"feature-state-truthful","ok":true,"status":"pass","detail":"No feature marked passing without recorded evidence."}
+{"ts":"2026-10-01T09:01:16.741Z","type":"exit.check","check":"no-undocumented-changes","ok":true,"status":"pass","detail":"No undocumented drift, debug code, or test weakening found in changed files."}
+{"ts":"2026-10-01T09:01:16.742Z","type":"exit.check","check":"next-session-continues","ok":true,"status":"pass","detail":"Startup path works, no hook errors this session, and no in-progress feature is missing a Next Best Step."}
+{"ts":"2026-10-01T09:01:16.968Z","type":"handoff","sessionNum":2,"commit":"c05d131","sessionId":"hx-doctor-probe"}
+{"ts":"2026-10-01T09:01:16.984Z","type":"quality.update","domainCount":5,"layerCount":0,"promoted":0,"demoted":0}
+{"ts":"2026-10-01T09:01:16.985Z","type":"hook.output","hook":"session-end","stdoutSha1":"a09b2424444cf9727c8255e99120ea0cdbc558ee","stderrSha1":null,"exitCode":0}
+{"ts":"2026-10-01T09:01:17.208Z","type":"handoff","sessionNum":2,"commit":"c05d131","sessionId":"hx-doctor-probe"}
+{"ts":"2026-10-01T09:01:17.209Z","type":"pre-compact"}
+{"ts":"2026-10-01T09:01:17.210Z","type":"hook.output","hook":"pre-compact","stdoutSha1":"c09bccaa9b9641ec289cb09b798152e3a5e90832","stderrSha1":null,"exitCode":0}
+{"ts":"2026-10-01T09:01:17.905Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-10-01T09:02:09.018Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-10-01T09:02:15.400Z","type":"start","initCheckFailures":2,"nextFeatureId":null,"activeFeatureId":"recon-002","baselineSmoke":null,"branch":"backend","head":"c05d131","dirtyCount":6,"configHash":"fe4fe4ebbc515cbd9cf4f677498689875f52df30","recentDecisionKeys":["2026-09-30|Startup path via init.sh / init.ps1","2026-09-30|Testing deferred by user instruction","2026-09-30|Web entry lives in web/src/app (vite root)"],"recentLessonKeys":[]}
+{"ts":"2026-10-01T09:02:15.503Z","type":"rules.baseline","signatures":[]}
+{"ts":"2026-10-01T09:02:15.523Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-10-01T09:02:15.524Z","type":"hook.output","hook":"session-start","stdoutSha1":"5614a64559e045c39ee761a433aaefa99d5f8aaa","stderrSha1":null,"exitCode":0}
+{"ts":"2026-10-01T09:02:16.120Z","type":"handoff","sessionNum":2,"commit":"c05d131","sessionId":"hx-doctor-probe"}
+{"ts":"2026-10-01T09:02:16.335Z","type":"exit","cleanupOk":true,"featureListOk":true,"progressUpdated":true,"dirty":true,"overallOk":true,"checklist":[{"id":"startup-path","status":"pass"},{"id":"verification-path","status":"pass"},{"id":"progress-recorded","status":"pass"},{"id":"feature-state-truthful","status":"pass"},{"id":"no-undocumented-changes","status":"pass"},{"id":"next-session-continues","status":"pass"}]}
+{"ts":"2026-10-01T09:02:16.335Z","type":"exit.check","check":"startup-path","ok":true,"status":"pass","detail":"init.sh/init.ps1 present"}
+{"ts":"2026-10-01T09:02:16.335Z","type":"exit.check","check":"verification-path","ok":true,"status":"pass","detail":"Verified at 2026-09-30T15:59:35.527Z, and the tree has not changed since."}
+{"ts":"2026-10-01T09:02:16.336Z","type":"exit.check","check":"progress-recorded","ok":true,"status":"pass","detail":"Progress log updated recently."}
+{"ts":"2026-10-01T09:02:16.336Z","type":"exit.check","check":"feature-state-truthful","ok":true,"status":"pass","detail":"No feature marked passing without recorded evidence."}
+{"ts":"2026-10-01T09:02:16.336Z","type":"exit.check","check":"no-undocumented-changes","ok":true,"status":"pass","detail":"No undocumented drift, debug code, or test weakening found in changed files."}
+{"ts":"2026-10-01T09:02:16.336Z","type":"exit.check","check":"next-session-continues","ok":true,"status":"pass","detail":"Startup path works, no hook errors this session, and no in-progress feature is missing a Next Best Step."}
+{"ts":"2026-10-01T09:02:16.548Z","type":"handoff","sessionNum":2,"commit":"c05d131","sessionId":"hx-doctor-probe"}
+{"ts":"2026-10-01T09:02:16.569Z","type":"quality.update","domainCount":5,"layerCount":0,"promoted":0,"demoted":0}
+{"ts":"2026-10-01T09:02:16.570Z","type":"hook.output","hook":"session-end","stdoutSha1":"a09b2424444cf9727c8255e99120ea0cdbc558ee","stderrSha1":null,"exitCode":0}
+{"ts":"2026-10-01T09:02:16.882Z","type":"handoff","sessionNum":2,"commit":"c05d131","sessionId":"hx-doctor-probe"}
+{"ts":"2026-10-01T09:02:16.882Z","type":"pre-compact"}
+{"ts":"2026-10-01T09:02:16.883Z","type":"hook.output","hook":"pre-compact","stdoutSha1":"c09bccaa9b9641ec289cb09b798152e3a5e90832","stderrSha1":null,"exitCode":0}
+{"ts":"2026-10-01T09:02:17.824Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-10-01T09:02:34.915Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-10-01T09:02:39.134Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-10-01T09:02:59.753Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-10-01T09:03:06.334Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-10-01T09:03:18.768Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-10-01T09:03:29.341Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-10-01T09:03:37.143Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-10-01T09:10:32.966Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-10-01T09:15:03.649Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-10-01T09:15:15.671Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-10-01T09:15:28.762Z","type":"handoff","sessionNum":5,"commit":"c05d131","sessionId":"18a8e4dc-2dd3-4238-8355-9cefaa9c0d88"}
+{"ts":"2026-10-01T09:15:29.001Z","type":"exit","cleanupOk":true,"featureListOk":true,"progressUpdated":true,"dirty":true,"overallOk":true,"checklist":[{"id":"startup-path","status":"pass"},{"id":"verification-path","status":"pass"},{"id":"progress-recorded","status":"pass"},{"id":"feature-state-truthful","status":"pass"},{"id":"no-undocumented-changes","status":"pass"},{"id":"next-session-continues","status":"pass"}]}
+{"ts":"2026-10-01T09:15:29.001Z","type":"exit.check","check":"startup-path","ok":true,"status":"pass","detail":"init.sh/init.ps1 present"}
+{"ts":"2026-10-01T09:15:29.001Z","type":"exit.check","check":"verification-path","ok":true,"status":"pass","detail":"Verified at 2026-09-30T15:59:35.527Z, and the tree has not changed since."}
+{"ts":"2026-10-01T09:15:29.001Z","type":"exit.check","check":"progress-recorded","ok":true,"status":"pass","detail":"Progress log updated recently."}
+{"ts":"2026-10-01T09:15:29.002Z","type":"exit.check","check":"feature-state-truthful","ok":true,"status":"pass","detail":"No feature marked passing without recorded evidence."}
+{"ts":"2026-10-01T09:15:29.002Z","type":"exit.check","check":"no-undocumented-changes","ok":true,"status":"pass","detail":"No undocumented drift, debug code, or test weakening found in changed files."}
+{"ts":"2026-10-01T09:15:29.002Z","type":"exit.check","check":"next-session-continues","ok":true,"status":"pass","detail":"Startup path works, no hook errors this session, and no in-progress feature is missing a Next Best Step."}
+{"ts":"2026-10-02T09:04:38.471Z","type":"start","initCheckFailures":2,"nextFeatureId":null,"activeFeatureId":"recon-002","baselineSmoke":null,"branch":"backend","head":"c05d131","dirtyCount":7,"configHash":"fe4fe4ebbc515cbd9cf4f677498689875f52df30","recentDecisionKeys":["2026-09-30|Startup path via init.sh / init.ps1","2026-09-30|Testing deferred by user instruction","2026-09-30|Web entry lives in web/src/app (vite root)"],"recentLessonKeys":["2026-10-01|manual"]}
+{"ts":"2026-10-02T09:04:38.589Z","type":"rules.baseline","signatures":[]}
+{"ts":"2026-10-02T09:04:38.614Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-10-02T09:04:38.614Z","type":"hook.output","hook":"session-start","stdoutSha1":"a78e5472a6ab14d27ea3ffe63a29d388760f2aa0","stderrSha1":null,"exitCode":0}
+{"ts":"2026-10-02T09:04:39.254Z","type":"handoff","sessionNum":2,"commit":"c05d131","sessionId":"hx-doctor-probe"}
+{"ts":"2026-10-02T09:04:39.498Z","type":"exit","cleanupOk":true,"featureListOk":true,"progressUpdated":true,"dirty":true,"overallOk":true,"checklist":[{"id":"startup-path","status":"pass"},{"id":"verification-path","status":"pass"},{"id":"progress-recorded","status":"pass"},{"id":"feature-state-truthful","status":"pass"},{"id":"no-undocumented-changes","status":"pass"},{"id":"next-session-continues","status":"pass"}]}
+{"ts":"2026-10-02T09:04:39.498Z","type":"exit.check","check":"startup-path","ok":true,"status":"pass","detail":"init.sh/init.ps1 present"}
+{"ts":"2026-10-02T09:04:39.498Z","type":"exit.check","check":"verification-path","ok":true,"status":"pass","detail":"Verified at 2026-09-30T15:59:35.527Z, and the tree has not changed since."}
+{"ts":"2026-10-02T09:04:39.499Z","type":"exit.check","check":"progress-recorded","ok":true,"status":"pass","detail":"Progress log updated recently."}
+{"ts":"2026-10-02T09:04:39.499Z","type":"exit.check","check":"feature-state-truthful","ok":true,"status":"pass","detail":"No feature marked passing without recorded evidence."}
+{"ts":"2026-10-02T09:04:39.499Z","type":"exit.check","check":"no-undocumented-changes","ok":true,"status":"pass","detail":"No undocumented drift, debug code, or test weakening found in changed files."}
+{"ts":"2026-10-02T09:04:39.499Z","type":"exit.check","check":"next-session-continues","ok":true,"status":"pass","detail":"Startup path works, no hook errors this session, and no in-progress feature is missing a Next Best Step."}
+{"ts":"2026-10-02T09:04:39.723Z","type":"handoff","sessionNum":2,"commit":"c05d131","sessionId":"hx-doctor-probe"}
+{"ts":"2026-10-02T09:04:39.737Z","type":"quality.update","domainCount":5,"layerCount":0,"promoted":0,"demoted":0}
+{"ts":"2026-10-02T09:04:39.738Z","type":"hook.output","hook":"session-end","stdoutSha1":"a09b2424444cf9727c8255e99120ea0cdbc558ee","stderrSha1":null,"exitCode":0}
+{"ts":"2026-10-02T09:04:39.996Z","type":"handoff","sessionNum":2,"commit":"c05d131","sessionId":"hx-doctor-probe"}
+{"ts":"2026-10-02T09:04:39.998Z","type":"pre-compact"}
+{"ts":"2026-10-02T09:04:39.999Z","type":"hook.output","hook":"pre-compact","stdoutSha1":"699279ed16a8a9934971575b3cad5bb0e02ca9b7","stderrSha1":null,"exitCode":0}
+{"ts":"2026-10-02T09:20:09.466Z","type":"start","initCheckFailures":2,"nextFeatureId":null,"activeFeatureId":"recon-002","baselineSmoke":null,"branch":"backend","head":"c05d131","dirtyCount":7,"configHash":"fe4fe4ebbc515cbd9cf4f677498689875f52df30","recentDecisionKeys":["2026-09-30|Startup path via init.sh / init.ps1","2026-09-30|Testing deferred by user instruction","2026-09-30|Web entry lives in web/src/app (vite root)"],"recentLessonKeys":["2026-10-01|manual"]}
+{"ts":"2026-10-02T09:20:09.562Z","type":"rules.baseline","signatures":[]}
+{"ts":"2026-10-02T09:20:09.580Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-10-02T09:20:09.581Z","type":"hook.output","hook":"session-start","stdoutSha1":"b5a6d6c6baf8d004c91a68ad9cf54125eec8d514","stderrSha1":null,"exitCode":0}
+{"ts":"2026-10-02T09:20:10.321Z","type":"handoff","sessionNum":2,"commit":"c05d131","sessionId":"hx-doctor-probe"}
+{"ts":"2026-10-02T09:20:10.666Z","type":"exit","cleanupOk":true,"featureListOk":true,"progressUpdated":true,"dirty":true,"overallOk":true,"checklist":[{"id":"startup-path","status":"pass"},{"id":"verification-path","status":"pass"},{"id":"progress-recorded","status":"pass"},{"id":"feature-state-truthful","status":"pass"},{"id":"no-undocumented-changes","status":"pass"},{"id":"next-session-continues","status":"pass"}]}
+{"ts":"2026-10-02T09:20:10.666Z","type":"exit.check","check":"startup-path","ok":true,"status":"pass","detail":"init.sh/init.ps1 present"}
+{"ts":"2026-10-02T09:20:10.666Z","type":"exit.check","check":"verification-path","ok":true,"status":"pass","detail":"Verified at 2026-09-30T15:59:35.527Z, and the tree has not changed since."}
+{"ts":"2026-10-02T09:20:10.666Z","type":"exit.check","check":"progress-recorded","ok":true,"status":"pass","detail":"Progress log updated recently."}
+{"ts":"2026-10-02T09:20:10.666Z","type":"exit.check","check":"feature-state-truthful","ok":true,"status":"pass","detail":"No feature marked passing without recorded evidence."}
+{"ts":"2026-10-02T09:20:10.666Z","type":"exit.check","check":"no-undocumented-changes","ok":true,"status":"pass","detail":"No undocumented drift, debug code, or test weakening found in changed files."}
+{"ts":"2026-10-02T09:20:10.667Z","type":"exit.check","check":"next-session-continues","ok":true,"status":"pass","detail":"Startup path works, no hook errors this session, and no in-progress feature is missing a Next Best Step."}
+{"ts":"2026-10-02T09:20:10.938Z","type":"handoff","sessionNum":2,"commit":"c05d131","sessionId":"hx-doctor-probe"}
+{"ts":"2026-10-02T09:20:10.953Z","type":"quality.update","domainCount":5,"layerCount":0,"promoted":0,"demoted":0}
+{"ts":"2026-10-02T09:20:10.954Z","type":"hook.output","hook":"session-end","stdoutSha1":"a09b2424444cf9727c8255e99120ea0cdbc558ee","stderrSha1":null,"exitCode":0}
+{"ts":"2026-10-02T09:20:11.256Z","type":"handoff","sessionNum":2,"commit":"c05d131","sessionId":"hx-doctor-probe"}
+{"ts":"2026-10-02T09:20:11.257Z","type":"pre-compact"}
+{"ts":"2026-10-02T09:20:11.258Z","type":"hook.output","hook":"pre-compact","stdoutSha1":"699279ed16a8a9934971575b3cad5bb0e02ca9b7","stderrSha1":null,"exitCode":0}
+{"ts":"2026-10-02T09:21:30.377Z","type":"verify","id":"recon-002","allPassed":false,"rootCauseLevel":"integration","commit":"419c67e","diffHash":"da39a3ee5e6b4b0d3255bfef95601890afd80709"}
+{"ts":"2026-10-02T09:22:06.318Z","type":"evaluate","featureId":"recon-002","verdict":"Accept","scores":{"Correctness":"n/a","Verification":2,"Scope discipline":2,"Reliability":"n/a","Maintainability":"n/a","Handoff readiness":2},"divergences":[]}
+{"ts":"2026-10-02T09:22:06.463Z","type":"verify","id":"recon-002","allPassed":true,"commit":"419c67e","diffHash":"da39a3ee5e6b4b0d3255bfef95601890afd80709"}
+{"ts":"2026-10-02T09:22:06.464Z","type":"feature.pass","id":"recon-002","commit":"419c67e"}
+{"ts":"2026-10-02T09:22:19.532Z","type":"feature.start","id":"recon-003","vcrWarning":null}

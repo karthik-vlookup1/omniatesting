@@ -1,6 +1,6 @@
 {
   "project": "omnia-recon",
-  "last_updated": "2026-09-30",
+  "last_updated": "2026-10-02",
   "rules": {
     "single_active_feature": true,
     "passing_requires_evidence": true,
@@ -127,8 +127,23 @@
           "cmd": "npm run db:test"
         }
       ],
-      "status": "in_progress",
-      "evidence": [],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run db:test",
+          "exitCode": 1,
+          "commit": "419c67e",
+          "testedAt": "2026-10-02T09:21:29.824Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run db:test",
+          "exitCode": 0,
+          "commit": "419c67e",
+          "testedAt": "2026-10-02T09:22:06.093Z"
+        }
+      ],
       "notes": "",
       "dependsOn": [
         "recon-001"
@@ -158,12 +173,13 @@
           "cmd": "npm run test:int -- crypto"
         }
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": [],
       "notes": "",
       "dependsOn": [
         "recon-001"
-      ]
+      ],
+      "contractHash": "fdcc59b17ddf6b07"
     },
     {
       "id": "recon-004",
