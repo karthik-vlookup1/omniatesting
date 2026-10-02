@@ -1,0 +1,30 @@
+{
+  "name": "omnia-recon-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Omnia Recon web frontend: rent reconciliation UI for Omnia Housing.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "workspaces": [
+    "web"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w web",
+    "build": "npm run build -w web",
+    "preview": "npm run preview -w web",
+    "lint": "eslint .",
+    "typecheck": "npm run typecheck -w web",
+    "test:unit": "npm run test -w web --"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.11.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.7",
+    "globals": "^17.12.0",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.71.0"
+  }
+}

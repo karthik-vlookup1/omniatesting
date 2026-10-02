@@ -16,3 +16,11 @@
 {"ts":"2026-09-30T16:33:24.798Z","type":"handoff","sessionNum":1,"commit":"d937ee0","sessionId":"hx-doctor-probe"}
 {"ts":"2026-09-30T16:33:24.800Z","type":"pre-compact"}
 {"ts":"2026-09-30T16:33:24.802Z","type":"hook.output","hook":"pre-compact","stdoutSha1":"b4bfe0fdc9ecd992c7c1d6a9fd27296d0b9a4724","stderrSha1":null,"exitCode":0}
+{"ts":"2026-10-02T10:32:05.075Z","type":"feature.start","id":"fe-001","vcrWarning":null}
+{"ts":"2026-10-02T10:35:39.685Z","type":"evaluate","featureId":"fe-001","verdict":"Block","scores":{"Correctness":"n/a","Verification":2,"Scope discipline":0,"Reliability":2,"Maintainability":"n/a","Handoff readiness":1},"divergences":[]}
+{"ts":"2026-10-02T10:35:39.801Z","type":"verify","id":"fe-001","allPassed":true,"commit":"a244249","diffHash":"9f40ec236c8962629ad69074805f1bec07f40a56"}
+{"ts":"2026-10-02T10:36:18.329Z","type":"evaluate","featureId":"fe-001","verdict":"Block","scores":{"Correctness":"n/a","Verification":2,"Scope discipline":0,"Reliability":2,"Maintainability":"n/a","Handoff readiness":1},"divergences":[]}
+{"ts":"2026-10-02T10:36:18.437Z","type":"verify","id":"fe-001","allPassed":true,"commit":"a244249","diffHash":"9f40ec236c8962629ad69074805f1bec07f40a56"}
+{"ts":"2026-10-02T10:41:13.678Z","type":"evaluate","featureId":"fe-001","verdict":"Revise","scores":{"Correctness":"n/a","Verification":2,"Scope discipline":2,"Reliability":2,"Maintainability":"n/a","Handoff readiness":1},"divergences":[]}
+{"ts":"2026-10-02T10:41:13.784Z","type":"verify","id":"fe-001","allPassed":true,"commit":"fa4975f","diffHash":"438f98a04f0a065fb112e9d469b594b8de0af39e","attestNote":"lint 0 errors; typecheck 0 errors; vite build 818 modules into 6 chunks (react 210.7kB/65.7kB gz, mantine 49.2kB/15.4kB gz); vitest 1 file 2/2 tests passed","attestNoteChars":155}
+{"ts":"2026-10-02T10:41:13.784Z","type":"feature.pass","id":"fe-001","commit":"fa4975f"}
