@@ -411,3 +411,8 @@
 {"ts":"2026-10-02T11:12:05.437Z","type":"evaluate","featureId":"recon-102","verdict":"Accept","scores":{"Correctness":"n/a","Verification":2,"Scope discipline":2,"Reliability":"n/a","Maintainability":"n/a","Handoff readiness":2},"divergences":[]}
 {"ts":"2026-10-02T11:12:05.560Z","type":"verify","id":"recon-102","allPassed":true,"commit":"ad9c221","diffHash":"b5044f4f8c93eb20894b3a725d7f0d427378c09a"}
 {"ts":"2026-10-02T11:12:05.561Z","type":"feature.pass","id":"recon-102","commit":"ad9c221"}
+{"ts":"2026-10-02T11:12:35.757Z","type":"feature.start","id":"recon-201","vcrWarning":null}
+{"ts":"2026-10-02T11:32:11.667Z","type":"contract.changed","id":"recon-201","reason":"user-approved reorder: 201 depends on 102; app.ts and web App/Shell added to scope"}
+{"ts":"2026-10-02T11:32:18.872Z","type":"evaluate","featureId":"recon-201","verdict":"Accept","scores":{"Correctness":"n/a","Verification":2,"Scope discipline":2,"Reliability":2,"Maintainability":"n/a","Handoff readiness":2},"divergences":[]}
+{"ts":"2026-10-02T11:32:19.052Z","type":"verify","id":"recon-201","allPassed":true,"commit":"c65c474","diffHash":"5e9ae482fcbb8b18955a5f6d4f9a06363940d1a6"}
+{"ts":"2026-10-02T11:32:19.052Z","type":"feature.pass","id":"recon-201","commit":"c65c474"}

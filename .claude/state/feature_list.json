@@ -323,15 +323,15 @@
           "kind": "cmd",
           "cmd": "npm run test:int -- tenan veco",
           "exitCode": 0,
-          "testedAt": "2026-10-02T11:11:44.893Z",
-          "commit": "ad9c221"
+          "commit": "ad9c221",
+          "testedAt": "2026-10-02T11:11:44.893Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:e2e -- tenan",
           "exitCode": 0,
-          "testedAt": "2026-10-02T11:12:05.165Z",
-          "commit": "ad9c221"
+          "commit": "ad9c221",
+          "testedAt": "2026-10-02T11:12:05.165Z"
         }
       ],
       "notes": "",
@@ -446,13 +446,29 @@
           "cmd": "npm run test:int -- ingest"
         }
       ],
-      "status": "not_started",
-      "evidence": [],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:unit -- ingest",
+          "exitCode": 0,
+          "testedAt": "2026-10-02T11:32:13.078Z",
+          "commit": "c65c474"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- ingest",
+          "exitCode": 0,
+          "testedAt": "2026-10-02T11:32:17.256Z",
+          "commit": "c65c474"
+        }
+      ],
       "notes": "",
       "dependsOn": [
         "recon-102",
         "recon-003"
-      ]
+      ],
+      "contractHash": "c7ab0a0b37224161"
     },
     {
       "id": "recon-202",
@@ -465,7 +481,8 @@
         "server/test/**/matching*",
         "server/src/api/app.ts",
         "web/src/app/App.tsx",
-        "web/src/app/Shell.tsx"
+        "web/src/app/Shell.tsx",
+        "db/migrations/004_*"
       ],
       "verification": [
         {

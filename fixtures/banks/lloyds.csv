@@ -1,0 +1,5 @@
+Transaction Date,Transaction Type,Transaction Description,Debit Amount,Credit Amount,Balance
+01/09/2026,BGC,"RBK COUNCIL HB REF T9006",,"1,300.00",5300.00
+01/09/2026,FPI,"TEST TENANT7 RENT",,650.00,5950.00
+02/09/2026,DD,"BRITISH GAS",120.50,,5829.50
+02/09/2026,FPI,"NI CE 12 34 56 D RENT",,650.00,6479.50

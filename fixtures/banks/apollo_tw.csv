@@ -1,0 +1,4 @@
+TransferWise ID,Date,Amount,Currency,Description,Payment Reference,Running Balance,Payer Name
+TRANSFER-900001,01-09-2026,650.00,GBP,"Received money from TEST TENANT8","T9008 SEPT",2650.00,TEST TENANT8
+TRANSFER-900002,01-09-2026,-25.00,GBP,"Wise fee",,2625.00,
+TRANSFER-900003,02-09-2026,325.00,GBP,"Received money, part payment","rent AB 10 00 09 C",2950.00,"TEST, TENANT9"

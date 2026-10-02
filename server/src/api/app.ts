@@ -25,6 +25,7 @@ import {
 import { purgeExpiredSessions } from '../services/auth.service.js';
 import { authenticate, csrfGuard } from './auth/middleware.js';
 import { authRouter, usersRouter } from './auth/routes.js';
+import { bankAccountsRouter, importsRouter } from './ingest/routes.js';
 import { tenanciesRouter } from './tenancy/routes.js';
 
 export interface AppDeps {
@@ -84,6 +85,8 @@ export function createApp({ config, pool, logger, vecoSync }: AppDeps): Express 
   app.use('/api', authenticate(pool), csrfGuard);
   app.use('/api/auth', authRouter({ pool, cookieSecure: config.cookieSecure }));
   app.use('/api/users', usersRouter({ pool }));
+  app.use('/api/bank-accounts', bankAccountsRouter({ pool }));
+  app.use('/api/imports', importsRouter({ pool, hashKey: config.hashKey }));
   app.use(
     '/api/tenancies',
     tenanciesRouter({ pool, ...keys, vecoSync: vecoSync ?? createVecoSyncRunner(pool, keys, null) }),

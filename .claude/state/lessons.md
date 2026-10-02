@@ -64,3 +64,23 @@ dead end a future session might otherwise walk into again.
 
 - Source: manual (recon-102)
 - Ending 'active tenancies not in the feed' by valid TIDs only means a row that fails validation (e.g. a new frequency label) ends a live tenancy; the end set and the >20% guard must count every TID Veco returned, valid or rejected.
+
+## 2026-10-02: csv-parse record index is not the file line
+
+- Source: manual (recon-201)
+- skip_empty_lines and quoted newlines shift records; use csv-parse info:true (info.lines) for row error line numbers
+
+## 2026-10-02: Strip-all-commas money parsing turns 1,23 into 123.00
+
+- Source: manual (recon-201)
+- validate thousands grouping (^\d{1,3}(,\d{3})*) before removing commas; reject anything else
+
+## 2026-10-02: Heredocs and Edit turn \uFEFF into a literal BOM in test files
+
+- Source: manual (recon-201)
+- eslint no-irregular-whitespace fails; write the escape via node String.fromCharCode(92)
+
+## 2026-10-02: Two identical uploads race on file_sha256 UNIQUE
+
+- Source: manual (recon-201)
+- The SHA pre-check runs before insert, so a concurrent duplicate hit 23505 -> 500. Map 23505 on import_batches_file_sha256_key to 409.

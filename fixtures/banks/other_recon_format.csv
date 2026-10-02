@@ -1,0 +1,4 @@
+Description,Payment Reference,Date,Payer Name,Current Tenancy ID,Amount,Payment notes
+"Faster payment","SEPT RENT",01/09/2026,"TEST TENANT16",T9016,650.00,
+"Council HB","HB 0926",01/09/2026,"COUNCIL",t9017,650.00,"part"
+"Card payment",,02/09/2026,,,-12.99,
