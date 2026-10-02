@@ -115,29 +115,29 @@
           "kind": "cmd",
           "cmd": "npm run lint",
           "exitCode": 0,
-          "testedAt": "2026-10-02T10:40:54.461Z",
-          "commit": "fa4975f"
+          "commit": "fa4975f",
+          "testedAt": "2026-10-02T10:40:54.461Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run typecheck",
           "exitCode": 0,
-          "testedAt": "2026-10-02T10:40:57.522Z",
-          "commit": "fa4975f"
+          "commit": "fa4975f",
+          "testedAt": "2026-10-02T10:40:57.522Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run build",
           "exitCode": 0,
-          "testedAt": "2026-10-02T10:40:59.132Z",
-          "commit": "fa4975f"
+          "commit": "fa4975f",
+          "testedAt": "2026-10-02T10:40:59.132Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:unit -- src/test",
           "exitCode": 0,
-          "testedAt": "2026-10-02T10:41:02.852Z",
-          "commit": "fa4975f"
+          "commit": "fa4975f",
+          "testedAt": "2026-10-02T10:41:02.852Z"
         }
       ],
       "notes": "",
@@ -170,12 +170,56 @@
           "cmd": "npm run test:unit -- src/lib src/components"
         }
       ],
-      "status": "not_started",
-      "evidence": [],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run lint",
+          "exitCode": 0,
+          "commit": "7f90943",
+          "testedAt": "2026-10-02T10:47:50.722Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run typecheck",
+          "exitCode": 0,
+          "commit": "7f90943",
+          "testedAt": "2026-10-02T10:47:55.063Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:unit -- src/lib src/components",
+          "exitCode": 0,
+          "commit": "7f90943",
+          "testedAt": "2026-10-02T10:48:00.966Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run lint",
+          "exitCode": 0,
+          "testedAt": "2026-10-02T10:48:32.280Z",
+          "commit": "7f90943"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run typecheck",
+          "exitCode": 0,
+          "testedAt": "2026-10-02T10:48:36.848Z",
+          "commit": "7f90943"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:unit -- src/lib src/components",
+          "exitCode": 0,
+          "testedAt": "2026-10-02T10:48:42.818Z",
+          "commit": "7f90943"
+        }
+      ],
       "notes": "",
       "dependsOn": [
         "fe-001"
-      ]
+      ],
+      "contractHash": "92439ff4028838ef"
     },
     {
       "id": "fe-003",

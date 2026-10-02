@@ -1,0 +1,33 @@
+/* Global rules that Mantine's theme cannot express. Keep this file small. */
+
+:root {
+  --app-surface: var(--mantine-color-slate-0);
+  --app-border: var(--mantine-color-slate-2);
+  --app-text-muted: var(--mantine-color-slate-6);
+}
+
+html,
+body {
+  background: var(--app-surface);
+  color: var(--mantine-color-slate-9);
+}
+
+/* Numbers line up in every column. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* A clear keyboard focus indicator on custom interactive elements (Mantine handles its own). */
+[data-focusable]:focus-visible {
+  outline: 2px solid var(--mantine-color-brand-6);
+  outline-offset: 2px;
+}
+
+@media print {
+  body {
+    background: #fff;
+  }
+  [data-print-hidden] {
+    display: none !important;
+  }
+}
