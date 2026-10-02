@@ -1,0 +1,18 @@
+{"ts":"2026-09-30T16:33:22.815Z","type":"start","initCheckFailures":4,"nextFeatureId":null,"activeFeatureId":null,"baselineSmoke":null,"branch":"frontend","head":"d937ee0","dirtyCount":2,"configHash":"fe4fe4ebbc515cbd9cf4f677498689875f52df30","recentDecisionKeys":[],"recentLessonKeys":[]}
+{"ts":"2026-09-30T16:33:23.004Z","type":"rules.baseline","signatures":[]}
+{"ts":"2026-09-30T16:33:23.029Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-09-30T16:33:23.032Z","type":"hook.output","hook":"session-start","stdoutSha1":"cb13968e000769db5f90af353f7cab6acacdf1e2","stderrSha1":null,"exitCode":0}
+{"ts":"2026-09-30T16:33:23.846Z","type":"handoff","sessionNum":1,"commit":"d937ee0","sessionId":"hx-doctor-probe"}
+{"ts":"2026-09-30T16:33:24.047Z","type":"exit","cleanupOk":true,"featureListOk":true,"progressUpdated":true,"dirty":true,"overallOk":false,"checklist":[{"id":"startup-path","status":"fail"},{"id":"verification-path","status":"warn"},{"id":"progress-recorded","status":"pass"},{"id":"feature-state-truthful","status":"pass"},{"id":"no-undocumented-changes","status":"pass"},{"id":"next-session-continues","status":"fail"}]}
+{"ts":"2026-09-30T16:33:24.047Z","type":"exit.check","check":"startup-path","ok":false,"status":"fail","detail":"No init.sh, init.ps1, or commands.start configured — there is no documented way to start this project."}
+{"ts":"2026-09-30T16:33:24.048Z","type":"exit.check","check":"verification-path","ok":true,"status":"warn","detail":"No active feature or issue, and nothing has been verified yet — nothing to check."}
+{"ts":"2026-09-30T16:33:24.048Z","type":"exit.check","check":"progress-recorded","ok":true,"status":"pass","detail":"Progress log updated recently."}
+{"ts":"2026-09-30T16:33:24.049Z","type":"exit.check","check":"feature-state-truthful","ok":true,"status":"pass","detail":"No feature marked passing without recorded evidence."}
+{"ts":"2026-09-30T16:33:24.049Z","type":"exit.check","check":"no-undocumented-changes","ok":true,"status":"pass","detail":"No undocumented drift, debug code, or test weakening found in changed files."}
+{"ts":"2026-09-30T16:33:24.050Z","type":"exit.check","check":"next-session-continues","ok":false,"status":"fail","detail":"startup path is broken"}
+{"ts":"2026-09-30T16:33:24.054Z","type":"hook.output","hook":"stop","stdoutSha1":null,"stderrSha1":"ffef7a5af002214ec779ea2b3cc73233b08d87e3","exitCode":2}
+{"ts":"2026-09-30T16:33:24.430Z","type":"handoff","sessionNum":1,"commit":"d937ee0","sessionId":"hx-doctor-probe"}
+{"ts":"2026-09-30T16:33:24.434Z","type":"hook.output","hook":"session-end","stdoutSha1":"668f291c23ab9ac6b672f10674068f9bb6b1c2ee","stderrSha1":null,"exitCode":0}
+{"ts":"2026-09-30T16:33:24.798Z","type":"handoff","sessionNum":1,"commit":"d937ee0","sessionId":"hx-doctor-probe"}
+{"ts":"2026-09-30T16:33:24.800Z","type":"pre-compact"}
+{"ts":"2026-09-30T16:33:24.802Z","type":"hook.output","hook":"pre-compact","stdoutSha1":"b4bfe0fdc9ecd992c7c1d6a9fd27296d0b9a4724","stderrSha1":null,"exitCode":0}

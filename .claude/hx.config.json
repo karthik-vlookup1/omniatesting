@@ -1,0 +1,11 @@
+{
+  "stateDir": ".claude/state",
+  "issuesDir": ".claude/issues",
+  "autonomy": "review",
+  "maxAttempts": 3,
+  "routes": [],
+  "stopGate": "block",
+  "vcrGate": "warn",
+  "debugCodeGate": { "mode": "warn", "paths": [] },
+  "testGuard": "warn"
+}
