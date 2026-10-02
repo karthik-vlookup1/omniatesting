@@ -37,8 +37,9 @@ export function PreviewBanner() {
             Sample accounts
           </Text>
           <Text fz="xs" c="dimmed" mb="sm">
-            Password for every account: <Code>{PREVIEW_PASSWORD}</Code>. Only sign-in and the account
-            menu work: they imitate the real <Code>/api/auth</Code> endpoints. Nothing is saved.
+            Password for every account: <Code>{PREVIEW_PASSWORD}</Code>. Screens use synthetic sample data that
+            imitates the backend's built endpoints. Changes last until you reload. Uploading statements and
+            Veco sync need the real backend.
           </Text>
           <Table fz="xs" verticalSpacing={4} withRowBorders={false}>
             <Table.Tbody>

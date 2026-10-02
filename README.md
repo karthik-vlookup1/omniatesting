@@ -30,15 +30,17 @@ Set `OMNIA_API_URL` to proxy to a different API, e.g. `OMNIA_API_URL=http://loca
 npm run dev:preview   # http://localhost:5173 — no backend, Docker or database needed
 ```
 
-A built-in stand-in for the backend's existing `/api/auth` endpoints, so the UI can be explored
+A built-in stand-in for the backend's built endpoints, with synthetic sample data, so the UI can be explored
 before the API is running. Sign in with a sample account (shown in the orange **Preview mode**
 pill at the bottom of the screen; password `preview-password`):
 `admin@preview.test`, `accounts@preview.test`, `staff@preview.test`, `readonly@preview.test`.
 
 - It exists only in the dev server: `vite build` never includes it.
-- It imitates only the backend's `/api/auth` endpoints, in the same order of checks (CSRF header,
-  body validation, then credentials) and with the same error responses. Every other `/api` path
-  answers `404 not_found`. The backend's admin-only `/api/users` is not imitated yet.
+- It imitates the backend's built endpoints (sign-in, users, bank accounts, imports, the review
+  queue and its actions, tenancies) over synthetic sample data, with the same checks and error
+  responses. Every other `/api` path answers `404 not_found`, as the real API does today.
+- Uploading a statement and Veco sync are not imitated (that would mean inventing the backend's
+  parsing and matching rules); in preview they say so. Changes last until the page is reloaded.
 - Nothing is stored; a reload keeps you signed in for that browser tab only.
 
 ## Scripts

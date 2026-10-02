@@ -4,11 +4,12 @@
  * Lets the UI be explored before Omnia_recon-backend is running. It imitates the backend's
  * /api/auth endpoints (server/src/api/auth/routes.ts, services/auth.service.ts) in the same order
  * of checks — CSRF guard, request-body validation, then credentials — with the same status codes
- * and error envelopes. Every other /api path answers 404 `not_found`, as the backend's catch-all
- * does (app.ts). /api/users exists in the backend (admin only) but is not imitated here yet. All
- * accounts are synthetic.
+ * and error envelopes. The built resource endpoints (users, bank accounts, imports, matching,
+ * tenancies) are imitated over synthetic data in previewResources.ts. Every other /api path answers
+ * 404 `not_found`, as the backend's catch-all does (app.ts). All accounts and data are synthetic.
  */
 import type { AuthUser } from '../data/auth/types';
+import { createPreviewState, handleResource } from './previewResources';
 
 export const PREVIEW_PASSWORD = 'preview-password';
 
@@ -78,10 +79,12 @@ export interface PreviewApi {
 export function createPreviewApi(): PreviewApi {
   const passwords = new Map<string, string>(PREVIEW_ACCOUNTS.map((a) => [a.id, PREVIEW_PASSWORD]));
   const currentUser = (): AuthUser | null => PREVIEW_ACCOUNTS.find((a) => a.id === readSession()) ?? null;
+  const state = createPreviewState(PREVIEW_ACCOUNTS);
 
   async function handle(rawPath: string, init: PreviewRequest = {}): Promise<Response> {
+    const url = new URL(rawPath, 'http://preview.local');
     // Express matches routes with or without a trailing slash.
-    const path = rawPath.length > 1 ? rawPath.replace(/\/+$/, '') : rawPath;
+    const path = url.pathname.length > 1 ? url.pathname.replace(/\/+$/, '') : url.pathname;
     const method = (init.method ?? 'GET').toUpperCase();
 
     if (path === '/api/health' && (method === 'GET' || method === 'HEAD')) return json(200, { status: 'ok' });
@@ -150,6 +153,9 @@ export function createPreviewApi(): PreviewApi {
       return new Response(null, { status: 204 });
     }
 
+    const resource = handleResource(state, user, method, path, url.searchParams, body);
+    if (resource) return resource;
+
     // The backend's catch-all: authenticate never rejects, so unknown routes are 404 signed in or not.
     return error(404, 'not_found', 'Not found');
   }
@@ -187,6 +193,6 @@ export function installPreviewApi(): void {
         reject(abortError());
       });
     });
-    return api.handle(url.pathname, merged);
+    return api.handle(url.pathname + url.search, merged);
   };
 }

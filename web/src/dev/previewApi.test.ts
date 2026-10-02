@@ -59,7 +59,7 @@ describe('preview API: guards and malformed input', () => {
   it('enforces the CSRF header on writes, before routing', async () => {
     const api = createPreviewApi();
     expect((await api.handle('/api/auth/login', post({ email: admin.email, password: PREVIEW_PASSWORD }, {}))).status).toBe(403);
-    expect((await api.handle('/api/imports', { method: 'POST' })).status).toBe(403);
+    expect((await api.handle('/api/vico/pending', { method: 'POST' })).status).toBe(403);
   });
 
   it('answers a malformed JSON body with 400 instead of throwing', async () => {
@@ -70,11 +70,11 @@ describe('preview API: guards and malformed input', () => {
   });
 
   it('answers unknown endpoints with 404 signed in or not, never invented data', async () => {
-    const out = await createPreviewApi().handle('/api/imports');
+    const out = await createPreviewApi().handle('/api/vico/pending');
     expect(out.status).toBe(404);
     expect(await errorOf(out)).toEqual({ code: 'not_found', message: 'Not found' });
     const api = await signedIn();
-    expect((await api.handle('/api/imports')).status).toBe(404);
+    expect((await api.handle('/api/vico/pending')).status).toBe(404);
     expect((await api.handle('/api/auth/me', post({}))).status).toBe(404);
   });
 
