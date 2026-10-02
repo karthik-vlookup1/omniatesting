@@ -19,3 +19,8 @@ dead end a future session might otherwise walk into again.
 
 - Source: issue.reject (ISSUE-0001)
 - Preview fake diverges from backend contract it claims to match exactly: (1) unknown /api routes (e.g. GET /api/imports, POST /api/auth/me) return 401 unauthenticated when signed out, but app.ts answers 404 not_found after authenticate+csrfGuard regardless of session (previewApi.ts unknown-route branch; previewApi.test.ts:53 asserts the wrong 401). (2) POST /api/auth/password checks currentPassword before newPassword length; backend runs Zod (ChangePasswordBody + PasswordSchema min12/max256) first, so wrong-current+short-new is 400 not 401, missing currentPassword is 400 not 401, 300-char newPassword is 400 not 204. (3) POST /api/auth/login with empty/missing password returns 401 invalid_credentials; backend LoginBody Zod gives 400 bad_request. (4) malformed/null JSON body makes handle() throw (SyntaxError/TypeError) -> client shows network error instead of 400 'Malformed JSON body'. README claim 'every other /api path answers 404' is also false for /api/users (real 200/403).
+
+## 2026-10-02: Mantine notifications leak between tests
+
+- Source: manual (fe-105)
+- The @mantine/notifications store is module-level, so a toast from one test was still rendered in the next and findByText found two. Call notifications.clean() in afterEach in any test file that asserts on notification text.
