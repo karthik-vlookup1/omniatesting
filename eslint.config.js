@@ -13,6 +13,8 @@ export default tseslint.config(
       'playwright-report/**',
       'test-results/**',
       '.claude/**',
+      // hx harness source drop (gitignored; installed into .claude/, not project code)
+      'hx-harness-latest-v0.6.0*/**',
     ],
   },
   js.configs.recommended,
