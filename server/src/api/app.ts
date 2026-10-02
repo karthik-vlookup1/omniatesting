@@ -15,17 +15,28 @@ import { createPool, type Pool } from '../db/pool.js';
 import { AppError } from '../lib/errors.js';
 import { isMainModule } from '../lib/is-main.js';
 import { createLogger, type Logger } from '../lib/logger.js';
+import {
+  createVecoSyncRunner,
+  loadVecoConfig,
+  scheduleNightly,
+  sourceFromConfig,
+  type VecoSyncRunner,
+} from '../jobs/veco-sync/index.js';
 import { purgeExpiredSessions } from '../services/auth.service.js';
 import { authenticate, csrfGuard } from './auth/middleware.js';
 import { authRouter, usersRouter } from './auth/routes.js';
+import { tenanciesRouter } from './tenancy/routes.js';
 
 export interface AppDeps {
   config: AppConfig;
   pool: Pool;
   logger: Logger;
+  /** Veco tenancy sync; defaults to a disabled runner (no VECO_MCP_URL). */
+  vecoSync?: VecoSyncRunner;
 }
 
-export function createApp({ config, pool, logger }: AppDeps): Express {
+export function createApp({ config, pool, logger, vecoSync }: AppDeps): Express {
+  const keys = { hashKey: config.hashKey, encryptionKey: config.encryptionKey };
   const app = express();
   app.disable('x-powered-by');
   // Behind a reverse proxy in production: trust exactly one hop for req.ip / secure cookies.
@@ -73,6 +84,10 @@ export function createApp({ config, pool, logger }: AppDeps): Express {
   app.use('/api', authenticate(pool), csrfGuard);
   app.use('/api/auth', authRouter({ pool, cookieSecure: config.cookieSecure }));
   app.use('/api/users', usersRouter({ pool }));
+  app.use(
+    '/api/tenancies',
+    tenanciesRouter({ pool, ...keys, vecoSync: vecoSync ?? createVecoSyncRunner(pool, keys, null) }),
+  );
 
   app.use('/api', (_req, _res, next) => next(new AppError('not_found', 'Not found')));
   app.use(errorHandler);
@@ -109,7 +124,16 @@ async function main(): Promise<void> {
   const pool = createPool({ databaseUrl: config.databaseUrl, hashKey: config.hashKey }, logger);
   await pool.query('SELECT 1');
 
-  const app = createApp({ config, pool, logger });
+  const veco = loadVecoConfig();
+  const vecoSync = createVecoSyncRunner(
+    pool,
+    { hashKey: config.hashKey, encryptionKey: config.encryptionKey },
+    sourceFromConfig(veco),
+  );
+  const stopVecoSync = vecoSync.enabled ? scheduleNightly(vecoSync, veco.syncHour, logger) : () => {};
+  logger.info({ enabled: vecoSync.enabled, hour: veco.syncHour }, 'veco nightly sync');
+
+  const app = createApp({ config, pool, logger, vecoSync });
   const server: Server = app.listen(config.port, () => {
     logger.info({ port: config.port, env: config.nodeEnv }, 'omnia-recon API listening');
   });
@@ -127,6 +151,7 @@ async function main(): Promise<void> {
     stopping = true;
     logger.info({ signal }, 'shutting down');
     clearInterval(purge);
+    stopVecoSync();
     server.close(() => {
       pool.end().finally(() => process.exit(0));
     });

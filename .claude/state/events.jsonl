@@ -368,3 +368,46 @@
 {"ts":"2026-10-02T10:13:31.888Z","type":"evaluate","featureId":"recon-004","verdict":"Accept","scores":{"Correctness":"n/a","Verification":2,"Scope discipline":2,"Reliability":"n/a","Maintainability":"n/a","Handoff readiness":2},"divergences":[]}
 {"ts":"2026-10-02T10:13:32.015Z","type":"verify","id":"recon-004","allPassed":true,"commit":"2141b10","diffHash":"a6abc1e0ee73a95577dae52b77ad8df7b47b5d8a"}
 {"ts":"2026-10-02T10:13:32.015Z","type":"feature.pass","id":"recon-004","commit":"2141b10"}
+{"ts":"2026-10-02T10:14:11.416Z","type":"start","initCheckFailures":2,"nextFeatureId":"recon-102","activeFeatureId":null,"baselineSmoke":null,"branch":"backend","head":"ad9c221","dirtyCount":2,"configHash":"fe4fe4ebbc515cbd9cf4f677498689875f52df30","recentDecisionKeys":["2026-10-02|Locked accounts answer 401 invalid_credentials, not 423","2026-10-02|Autonomous loop with senior-tester subagent, push to backend","2026-09-30|Startup path via init.sh / init.ps1"],"recentLessonKeys":["2026-10-02|recon-004","2026-10-02|recon-004","2026-10-02|recon-004"]}
+{"ts":"2026-10-02T10:14:11.585Z","type":"rules.baseline","signatures":[]}
+{"ts":"2026-10-02T10:14:11.614Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-10-02T10:14:11.615Z","type":"hook.output","hook":"session-start","stdoutSha1":"672b500bb8fbf3feb0b6ebf632da41e2dd8d4bc0","stderrSha1":null,"exitCode":0}
+{"ts":"2026-10-02T10:14:12.456Z","type":"handoff","sessionNum":2,"commit":"ad9c221","sessionId":"hx-doctor-probe"}
+{"ts":"2026-10-02T10:14:12.754Z","type":"exit","cleanupOk":true,"featureListOk":true,"progressUpdated":true,"dirty":true,"overallOk":false,"checklist":[{"id":"startup-path","status":"pass"},{"id":"verification-path","status":"fail"},{"id":"progress-recorded","status":"pass"},{"id":"feature-state-truthful","status":"pass"},{"id":"no-undocumented-changes","status":"pass"},{"id":"next-session-continues","status":"pass"}]}
+{"ts":"2026-10-02T10:14:12.755Z","type":"exit.check","check":"startup-path","ok":true,"status":"pass","detail":"init.sh/init.ps1 present"}
+{"ts":"2026-10-02T10:14:12.755Z","type":"exit.check","check":"verification-path","ok":false,"status":"fail","detail":"ERROR: the code changed since the last verification run.\n  WHY: a passing verification only proves the code AT THAT TIME worked — edits made since then (through any tool) are unverified.\n  FIX: hx verify <id>"}
+{"ts":"2026-10-02T10:14:12.755Z","type":"exit.check","check":"progress-recorded","ok":true,"status":"pass","detail":"Progress log updated recently."}
+{"ts":"2026-10-02T10:14:12.755Z","type":"exit.check","check":"feature-state-truthful","ok":true,"status":"pass","detail":"No feature marked passing without recorded evidence."}
+{"ts":"2026-10-02T10:14:12.755Z","type":"exit.check","check":"no-undocumented-changes","ok":true,"status":"pass","detail":"No undocumented drift, debug code, or test weakening found in changed files."}
+{"ts":"2026-10-02T10:14:12.755Z","type":"exit.check","check":"next-session-continues","ok":true,"status":"pass","detail":"Startup path works, no hook errors this session, and no in-progress feature is missing a Next Best Step."}
+{"ts":"2026-10-02T10:14:12.757Z","type":"hook.output","hook":"stop","stdoutSha1":"5973c4258ff3e7ddcb7ff5a16246828eec28c379","stderrSha1":null,"exitCode":0}
+{"ts":"2026-10-02T10:14:13.095Z","type":"handoff","sessionNum":2,"commit":"ad9c221","sessionId":"hx-doctor-probe"}
+{"ts":"2026-10-02T10:14:13.124Z","type":"quality.update","domainCount":5,"layerCount":0,"promoted":1,"demoted":0}
+{"ts":"2026-10-02T10:14:13.126Z","type":"hook.output","hook":"session-end","stdoutSha1":"a09b2424444cf9727c8255e99120ea0cdbc558ee","stderrSha1":null,"exitCode":0}
+{"ts":"2026-10-02T10:14:13.530Z","type":"handoff","sessionNum":2,"commit":"ad9c221","sessionId":"hx-doctor-probe"}
+{"ts":"2026-10-02T10:14:13.531Z","type":"pre-compact"}
+{"ts":"2026-10-02T10:14:13.533Z","type":"hook.output","hook":"pre-compact","stdoutSha1":"699279ed16a8a9934971575b3cad5bb0e02ca9b7","stderrSha1":null,"exitCode":0}
+{"ts":"2026-10-02T10:14:27.482Z","type":"feature.start","id":"recon-102","vcrWarning":null}
+{"ts":"2026-10-02T10:17:18.447Z","type":"start","initCheckFailures":2,"nextFeatureId":null,"activeFeatureId":"recon-102","baselineSmoke":null,"branch":"backend","head":"ad9c221","dirtyCount":8,"configHash":"fe4fe4ebbc515cbd9cf4f677498689875f52df30","recentDecisionKeys":["2026-10-02|app.ts added to scope of 102/201/202/203/302/303; .env.example to 102","2026-10-02|recon-303 targets Xero Demo Company first via Sam's bridge","2026-10-02|Tenancies come from Veco via nightly MCP sync"],"recentLessonKeys":["2026-10-02|recon-102","2026-10-02|recon-004","2026-10-02|recon-004"]}
+{"ts":"2026-10-02T10:17:18.578Z","type":"rules.baseline","signatures":[]}
+{"ts":"2026-10-02T10:17:18.603Z","type":"protected.baseline","files":{".claude/settings.json":"f909a6cead725bf88f0c89dc302f989111792587",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"c987924d828ce7b7f022dbd2769c6c0b973aeb74"}}
+{"ts":"2026-10-02T10:17:18.604Z","type":"hook.output","hook":"session-start","stdoutSha1":"599d19f443645761f2a97f96cd9d4a9266aa30d1","stderrSha1":null,"exitCode":0}
+{"ts":"2026-10-02T10:17:19.443Z","type":"handoff","sessionNum":2,"commit":"ad9c221","sessionId":"hx-doctor-probe"}
+{"ts":"2026-10-02T10:17:19.790Z","type":"exit","cleanupOk":true,"featureListOk":true,"progressUpdated":true,"dirty":true,"overallOk":false,"checklist":[{"id":"startup-path","status":"pass"},{"id":"verification-path","status":"fail"},{"id":"progress-recorded","status":"pass"},{"id":"feature-state-truthful","status":"pass"},{"id":"no-undocumented-changes","status":"pass"},{"id":"next-session-continues","status":"pass"}]}
+{"ts":"2026-10-02T10:17:19.790Z","type":"exit.check","check":"startup-path","ok":true,"status":"pass","detail":"init.sh/init.ps1 present"}
+{"ts":"2026-10-02T10:17:19.790Z","type":"exit.check","check":"verification-path","ok":false,"status":"fail","detail":"ERROR: the code changed since the last verification run.\n  WHY: a passing verification only proves the code AT THAT TIME worked — edits made since then (through any tool) are unverified.\n  FIX: hx verify recon-102"}
+{"ts":"2026-10-02T10:17:19.790Z","type":"exit.check","check":"progress-recorded","ok":true,"status":"pass","detail":"Progress log updated recently."}
+{"ts":"2026-10-02T10:17:19.790Z","type":"exit.check","check":"feature-state-truthful","ok":true,"status":"pass","detail":"No feature marked passing without recorded evidence."}
+{"ts":"2026-10-02T10:17:19.791Z","type":"exit.check","check":"no-undocumented-changes","ok":true,"status":"pass","detail":"No undocumented drift, debug code, or test weakening found in changed files."}
+{"ts":"2026-10-02T10:17:19.791Z","type":"exit.check","check":"next-session-continues","ok":true,"status":"pass","detail":"Startup path works, no hook errors this session, and no in-progress feature is missing a Next Best Step."}
+{"ts":"2026-10-02T10:17:19.792Z","type":"hook.output","hook":"stop","stdoutSha1":null,"stderrSha1":"ff4e10036fa2671f1694d39afe4987bd3a4ee016","exitCode":2}
+{"ts":"2026-10-02T10:17:20.089Z","type":"handoff","sessionNum":2,"commit":"ad9c221","sessionId":"hx-doctor-probe"}
+{"ts":"2026-10-02T10:17:20.105Z","type":"quality.update","domainCount":5,"layerCount":0,"promoted":0,"demoted":0}
+{"ts":"2026-10-02T10:17:20.107Z","type":"hook.output","hook":"session-end","stdoutSha1":"a09b2424444cf9727c8255e99120ea0cdbc558ee","stderrSha1":null,"exitCode":0}
+{"ts":"2026-10-02T10:17:20.436Z","type":"handoff","sessionNum":2,"commit":"ad9c221","sessionId":"hx-doctor-probe"}
+{"ts":"2026-10-02T10:17:20.436Z","type":"pre-compact"}
+{"ts":"2026-10-02T10:17:20.438Z","type":"hook.output","hook":"pre-compact","stdoutSha1":"699279ed16a8a9934971575b3cad5bb0e02ca9b7","stderrSha1":null,"exitCode":0}
+{"ts":"2026-10-02T11:11:34.561Z","type":"contract.changed","id":"recon-102","reason":"user-approved reorder: 102 rewritten as Veco tenancy sync; app.ts, web App/Shell and .env.example added to scope"}
+{"ts":"2026-10-02T11:12:05.437Z","type":"evaluate","featureId":"recon-102","verdict":"Accept","scores":{"Correctness":"n/a","Verification":2,"Scope discipline":2,"Reliability":"n/a","Maintainability":"n/a","Handoff readiness":2},"divergences":[]}
+{"ts":"2026-10-02T11:12:05.560Z","type":"verify","id":"recon-102","allPassed":true,"commit":"ad9c221","diffHash":"b5044f4f8c93eb20894b3a725d7f0d427378c09a"}
+{"ts":"2026-10-02T11:12:05.561Z","type":"feature.pass","id":"recon-102","commit":"ad9c221"}

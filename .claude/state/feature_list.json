@@ -242,15 +242,15 @@
           "kind": "cmd",
           "cmd": "npm run test:int -- auth",
           "exitCode": 0,
-          "testedAt": "2026-10-02T10:13:17.240Z",
-          "commit": "2141b10"
+          "commit": "2141b10",
+          "testedAt": "2026-10-02T10:13:17.240Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:e2e -- auth",
           "exitCode": 0,
-          "testedAt": "2026-10-02T10:13:31.700Z",
-          "commit": "2141b10"
+          "commit": "2141b10",
+          "testedAt": "2026-10-02T10:13:31.700Z"
         }
       ],
       "notes": "",
@@ -262,7 +262,7 @@
     },
     {
       "id": "recon-101",
-      "priority": 101,
+      "priority": 601,
       "area": "phase-1-tenants",
       "title": "Branches, bank accounts, landlords, properties: API + UI (list, search, create, edit)",
       "user_visible_behavior": "",
@@ -291,36 +291,58 @@
     },
     {
       "id": "recon-102",
-      "priority": 102,
+      "priority": 110,
       "area": "phase-1-tenants",
-      "title": "Tenants + tenancies: TID, RG/MG/IRG, joint tenants, NI stored encrypted+hashed+last3, search by TID/name/NI; tenancy end flow",
-      "user_visible_behavior": "Staff search a tenant by TID, name or full NI; NI is never shown in full except to admin/accounts; ending a tenancy requires an end date.",
+      "title": "Veco tenancy sync: nightly job reads active tenancies (TID, rent, frequency, property, branch, NI) from omnia_analytics via the Veco read-only MCP into Postgres; NI stored encrypted+hashed+last3; tenancy search by TID/name/NI",
+      "user_visible_behavior": "A sync run (nightly or on demand by admin) upserts active tenancies from Veco and marks ones no longer active as ended, with a run summary (fetched/inserted/updated/ended). Staff search by TID, name or full NI; NI is never shown in full except to admin/accounts. Tests use a mocked MCP with synthetic rows.",
       "scope": [
         "server/src/{domain,services,api}/{tenant,tenancy}*/**",
+        "server/src/jobs/veco-sync/**",
         "web/src/features/{tenants,tenancies}/**",
         "server/test/**/tenan*",
-        "e2e/tenan*"
+        "server/test/**/veco*",
+        "e2e/tenan*",
+        "server/src/api/app.ts",
+        ".env.example",
+        "web/src/app/App.tsx",
+        "web/src/app/Shell.tsx"
       ],
       "verification": [
         {
           "level": "integration",
-          "cmd": "npm run test:int -- tenan"
+          "cmd": "npm run test:int -- tenan veco"
         },
         {
           "level": "e2e",
           "cmd": "npm run test:e2e -- tenan"
         }
       ],
-      "status": "not_started",
-      "evidence": [],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- tenan veco",
+          "exitCode": 0,
+          "testedAt": "2026-10-02T11:11:44.893Z",
+          "commit": "ad9c221"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:e2e -- tenan",
+          "exitCode": 0,
+          "testedAt": "2026-10-02T11:12:05.165Z",
+          "commit": "ad9c221"
+        }
+      ],
       "notes": "",
       "dependsOn": [
-        "recon-101"
-      ]
+        "recon-004"
+      ],
+      "contractHash": "f61c184bc8af8987"
     },
     {
       "id": "recon-103",
-      "priority": 103,
+      "priority": 603,
       "area": "phase-1-tenants",
       "title": "Rent terms: rent schedules, benefit awards (LHA/UC/HB), payer splits, payment methods; nightly charge generation job + rent account view per tenancy",
       "user_visible_behavior": "On a tenancy page staff set rent + cycle, add an HB award of a fixed amount and see the tenant/council split per period and the running balance per payer.",
@@ -350,7 +372,7 @@
     },
     {
       "id": "recon-104",
-      "priority": 104,
+      "priority": 604,
       "area": "phase-1-tenants",
       "title": "Known payer accounts: add/link landlord, relative or tenant accounts (hash + last4) to a tenancy or landlord",
       "user_visible_behavior": "",
@@ -375,7 +397,7 @@
     },
     {
       "id": "recon-105",
-      "priority": 105,
+      "priority": 605,
       "area": "phase-1-tenants",
       "title": "LetMC import: tenants, tenancies, properties, landlords + opening balances at a cutover date; dry-run report before commit",
       "user_visible_behavior": "Import a (synthetic) LetMC export in dry-run; see counts, duplicates and rejects; commit; arrears appear as opening_balance charges, credits as negative adjustments.",
@@ -401,7 +423,7 @@
     },
     {
       "id": "recon-201",
-      "priority": 201,
+      "priority": 120,
       "area": "phase-2-matching",
       "title": "Bank CSV ingest: upload, profile by header name, dedupe, raw row kept, extraction of TID/NI/payer account; CSV profile admin screen",
       "user_visible_behavior": "Uploading each of 7 synthetic bank files (columns reordered/renamed per bank) imports the expected rows; re-upload is rejected; an overlapping file inserts only new lines; an unknown layout fails naming the missing fields.",
@@ -409,7 +431,10 @@
         "server/src/{domain,services,api}/ingest/**",
         "web/src/features/{upload,csv-profiles}/**",
         "fixtures/banks/**",
-        "server/test/**/ingest*"
+        "server/test/**/ingest*",
+        "server/src/api/app.ts",
+        "web/src/app/App.tsx",
+        "web/src/app/Shell.tsx"
       ],
       "verification": [
         {
@@ -425,18 +450,22 @@
       "evidence": [],
       "notes": "",
       "dependsOn": [
-        "recon-104"
+        "recon-102",
+        "recon-003"
       ]
     },
     {
       "id": "recon-202",
-      "priority": 202,
+      "priority": 130,
       "area": "phase-2-matching",
       "title": "Matching service: auto_match on every ingested line, match summary per import, API for suggestions / confirm / remember / reject",
       "user_visible_behavior": "After upload the summary shows N matched automatically, N for review, N yet to take, N excluded.",
       "scope": [
         "server/src/{services,api}/matching/**",
-        "server/test/**/matching*"
+        "server/test/**/matching*",
+        "server/src/api/app.ts",
+        "web/src/app/App.tsx",
+        "web/src/app/Shell.tsx"
       ],
       "verification": [
         {
@@ -453,13 +482,16 @@
     },
     {
       "id": "recon-203",
-      "priority": 203,
+      "priority": 140,
       "area": "phase-2-matching",
       "title": "Review queue UI: suggestions with confidence + reason, accept / pick another tenancy / remember payer, yet-to-take list with manual match",
       "user_visible_behavior": "",
       "scope": [
         "web/src/features/review/**",
-        "e2e/review*"
+        "e2e/review*",
+        "server/src/api/app.ts",
+        "web/src/app/App.tsx",
+        "web/src/app/Shell.tsx"
       ],
       "verification": [
         {
@@ -476,7 +508,7 @@
     },
     {
       "id": "recon-204",
-      "priority": 204,
+      "priority": 704,
       "area": "phase-2-matching",
       "title": "Receipt operations: split a bulk council payment / upload remittance, manual allocation override, reverse a receipt, adjustments (write-off, refund)",
       "user_visible_behavior": "",
@@ -500,7 +532,7 @@
     },
     {
       "id": "recon-301",
-      "priority": 301,
+      "priority": 801,
       "area": "phase-3-outputs",
       "title": "Filled-in bank statement CSV download (replaces the Google Sheet) with filters by bank/date/status",
       "user_visible_behavior": "",
@@ -524,14 +556,17 @@
     },
     {
       "id": "recon-302",
-      "priority": 302,
+      "priority": 150,
       "area": "phase-3-outputs",
       "title": "Vico export from v_vico_export: file download (TID, amount, constant sort code/account), marks each receipt exported once via external_refs",
       "user_visible_behavior": "",
       "scope": [
         "server/src/{services,api,jobs}/vico/**",
         "web/src/features/vico/**",
-        "server/test/**/vico*"
+        "server/test/**/vico*",
+        "server/src/api/app.ts",
+        "web/src/app/App.tsx",
+        "web/src/app/Shell.tsx"
       ],
       "verification": [
         {
@@ -548,14 +583,17 @@
     },
     {
       "id": "recon-303",
-      "priority": 303,
+      "priority": 160,
       "area": "phase-3-outputs",
-      "title": "Xero sync: OAuth2, contact mapping, one draft invoice per receipt (ledger code + branch tracking), status read-back, idempotent outbox worker; field map from integration_settings",
-      "user_visible_behavior": "Against a mocked Xero API: one invoice per receipt, retries never duplicate, APPROVED/VOIDED flows back. A real sandbox run is a manual step.",
+      "title": "Xero sync via Sam's Omnia Xero OHL bridge (REST + X-Api-Key): contact upsert, one invoice per confirmed receipt with externalRef idempotency, ledger code + property tracking from dim_PropertyXeroMap, demo/live gate (XERO_TARGET_ENV), outbox worker with retries; Xero is the ledger",
+      "user_visible_behavior": "Against a mocked bridge: one invoice per receipt, retries never duplicate, non-demo target refused without confirm_live, failures retried up to 5 times and visible in the outbox. A real Demo Company run is a manual step once XERO_BRIDGE_URL and the key are in .env.",
       "scope": [
         "server/src/{services,api,jobs}/xero/**",
         "web/src/features/xero/**",
-        "server/test/**/xero*"
+        "server/test/**/xero*",
+        "server/src/api/app.ts",
+        "web/src/app/App.tsx",
+        "web/src/app/Shell.tsx"
       ],
       "verification": [
         {
@@ -572,7 +610,7 @@
     },
     {
       "id": "recon-401",
-      "priority": 401,
+      "priority": 901,
       "area": "phase-4-reporting",
       "title": "Dashboard: today's imports per bank, auto-match rate, review backlog, balances per payer, arrears ageing, tenant rent statement (PDF/CSV)",
       "user_visible_behavior": "",

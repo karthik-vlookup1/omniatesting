@@ -39,3 +39,28 @@ dead end a future session might otherwise walk into again.
 
 - Source: manual (recon-004)
 - No write routes exist yet for non-admins; a probe app wiring authenticate+csrfGuard+requireWriter plus a req.db.tx current_setting probe covers readonly-cannot-write and SET LOCAL isolation under concurrency.
+
+## 2026-10-02: Veco MCP returns unquoted CSV; use FOR JSON PATH
+
+- Source: manual (recon-102)
+- execute_sql returns text CSV with no quoting (commas/newlines in values break rows, NULL prints as None). Wrap queries in FOR JSON PATH, INCLUDE_NULL_VALUES, drop the JSON_F52E... header line and join the remaining lines with '' — 3000-row probe round-tripped exactly. Transport is MCP streamable HTTP: initialize -> mcp-session-id header -> notifications/initialized -> tools/call; responses are SSE 'data:' lines.
+
+## 2026-10-02: Live Veco dry run 2026-10-02: 1097 tenancies, 0 rejected, 11 invalid NI
+
+- Source: manual (recon-102)
+- Real feed via MCP in 13s: 10 branches, 369 buildings, 1097 rooms/tenants; IRG 534 / RG 563 (55 defaulted, no owner record); NI 3 missing + 11 invalid (9 malformed typos, 2 non-HMRC prefixes) - those tenants sync without NI and match by TID only. Fix NI typos in Veco, not here.
+
+## 2026-10-02: Reactivated tenancy: rent schedule overlap
+
+- Source: manual (recon-102)
+- An ended tenancy keeps a closed schedule; inserting a new one from start_date violates the daterange EXCLUDE. Reopen the last schedule if rent is unchanged, else start the day after it closed.
+
+## 2026-10-02: Scope globs {tenant,tenancy}*/** need a matching FOLDER
+
+- Source: manual (recon-102)
+- server/src/services/tenancy.service.ts and api/tenancies/ were flagged as drift: the glob only matches files inside a dir named tenant*/tenancy*. Put feature code under services/<name>/ and api/<name>/ with the singular name the scope uses.
+
+## 2026-10-02: Sync ending must exclude rejected feed rows
+
+- Source: manual (recon-102)
+- Ending 'active tenancies not in the feed' by valid TIDs only means a row that fails validation (e.g. a new frequency label) ends a live tenancy; the end set and the >20% guard must count every TID Veco returned, valid or rejected.

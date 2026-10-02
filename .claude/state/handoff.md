@@ -4,21 +4,17 @@
 
 ## Verified Now
 
-- Passing features: recon-001, recon-002, recon-003
-- Verification runs this session: 3
+- Passing features: recon-001, recon-002, recon-003, recon-004
+- Verification runs this session: 2
 
 ## Changed This Session
 
-- Commit: 592288a
-- Files changed: AUTONOMOUS_LOOP.md, e2e/auth.spec.ts, server/test/int/auth.test.ts, web/src/app/App.tsx, web/src/app/HomePage.tsx, web/src/app/Shell.tsx, web/src/app/index.html, web/src/app/main.tsx, web/src/features/auth/LoginPage.tsx, web/src/features/auth/RequireAuth.tsx, web/src/features/auth/api.ts, web/src/features/auth/useAuth.ts
+- Commit: ad9c221
+- Files changed: (none)
 
 ## Broken Or Unverified
 
 - Blocked: none
-
-### Verification failures this session
-
-- `(command not recorded)` exited ? (recon-002)
 
 ## Waiting on a human
 
@@ -26,13 +22,13 @@
 
 ## Next Best Step
 
-- Highest-priority unfinished feature: recon-004
-- Why it is next: feature "recon-004" is already active (WIP=1) — finish or block it first
-- What counts as passing: (n/a)
-- What must not change: (n/a)
+- Highest-priority unfinished feature: recon-101
+- Why it is next: dependencies (recon-004) are all passing, and it is the highest-priority (p601) not_started feature left
+- What counts as passing: npm run test:int -- property && npm run test:e2e -- property
+- What must not change: stay within server/src/{domain,services,api}/{branch,bank-account,landlord,property}*/**, web/src/features/{branches,bank-accounts,landlords,properties}/**, server/test/**/property*, e2e/property*; avoid package.json, package-lock.json, docker-compose.yml, .github/**, server/package.json, server/tsconfig*.json, web/package.json, web/tsconfig*.json, web/vite.config.ts, README.md, docs/ARCHITECTURE.md, .env.example, eslint.config.*, vitest.config.*, playwright.config.*, server/src/db/migrate.ts, scripts/db-test.*, server/src/lib/crypto*, server/src/config/**, server/test/unit/crypto*, server/test/unit/config*, server/test/int/crypto*, server/src/api/auth/**, server/src/services/auth*, server/src/db/context*, server/src/api/app.ts, web/src/app/**, web/src/features/auth/**, server/test/**/auth*, e2e/auth*, server/src/{domain,services,api}/{tenant,tenancy}*/**, server/src/jobs/veco-sync/**, web/src/features/{tenants,tenancies}/**, server/test/**/tenan*, server/test/**/veco*, e2e/tenan*, server/src/{domain,services,api}/{rent,benefit,payer-split,payment-method}*/**, server/src/jobs/generate-charges*, web/src/features/rent-terms/**, server/test/**/rent*, e2e/rent*, server/src/{domain,services,api}/payer-account*/**, web/src/features/payer-accounts/**, server/test/**/payer-account*, server/src/jobs/letmc-import/**, server/src/api/imports/letmc*, web/src/features/letmc-import/**, fixtures/letmc/**, server/test/**/letmc*, server/src/{domain,services,api}/ingest/**, web/src/features/{upload,csv-profiles}/**, fixtures/banks/**, server/test/**/ingest*, server/src/{services,api}/matching/**, server/test/**/matching*, web/src/features/review/**, e2e/review*, server/src/{domain,services,api}/{receipt,allocation,remittance,adjustment}*/**, web/src/features/receipts/**, server/test/**/receipt*, server/src/{services,api}/export/statement*, web/src/features/export/**, server/test/**/export-statement*, server/src/{services,api,jobs}/vico/**, web/src/features/vico/**, server/test/**/vico*, server/src/{services,api,jobs}/xero/**, web/src/features/xero/**, server/test/**/xero*, server/src/{services,api}/reports/**, web/src/features/dashboard/**, e2e/dashboard* (belongs to other features)
 
 ## Commands
 
 - Startup: `hx start`
-- Verification: `hx verify recon-004`
+- Verification: `hx verify recon-101`
 - Focused debug: `hx logs diagnose`

@@ -1,6 +1,6 @@
 import { AppShell, Badge, Burger, Button, Group, NavLink, Text, Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconHome, IconLogout } from '@tabler/icons-react';
+import { IconHome, IconLogout, IconUsers } from '@tabler/icons-react';
 import { Outlet, NavLink as RouterLink, useNavigate } from 'react-router-dom';
 import { useCurrentUser, useLogout } from '../features/auth/useAuth';
 
@@ -41,7 +41,8 @@ export function Shell() {
         </Group>
       </AppShell.Header>
       <AppShell.Navbar p="xs">
-        <NavLink component={RouterLink} to="/" label="Home" leftSection={<IconHome size={16} />} />
+        <NavLink component={RouterLink} to="/" end label="Home" leftSection={<IconHome size={16} />} />
+        <NavLink component={RouterLink} to="/tenancies" label="Tenancies" leftSection={<IconUsers size={16} />} />
       </AppShell.Navbar>
       <AppShell.Main>
         <Outlet />
