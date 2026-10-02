@@ -57,7 +57,13 @@ export const routes: RouteObject[] = [
           },
           {
             path: 'review',
-            lazy: async () => ({ Component: (await import('../features/transactions/BankLinesPage')).BankLinesPage }),
+            lazy: async () => {
+              const [{ BankLinesPage }, { ReviewActions }] = await Promise.all([
+                import('../features/transactions/BankLinesPage'),
+                import('../features/review/ReviewActions'),
+              ]);
+              return { Component: () => <BankLinesPage Actions={ReviewActions} /> };
+            },
           },
           {
             path: 'tenancies',
