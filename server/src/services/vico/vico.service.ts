@@ -1,6 +1,7 @@
 /**
- * Vico export. Vico needs one row per confirmed receipt: TID, amount, and OHG's sort code and account
- * number (the same on every row, kept in integration_settings). v_vico_export lists receipts not yet
+ * Vico export. The upload file has one row per confirmed receipt, in the accounts team's "G-Sheet VECO"
+ * layout: Sort code, Account number (OHG's, the same on every row, kept in integration_settings), Date,
+ * Amount, Standing order reference (the TID) and MG/RG (the tenancy's management type). v_vico_export lists receipts not yet
  * exported; exporting writes one external_refs row per receipt (system 'vico'), whose
  * UNIQUE (system, entity_type, entity_id) guarantees a receipt goes to Vico once. external_key2 holds the
  * export id, so an export's file can be downloaded again later.
@@ -22,6 +23,7 @@ export interface PendingReceipt {
   amount: string;
   receivedOn: string;
   bankCode: string | null;
+  managementType: string;
 }
 
 export interface VicoExport {
@@ -73,9 +75,10 @@ export async function saveVicoSettings(db: ActorDb, input: { sortCode: string; a
 
 const PENDING_SELECT = `
 SELECT v.receipt_id, v.tid, tn.full_name AS tenant_name, v.amount::text AS amount,
-       to_char(v.date, 'YYYY-MM-DD') AS received_on, b.code AS bank_code
+       to_char(v.date, 'YYYY-MM-DD') AS received_on, b.code AS bank_code, t.management_type::text AS management_type
   FROM v_vico_export v
   JOIN receipts r ON r.id = v.receipt_id
+  JOIN tenancies t ON t.id = r.tenancy_id
   -- LEFT: a manual / legacy receipt may have no bank line, and must still reach Vico.
   LEFT JOIN bank_transactions bt ON bt.id = r.bank_transaction_id
   LEFT JOIN bank_accounts b ON b.id = bt.bank_account_id
@@ -89,6 +92,7 @@ interface PendingRow {
   amount: string;
   received_on: string;
   bank_code: string | null;
+  management_type: string;
 }
 
 const toPending = (r: PendingRow): PendingReceipt => ({
@@ -98,6 +102,7 @@ const toPending = (r: PendingRow): PendingReceipt => ({
   amount: r.amount,
   receivedOn: r.received_on,
   bankCode: r.bank_code,
+  managementType: r.management_type,
 });
 
 /** Sum pound strings exactly, in pence. */
@@ -128,10 +133,25 @@ function cell(value: string): string {
   return /[",\r\n]/.test(safe) ? `"${safe.replace(/"/g, '""')}"` : safe;
 }
 
-export const VICO_HEADER = ['TID', 'Amount', 'Sort Code', 'Account Number'];
+export const VICO_HEADER = ['Sort code', 'Account number', 'Date', 'Amount', 'Standing order reference', 'MG/RG'];
 
-export function buildVicoCsv(rows: { tid: string; amount: string }[], settings: { sortCode: string; accountNumber: string }): string {
-  const lines = [VICO_HEADER, ...rows.map((r) => [r.tid, twoDp(r.amount), settings.sortCode, settings.accountNumber])];
+export interface VicoRow {
+  tid: string;
+  amount: string;
+  /** YYYY-MM-DD */
+  receivedOn: string;
+  managementType: string;
+}
+
+/** YYYY-MM-DD -> DD/MM/YYYY, without going through Date (no time-zone shifts). */
+const ukDate = (iso: string): string => iso.split('-').reverse().join('/');
+
+export function buildVicoCsv(rows: VicoRow[], settings: { sortCode: string; accountNumber: string }): string {
+  const sortCode = settings.sortCode.replace(/-/g, ''); // the sheet holds the six digits
+  const lines = [
+    VICO_HEADER,
+    ...rows.map((r) => [sortCode, settings.accountNumber, ukDate(r.receivedOn), twoDp(r.amount), r.tid, r.managementType]),
+  ];
   return lines.map((l) => l.map(cell).join(',')).join('\r\n') + '\r\n';
 }
 
@@ -174,7 +194,7 @@ export async function createExport(db: ActorDb, receiptIds?: string[]): Promise<
 
     const exportId = randomUUID();
     const createdAt = new Date();
-    const csv = buildVicoCsv(rows, settings);
+    const csv = buildVicoCsv(rows.map(toPending), settings);
     await c.query(
       `INSERT INTO external_refs (system, entity_type, entity_id, external_id, external_key2, last_synced_at, last_synced_hash)
        SELECT 'vico', 'receipt', r.id, $1 || ':' || r.id, $1, $2, r.hash
@@ -219,8 +239,9 @@ export async function listExports(pool: Pool): Promise<VicoExport[]> {
 /** The file of an earlier export, rebuilt from the receipts it marked (same rows, current sort code/account). */
 export async function getExportFile(pool: Pool, exportId: string): Promise<VicoFile> {
   const settings = requireSettings(await getVicoSettings(pool));
-  const { rows } = await pool.query<{ tid: string; amount: string; synced_at: Date }>(
-    `SELECT t.tid, r.amount::text AS amount, e.last_synced_at AS synced_at
+  const { rows } = await pool.query<VicoRow & { synced_at: Date }>(
+    `SELECT t.tid, r.amount::text AS amount, e.last_synced_at AS synced_at,
+            to_char(r.received_on, 'YYYY-MM-DD') AS "receivedOn", t.management_type::text AS "managementType"
        FROM external_refs e
        JOIN receipts r ON r.id = e.entity_id
        JOIN tenancies t ON t.id = r.tenancy_id

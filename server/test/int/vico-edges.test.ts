@@ -87,7 +87,7 @@ describe('Vico export edges', () => {
     expect(pending.rows.map((r) => r.receiptId)).toContain(id);
     const res = await send('post', '/api/vico/exports').send({ receiptIds: [id] });
     expect(res.status).toBe(200);
-    expect(res.text).toContain(`${tenancies[0]!.tid},12.30,11-22-33,44556677\r\n`);
+    expect(res.text).toMatch(new RegExp(`\\r\\n112233,44556677,01/09/2026,12\\.30,${tenancies[0]!.tid},(RG|MG|IRG)\\r\\n`));
   });
 
   it('a receipt reversed after export never comes back as pending, and its export history is kept', async () => {
@@ -110,7 +110,7 @@ describe('Vico export edges', () => {
     expect(res.status).toBe(200);
     expect((await send('put', '/api/vico/settings', 'admin').send({ sortCode: '99-88-77', accountNumber: '12121212' })).status).toBe(200);
     const again = await get(`/api/vico/exports/${res.headers['x-vico-export-id'] as string}/file`);
-    expect(again.text).toBe(res.text.replace('11-22-33,44556677', '99-88-77,12121212'));
+    expect(again.text).toBe(res.text.replace('112233,44556677', '998877,12121212'));
   });
 
   it('refuses more than 5000 receipt ids, and a non-JSON body', async () => {

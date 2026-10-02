@@ -125,7 +125,12 @@ describe('export', () => {
     expect(res.headers['content-type']).toContain('text/csv');
     expect(res.headers['content-disposition']).toMatch(/^attachment; filename="vico-\d{8}-\d{6}\.csv"$/);
     expect(res.headers['x-vico-rows']).toBe('1');
-    expect(res.text).toBe(`TID,Amount,Sort Code,Account Number\r\nT9001,${Number(one.amount).toFixed(2)},00-00-99,00009999\r\n`);
+    const [y, m, d] = one.receivedOn.split('-');
+    expect(one.managementType).toBe('RG'); // T9001's building has a branch suffix
+    expect(res.text).toBe(
+      'Sort code,Account number,Date,Amount,Standing order reference,MG/RG\r\n' +
+        `000099,00009999,${d}/${m}/${y},${Number(one.amount).toFixed(2)},T9001,RG\r\n`,
+    );
     firstFile = res.text;
     firstId = res.headers['x-vico-export-id'] as string;
 
@@ -163,7 +168,8 @@ describe('export', () => {
     expect(res.headers['x-vico-total']).toBe(p.totalAmount);
     const lines = res.text.trimEnd().split('\r\n');
     expect(lines).toHaveLength(p.total + 1);
-    for (const l of lines.slice(1)) expect(l).toMatch(/^T\d{3,6},\d+\.\d{2},00-00-99,00009999$/);
+    for (const l of lines.slice(1)) expect(l).toMatch(/^000099,00009999,\d{2}\/\d{2}\/\d{4},\d+\.\d{2},T\d{3,6},(RG|MG|IRG)$/);
+    expect(res.text).toContain(',IRG\r\n'); // T9003 and T9006 sit in IRG buildings
 
     expect((await pending()).total).toBe(0);
     const none = await post('/api/vico/exports').send({});

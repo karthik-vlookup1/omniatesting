@@ -14,6 +14,7 @@ export interface PendingReceipt {
   amount: string;
   receivedOn: string;
   bankCode: string | null;
+  managementType: string;
 }
 
 export interface VicoExport {

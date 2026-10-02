@@ -84,6 +84,7 @@ function VicoExportView({ isAdmin }: { isAdmin: boolean }) {
             <Table.Th>TID</Table.Th>
             <Table.Th>Tenant</Table.Th>
             <Table.Th>Bank</Table.Th>
+            <Table.Th>MG/RG</Table.Th>
             <Table.Th ta="right">Amount</Table.Th>
           </Table.Tr>
         </Table.Thead>
@@ -94,6 +95,7 @@ function VicoExportView({ isAdmin }: { isAdmin: boolean }) {
               <Table.Td>{r.tid}</Table.Td>
               <Table.Td>{r.tenantName ?? '—'}</Table.Td>
               <Table.Td>{r.bankCode ?? '—'}</Table.Td>
+              <Table.Td>{r.managementType}</Table.Td>
               <Table.Td ta="right" style={{ fontVariantNumeric: 'tabular-nums' }}>
                 {money(r.amount)}
               </Table.Td>

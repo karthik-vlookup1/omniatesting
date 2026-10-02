@@ -109,3 +109,8 @@ dead end a future session might otherwise walk into again.
 
 - Source: manual (recon-302)
 - receipts.bank_transaction_id can be NULL (manual/legacy); an inner join silently drops them from the Vico export
+
+## 2026-10-02: Real bank exports differ from synthetic layouts
+
+- Source: manual (ISSUE-0003)
+- Accounts procedure showed Apollo HSBC as one signed Amount with 02-Oct-26 dates; profiles now accept either amount layout and any month-name date

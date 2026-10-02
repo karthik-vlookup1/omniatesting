@@ -435,3 +435,13 @@
 {"ts":"2026-10-02T13:24:05.277Z","type":"issue.start","id":"ISSUE-0001","attempt":1}
 {"ts":"2026-10-02T13:25:59.268Z","type":"issue.verify","id":"ISSUE-0001","allPassed":true,"commands":[{"cmd":"npm run test:unit -- veco","exitCode":0,"passed":true},{"cmd":"npm run test:int -- veco","exitCode":0,"passed":true}],"diffHash":"31e6671e5411d75ffd50a2cc8f8744c69ab41a04","journeyOk":null,"debugLogBlank":true}
 {"ts":"2026-10-02T13:25:59.268Z","type":"issue.resolved-pending-review","id":"ISSUE-0001"}
+{"ts":"2026-10-02T13:26:20.549Z","type":"issue.create","id":"ISSUE-0002","source":"manual"}
+{"ts":"2026-10-02T13:26:20.682Z","type":"issue.triage","id":"ISSUE-0002","skill":"issue-solve"}
+{"ts":"2026-10-02T13:26:20.803Z","type":"issue.start","id":"ISSUE-0002","attempt":1}
+{"ts":"2026-10-02T13:28:28.110Z","type":"issue.verify","id":"ISSUE-0002","allPassed":true,"commands":[{"cmd":"npm run test:unit -- vico","exitCode":0,"passed":true},{"cmd":"npm run test:int -- vico","exitCode":0,"passed":true}],"diffHash":"0e09cad4c4f892e2893d3fdbe431e543421c4e30","journeyOk":null,"debugLogBlank":true}
+{"ts":"2026-10-02T13:28:28.111Z","type":"issue.resolved-pending-review","id":"ISSUE-0002"}
+{"ts":"2026-10-02T13:30:54.056Z","type":"issue.create","id":"ISSUE-0003","source":"manual"}
+{"ts":"2026-10-02T13:30:54.166Z","type":"issue.triage","id":"ISSUE-0003","skill":"issue-solve"}
+{"ts":"2026-10-02T13:30:54.269Z","type":"issue.start","id":"ISSUE-0003","attempt":1}
+{"ts":"2026-10-02T13:33:43.431Z","type":"issue.verify","id":"ISSUE-0003","allPassed":true,"commands":[{"cmd":"npm run test:unit -- ingest","exitCode":0,"passed":true},{"cmd":"npm run test:int -- ingest","exitCode":0,"passed":true}],"diffHash":"48085c806d65e073898b41afd0d63c6be1bef164","journeyOk":null,"debugLogBlank":true}
+{"ts":"2026-10-02T13:33:43.431Z","type":"issue.resolved-pending-review","id":"ISSUE-0003"}

@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { buildVicoCsv, normaliseSortCode, sumPounds } from '../../src/services/vico/vico.service.js';
 
+const BANK = { sortCode: '00-00-99', accountNumber: '00009999' };
+
 describe('Vico file helpers', () => {
   it('sums pound strings exactly', () => {
     expect(sumPounds([])).toBe('0.00');
@@ -15,19 +17,23 @@ describe('Vico file helpers', () => {
     expect(normaliseSortCode('12-34-56')).toBe('12-34-56');
   });
 
-  it('writes CRLF rows with two-decimal amounts and the constant bank details', () => {
+  it('writes the accounts team layout: sort code digits, account, UK date, 2dp amount, TID, MG/RG', () => {
     const csv = buildVicoCsv(
       [
-        { tid: 'T1234', amount: '650' },
-        { tid: 'T42', amount: '346.1' },
+        { tid: 'T1234', amount: '650', receivedOn: '2026-09-30', managementType: 'RG' },
+        { tid: 'T42', amount: '346.1', receivedOn: '2026-10-01', managementType: 'IRG' },
       ],
-      { sortCode: '00-00-99', accountNumber: '00009999' },
+      BANK,
     );
-    expect(csv).toBe('TID,Amount,Sort Code,Account Number\r\nT1234,650.00,00-00-99,00009999\r\nT42,346.10,00-00-99,00009999\r\n');
+    expect(csv).toBe(
+      'Sort code,Account number,Date,Amount,Standing order reference,MG/RG\r\n' +
+        '000099,00009999,30/09/2026,650.00,T1234,RG\r\n' +
+        '000099,00009999,01/10/2026,346.10,T42,IRG\r\n',
+    );
   });
 
   it('never lets a cell be read as a spreadsheet formula', () => {
-    const csv = buildVicoCsv([{ tid: '=HYPERLINK("x")', amount: '1' }], { sortCode: '00-00-99', accountNumber: '00009999' });
-    expect(csv.split('\r\n')[1]).toBe(`"'=HYPERLINK(""x"")",1.00,00-00-99,00009999`);
+    const csv = buildVicoCsv([{ tid: '=HYPERLINK("x")', amount: '1', receivedOn: '2026-09-30', managementType: 'MG' }], BANK);
+    expect(csv.split('\r\n')[1]).toBe(`000099,00009999,30/09/2026,1.00,"'=HYPERLINK(""x"")",MG`);
   });
 });
