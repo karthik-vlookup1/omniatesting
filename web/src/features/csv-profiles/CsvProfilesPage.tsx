@@ -16,7 +16,8 @@ import {
 } from '@mantine/core';
 import { IconBuildingBank, IconPencil } from '@tabler/icons-react';
 import { useState } from 'react';
-import { hasRole, useCurrentUser } from '../auth/useAuth';
+import { can, useCurrentUser } from '../../data/auth';
+import { errorMessage } from '../../lib/api';
 import {
   CANONICAL_FIELDS,
   DATE_FORMATS,
@@ -26,7 +27,7 @@ import {
   type BankAccount,
   type CanonicalField,
   type ProfileInput,
-} from '../upload/api';
+} from './api';
 
 const FIELD_LABELS: Record<CanonicalField, string> = {
   txn_date: 'Date',
@@ -46,29 +47,36 @@ const FIELD_LABELS: Record<CanonicalField, string> = {
 
 /** How each bank's CSV is read. Editing saves a new version; the old one is kept. */
 export function CsvProfilesPage() {
-  const { data: user } = useCurrentUser();
+  const user = useCurrentUser();
   const banks = useBankAccounts();
   const install = useInstallDefaultBanks();
   const [editing, setEditing] = useState<BankAccount | null>(null);
-  const canEdit = hasRole(user?.role, 'accounts');
+  const canEdit = can(user, 'finance');
 
   return (
     <Stack>
       <Group justify="space-between">
         <Title order={2}>Bank CSV profiles</Title>
-        {hasRole(user?.role) && (
-          <Button variant="default" leftSection={<IconBuildingBank size={16} />} onClick={() => install.mutate()} loading={install.isPending}>
+        {can(user, 'settings') && (
+          <Button
+            variant="default"
+            leftSection={<IconBuildingBank size={16} />}
+            onClick={() => install.mutate()}
+            loading={install.isPending}
+          >
             Add default banks
           </Button>
         )}
       </Group>
       <Text c="dimmed" size="sm">
-        Columns are found by header name, never by position. When a bank renames a column, add the new name as another alias
-        — that saves a new profile version and no code changes are needed.
+        Columns are found by header name, never by position. When a bank renames a column, add the new name as another
+        alias — that saves a new profile version and no code changes are needed.
       </Text>
       {install.data && (
         <Alert color="green" role="status">
-          {install.data.created.length ? `Added: ${install.data.created.join(', ')}` : 'All default banks already exist.'}
+          {install.data.created.length
+            ? `Added: ${install.data.created.join(', ')}`
+            : 'All default banks already exist.'}
         </Alert>
       )}
       <Table striped aria-label="Bank accounts">
@@ -91,8 +99,12 @@ export function CsvProfilesPage() {
                   {b.accountName}
                 </Text>
               </Table.Td>
-              <Table.Td>{b.profile ? <Badge variant="light">v{b.profile.version}</Badge> : <Badge color="gray">none</Badge>}</Table.Td>
-              <Table.Td>{b.profile?.amountMode === 'signed' ? 'one signed column' : b.profile ? 'paid in / out' : '—'}</Table.Td>
+              <Table.Td>
+                {b.profile ? <Badge variant="light">v{b.profile.version}</Badge> : <Badge color="gray">none</Badge>}
+              </Table.Td>
+              <Table.Td>
+                {b.profile?.amountMode === 'signed' ? 'one signed column' : b.profile ? 'paid in / out' : '—'}
+              </Table.Td>
               <Table.Td>{b.profile?.dateFormat ?? '—'}</Table.Td>
               <Table.Td>
                 <Text size="xs">
@@ -105,7 +117,12 @@ export function CsvProfilesPage() {
               </Table.Td>
               <Table.Td>
                 {canEdit && (
-                  <Button size="xs" variant="subtle" leftSection={<IconPencil size={14} />} onClick={() => setEditing(b)}>
+                  <Button
+                    size="xs"
+                    variant="subtle"
+                    leftSection={<IconPencil size={14} />}
+                    onClick={() => setEditing(b)}
+                  >
                     Edit
                   </Button>
                 )}
@@ -188,11 +205,22 @@ function ProfileEditor({ bank, onClose }: { bank: BankAccount; onClose: () => vo
               { value: 'split_in_out', label: 'Separate paid in / paid out' },
             ]}
           />
-          <Select label="Date format" value={dateFormat} onChange={(v) => setDateFormat(v ?? 'DD/MM/YYYY')} data={[...DATE_FORMATS]} />
-          <NumberInput label="Lines before the header" min={0} max={50} value={skipRows} onChange={(v) => setSkipRows(Number(v) || 0)} />
+          <Select
+            label="Date format"
+            value={dateFormat}
+            onChange={(v) => setDateFormat(v ?? 'DD/MM/YYYY')}
+            data={[...DATE_FORMATS]}
+          />
+          <NumberInput
+            label="Lines before the header"
+            min={0}
+            max={50}
+            value={skipRows}
+            onChange={(v) => setSkipRows(Number(v) || 0)}
+          />
         </Group>
         <Textarea label="What changed (optional)" value={notes} onChange={(e) => setNotes(e.currentTarget.value)} />
-        {save.isError && <Alert color="red">{save.error.message}</Alert>}
+        {save.isError && <Alert color="red">{errorMessage(save.error)}</Alert>}
         <Group justify="end">
           <Button variant="default" onClick={onClose}>
             Cancel

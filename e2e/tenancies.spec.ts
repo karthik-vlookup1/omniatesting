@@ -36,42 +36,51 @@ async function signIn(page: Page, email: string) {
   await expect(page).toHaveURL(/\/$/);
 }
 
+const table = (page: Page) => page.getByRole('table', { name: 'Tenancies' });
+
 test('staff search a tenancy by TID and see only the masked NI', async ({ page }) => {
   await signIn(page, STAFF);
   await page.getByRole('link', { name: 'Tenancies' }).click();
   await expect(page.getByRole('heading', { name: 'Tenancies' })).toBeVisible();
-  await expect(page.getByRole('table', { name: 'Tenancies' }).getByRole('row')).toHaveCount(7); // header + 6
+  await expect(table(page).getByRole('row')).toHaveCount(7); // header + 6
 
   await page.getByLabel('Search').fill('t9006');
-  const rows = page.getByRole('table', { name: 'Tenancies' }).getByRole('row');
+  const rows = table(page).getByRole('row');
   await expect(rows).toHaveCount(2);
   await expect(rows.nth(1)).toContainText('Zara Q Sample');
   await expect(rows.nth(1)).toContainText('•••••56D');
 
   await rows.nth(1).click();
-  await expect(page.getByTestId('tenancy-ni')).toHaveText('•••••56D');
-  await expect(page.getByRole('button', { name: 'Sync from Veco now' })).toHaveCount(0);
+  const drawer = page.getByRole('dialog');
+  await expect(drawer.getByLabel('NI number, masked: •••••56D')).toBeVisible();
+  await expect(drawer.getByRole('button', { name: 'Show full NI' })).toHaveCount(0);
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('button', { name: 'Sync from Veco' })).toHaveCount(0);
 });
 
 test('staff can search by full NI number', async ({ page }) => {
   await signIn(page, STAFF);
   await page.goto('/tenancies');
   await page.getByLabel('Search').fill('CE 12 34 56 D');
-  const rows = page.getByRole('table', { name: 'Tenancies' }).getByRole('row');
+  const rows = table(page).getByRole('row');
   await expect(rows).toHaveCount(2);
   await expect(rows.nth(1)).toContainText('T9006');
 });
 
-test('admin sees the full NI and gets a clear message when Veco is not configured', async ({ page }) => {
+test('admin can reveal the full NI and gets a clear message when Veco is not configured', async ({ page }) => {
   await signIn(page, ADMIN);
   await page.goto('/tenancies');
   await page.getByLabel('Search').fill('Zara');
-  const rows = page.getByRole('table', { name: 'Tenancies' }).getByRole('row');
+  const rows = table(page).getByRole('row');
   await expect(rows).toHaveCount(2); // wait for the debounced search to apply
   await rows.nth(1).click();
-  await expect(page.getByTestId('tenancy-ni')).toHaveText('CE123456D');
+  const drawer = page.getByRole('dialog');
+  await drawer.getByRole('button', { name: 'Show full NI' }).click();
+  await expect(drawer.getByLabel('NI number CE123456D')).toHaveText('CE123456D');
   await page.keyboard.press('Escape');
 
-  await page.getByRole('button', { name: 'Preview sync' }).click();
-  await expect(page.getByRole('alert')).toContainText('Veco sync is not configured');
+  await page.getByRole('button', { name: 'Sync from Veco' }).click();
+  const modal = page.getByRole('dialog', { name: 'Sync from Veco' });
+  await modal.getByRole('button', { name: 'Dry run' }).click();
+  await expect(modal).toContainText('Veco sync is not set up');
 });

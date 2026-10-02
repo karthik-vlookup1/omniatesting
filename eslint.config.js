@@ -38,6 +38,8 @@ export default tseslint.config(
     rules: {
       ...reactHooks.configs.recommended.rules,
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+      // Personal data must never reach the browser console.
+      'no-console': 'error',
     },
   },
   {

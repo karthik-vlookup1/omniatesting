@@ -1,6 +1,6 @@
 /** Xero API client: status, settings, pending invoices, staging, sending and the outbox. */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { apiFetch } from '../auth/api';
+import { apiRequest } from '../../lib/api';
 
 export interface XeroStatus {
   configured: boolean;
@@ -71,14 +71,14 @@ const KEY = ['xero'] as const;
 export function useXeroStatus() {
   return useQuery({
     queryKey: [...KEY, 'status'],
-    queryFn: () => apiFetch<XeroStatus>('/api/xero/status'),
+    queryFn: () => apiRequest<XeroStatus>('/xero/status'),
   });
 }
 
 export function useXeroSettings() {
   return useQuery({
     queryKey: [...KEY, 'settings'],
-    queryFn: () => apiFetch<{ settings: XeroSettings }>('/api/xero/settings').then((r) => r.settings),
+    queryFn: () => apiRequest<{ settings: XeroSettings }>('/xero/settings').then((r) => r.settings),
   });
 }
 
@@ -86,9 +86,9 @@ export function useSaveXeroSettings() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (s: XeroSettings) =>
-      apiFetch<{ settings: XeroSettings }>('/api/xero/settings', {
+      apiRequest<{ settings: XeroSettings }>('/xero/settings', {
         method: 'PUT',
-        body: JSON.stringify(s),
+        body: s,
       }).then((r) => r.settings),
     onSuccess: (s) => {
       qc.setQueryData([...KEY, 'settings'], s);
@@ -100,7 +100,7 @@ export function useSaveXeroSettings() {
 export function useXeroPending() {
   return useQuery({
     queryKey: [...KEY, 'pending'],
-    queryFn: () => apiFetch<{ invoices: InvoiceDraft[]; receipts: number; total: string }>('/api/xero/pending'),
+    queryFn: () => apiRequest<{ invoices: InvoiceDraft[]; receipts: number; total: string }>('/xero/pending'),
   });
 }
 
@@ -108,9 +108,9 @@ export function useXeroOutbox(status: 'open' | 'done' | 'dead') {
   return useQuery({
     queryKey: [...KEY, 'outbox', status],
     queryFn: () =>
-      apiFetch<{ items: OutboxItem[]; summary: Record<OutboxStatus, number>; ready: number }>(
-        `/api/xero/outbox?status=${status}`,
-      ),
+      apiRequest<{ items: OutboxItem[]; summary: Record<OutboxStatus, number>; ready: number }>('/xero/outbox', {
+        query: { status },
+      }),
   });
 }
 
@@ -118,9 +118,9 @@ export function useStageInvoices() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: () =>
-      apiFetch<{ batches: OutboxItem[] }>('/api/xero/stage', {
+      apiRequest<{ batches: OutboxItem[] }>('/xero/stage', {
         method: 'POST',
-        body: '{}',
+        body: {},
       }).then((r) => r.batches),
     onSettled: () => void qc.invalidateQueries({ queryKey: KEY }),
   });
@@ -130,9 +130,9 @@ export function useRunXero() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (body: { confirmLive: boolean }) =>
-      apiFetch<RunResult>('/api/xero/run', {
+      apiRequest<RunResult>('/xero/run', {
         method: 'POST',
-        body: JSON.stringify(body),
+        body,
       }),
     onSettled: () => void qc.invalidateQueries({ queryKey: KEY }),
   });
@@ -142,9 +142,9 @@ export function useRetryBatch() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: string) =>
-      apiFetch<{ item: OutboxItem }>(`/api/xero/outbox/${id}/retry`, {
+      apiRequest<{ item: OutboxItem }>(`/xero/outbox/${id}/retry`, {
         method: 'POST',
-        body: '{}',
+        body: {},
       }),
     onSettled: () => void qc.invalidateQueries({ queryKey: KEY }),
   });
@@ -154,7 +154,7 @@ export function useRefreshPropertyMap() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: () =>
-      apiFetch<{ summary: PropertyMapSummary }>('/api/xero/property-map/refresh', { method: 'POST', body: '{}' }).then(
+      apiRequest<{ summary: PropertyMapSummary }>('/xero/property-map/refresh', { method: 'POST', body: {} }).then(
         (r) => r.summary,
       ),
     onSettled: () => void qc.invalidateQueries({ queryKey: [...KEY, 'pending'] }),

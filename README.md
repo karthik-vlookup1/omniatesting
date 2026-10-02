@@ -19,13 +19,16 @@ See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for layers and data flow, and
 ## Getting started
 
 ```sh
-docker compose up -d --wait db     # PostgreSQL 16 on localhost:5432
+docker compose up -d --wait db     # PostgreSQL 16 on localhost:5432 (set OMNIA_DB_PORT=5433 if 5432 is taken)
 npm ci
 cp .env.example .env               # then fill in real keys (see below)
 npm run db:migrate                 # applies db/migrations/*.sql in order
 npm run user:create -- --email admin@example.com --name "Admin" --role admin
 npm run dev:server                 # API on http://localhost:3001
+npm run dev:web                    # UI on http://localhost:5173 (proxies /api to the API)
 ```
+
+`npm run dev:preview` runs the UI alone with sample data and no API, for design work.
 
 ### Environment
 
@@ -39,6 +42,9 @@ npm run dev:server                 # API on http://localhost:3001
 | `PORT` | API port. Default `3001`. |
 | `LOG_LEVEL` | pino level. Default `info`. |
 | `COOKIE_SECURE` | `true` behind HTTPS (default in production). |
+| `VECO_MCP_URL` | Veco read-only source for the tenancy sync and the Xero property map. Unset: those features say "not configured". |
+| `XERO_BRIDGE_URL`, `XERO_BRIDGE_RECON_KEY` | Sam's Xero bridge and its API key. Unset: Xero posting says "not configured". |
+| `XERO_TARGET_ENV` | `demo` only when the bridge points at the Demo Company; anything else is treated as live and needs typed confirmation. |
 
 Generate keys with `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"`.
 Keys come from the environment only; never commit them.
@@ -53,7 +59,9 @@ Keys come from the environment only; never commit them.
 | `npm run db:test` | Fresh test DB, all migrations, every `db/tests/*.sql`; fails unless each prints its `ALL ... PASSED` line |
 | `npm run test:unit -- <filter>` | Vitest unit tests |
 | `npm run test:int -- <filter>` | Vitest + supertest against a real test database |
-| `npm run test:e2e -- <filter>` | Playwright |
+| `npm run test:web` | Vitest + Testing Library for the web UI (jsdom) |
+| `npm run test:e2e -- <filter>` | Playwright, against the real API and UI |
+| `npm run build:web` | Production build of the UI into `web/dist` |
 | `npm run user:create -- ...` | Create or reset an app user (prompts for the password) |
 
 ## Repository layout

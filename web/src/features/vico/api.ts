@@ -1,6 +1,6 @@
 /** Vico export API client: constants, pending receipts, export (file download) and history. */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { apiFetch, ApiError } from '../auth/api';
+import { ApiError, apiRequest, CSRF_HEADER, CSRF_HEADER_VALUE, type ApiErrorCode } from '../../lib/api';
 
 export interface VicoSettings {
   sortCode: string | null;
@@ -36,7 +36,7 @@ const KEY = ['vico'] as const;
 export function useVicoSettings() {
   return useQuery({
     queryKey: [...KEY, 'settings'],
-    queryFn: () => apiFetch<{ settings: VicoSettings }>('/api/vico/settings').then((r) => r.settings),
+    queryFn: () => apiRequest<{ settings: VicoSettings }>('/vico/settings').then((r) => r.settings),
   });
 }
 
@@ -44,9 +44,7 @@ export function useSaveVicoSettings() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (body: { sortCode: string; accountNumber: string }) =>
-      apiFetch<{ settings: VicoSettings }>('/api/vico/settings', { method: 'PUT', body: JSON.stringify(body) }).then(
-        (r) => r.settings,
-      ),
+      apiRequest<{ settings: VicoSettings }>('/vico/settings', { method: 'PUT', body }).then((r) => r.settings),
     onSuccess: (s) => qc.setQueryData([...KEY, 'settings'], s),
   });
 }
@@ -54,14 +52,14 @@ export function useSaveVicoSettings() {
 export function useVicoPending() {
   return useQuery({
     queryKey: [...KEY, 'pending'],
-    queryFn: () => apiFetch<{ rows: PendingReceipt[]; total: number; totalAmount: string }>('/api/vico/pending'),
+    queryFn: () => apiRequest<{ rows: PendingReceipt[]; total: number; totalAmount: string }>('/vico/pending'),
   });
 }
 
 export function useVicoExports() {
   return useQuery({
     queryKey: [...KEY, 'exports'],
-    queryFn: () => apiFetch<{ exports: VicoExport[] }>('/api/vico/exports').then((r) => r.exports),
+    queryFn: () => apiRequest<{ exports: VicoExport[] }>('/vico/exports').then((r) => r.exports),
   });
 }
 
@@ -70,11 +68,15 @@ async function download(path: string, init: RequestInit): Promise<Downloaded> {
   const res = await fetch(path, {
     ...init,
     credentials: 'same-origin',
-    headers: { 'X-Requested-With': 'omnia-recon', 'Content-Type': 'application/json', ...init.headers },
+    headers: { [CSRF_HEADER]: CSRF_HEADER_VALUE, 'Content-Type': 'application/json', ...init.headers },
   });
   if (!res.ok) {
     const body = (await res.json().catch(() => ({}))) as { error?: { code?: string; message?: string } };
-    throw new ApiError(res.status, body.error?.code ?? 'error', body.error?.message ?? 'Download failed');
+    throw new ApiError({
+      status: res.status,
+      code: (body.error?.code as ApiErrorCode | undefined) ?? (res.status >= 500 ? 'internal' : 'unknown'),
+      message: body.error?.message ?? 'Download failed',
+    });
   }
   const fileName = /filename="([^"]+)"/.exec(res.headers.get('Content-Disposition') ?? '')?.[1] ?? 'vico.csv';
   const url = URL.createObjectURL(await res.blob());

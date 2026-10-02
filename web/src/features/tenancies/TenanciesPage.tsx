@@ -1,191 +1,174 @@
-import {
-  Alert,
-  Badge,
-  Button,
-  Drawer,
-  Group,
-  List,
-  SegmentedControl,
-  Stack,
-  Table,
-  Text,
-  TextInput,
-  Title,
-} from '@mantine/core';
-import { useDebouncedValue } from '@mantine/hooks';
-import { IconRefresh, IconSearch } from '@tabler/icons-react';
+import { Badge, Button, Group, SegmentedControl, Stack, Text } from '@mantine/core';
+import { useDocumentTitle } from '@mantine/hooks';
+import { IconRefresh } from '@tabler/icons-react';
 import { useState } from 'react';
-import { hasRole, useCurrentUser } from '../auth/useAuth';
-import { useTenancy, useTenancySearch, useVecoSync, type StatusFilter, type SyncSummary } from './api';
+import { useSearchParams } from 'react-router-dom';
+import { DataTable, EmptyState, FilterBar, MaskedValue, Money, PageHeader, SearchInput, type DataTableColumn } from '../../components';
+import { useCurrentUser } from '../../data/auth';
+import { TENANCY_QUERY_MAX, TENANCY_SEARCH_LIMIT, useTenancySearch, type TenancyStatusFilter, type TenancySummary } from '../../data/tenancies';
+import { formatDate, humanize } from '../../lib/format';
+import { TenancyDrawer } from './TenancyDrawer';
+import { TenancyStatusBadge } from './TenancyStatusBadge';
+import { VecoSyncModal } from './VecoSyncModal';
 
-const FREQUENCY: Record<string, string> = {
-  weekly: 'weekly',
-  fortnightly: 'fortnightly',
-  four_weekly: '4-weekly',
-  monthly: 'monthly',
-  quarterly: 'quarterly',
-};
+const STATUSES: { value: TenancyStatusFilter; label: string }[] = [
+  { value: 'active', label: 'Active' },
+  { value: 'ended', label: 'Ended' },
+  { value: 'all', label: 'All' },
+];
 
-function rentText(rent: { amount: string; frequency: string } | null): string {
-  return rent ? `£${rent.amount} ${FREQUENCY[rent.frequency] ?? rent.frequency}` : '—';
-}
+const columns: DataTableColumn<TenancySummary>[] = [
+  {
+    key: 'tid',
+    header: 'TID',
+    width: 90,
+    cell: (t) => (
+      <Text span fz="sm" fw={600} ff="monospace">
+        {t.tid}
+      </Text>
+    ),
+  },
+  { key: 'tenant', header: 'Tenant', cell: (t) => t.tenantName ?? '—', truncate: { tooltip: (t) => t.tenantName }, width: 200 },
+  { key: 'ni', header: 'NI', width: 120, cell: (t) => <MaskedValue kind="ni" value={t.niMasked} /> },
+  {
+    key: 'property',
+    header: 'Property',
+    cell: (t) => (
+      <Stack gap={0} miw={0} maw={320}>
+        <Text fz="sm" truncate title={`${t.address}, ${t.postcode}`}>
+          {t.address}
+        </Text>
+        <Text fz="xs" c="dimmed" truncate>
+          {t.propertyRef}
+          {t.unitRef ? ` / ${t.unitRef}` : ''} · {t.postcode}
+        </Text>
+      </Stack>
+    ),
+  },
+  { key: 'branch', header: 'Branch', width: 80, cell: (t) => t.branchCode },
+  {
+    key: 'type',
+    header: 'Type',
+    width: 70,
+    cell: (t) => (
+      <Badge variant="outline" color="gray" size="sm">
+        {t.managementType}
+      </Badge>
+    ),
+  },
+  {
+    key: 'rent',
+    header: 'Rent',
+    align: 'right',
+    cell: (t) =>
+      t.rent ? (
+        <Group gap={4} justify="flex-end" wrap="nowrap">
+          <Money value={t.rent.amount} />
+          <Text span fz="xs" c="dimmed">
+            {humanize(t.rent.frequency).toLowerCase()}
+          </Text>
+        </Group>
+      ) : (
+        '—'
+      ),
+  },
+  {
+    key: 'dates',
+    header: 'Start – end',
+    cell: (t) => (
+      <Text span fz="sm" className="tabular">
+        {formatDate(t.startDate)} – {t.endDate ? formatDate(t.endDate) : 'now'}
+      </Text>
+    ),
+  },
+  { key: 'status', header: 'Status', cell: (t) => <TenancyStatusBadge status={t.status} /> },
+];
 
-/** Tenancies synced from Veco: search by TID, NI or name; admins can pull from Veco now. */
+/** FRONTEND_REFERENCE.md §5.3, §6.3: search tenancies by TID, name or full NI; admins sync from Veco. */
 export function TenanciesPage() {
-  const { data: user } = useCurrentUser();
-  const [q, setQ] = useState('');
-  const [status, setStatus] = useState<StatusFilter>('active');
-  const [debounced] = useDebouncedValue(q, 250);
-  const [selected, setSelected] = useState<string | null>(null);
-  const search = useTenancySearch(debounced, status);
+  useDocumentTitle('Tenancies · Omnia Recon');
+  const user = useCurrentUser();
+  const [params, setParams] = useSearchParams();
+  const q = (params.get('q') ?? '').slice(0, TENANCY_QUERY_MAX);
+  const status = (STATUSES.find((s) => s.value === params.get('status'))?.value ?? 'active') as TenancyStatusFilter;
+  const [open, setOpen] = useState<string | null>(null);
+  const [syncing, setSyncing] = useState(false);
+  const results = useTenancySearch(q, status);
+
+  const setFilter = (key: 'q' | 'status', value: string, fallback: string) =>
+    setParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        if (value === fallback) next.delete(key);
+        else next.set(key, value);
+        return next;
+      },
+      { replace: true },
+    );
+
+  const capped = (results.data?.length ?? 0) >= TENANCY_SEARCH_LIMIT;
 
   return (
-    <Stack>
-      <Group justify="space-between">
-        <Title order={2}>Tenancies</Title>
-        {hasRole(user?.role) && <SyncPanel />}
-      </Group>
-      <Group align="end">
-        <TextInput
+    <>
+      <PageHeader
+        title="Tenancies"
+        description="Tenancies come from Veco. Search by TID, tenant name or a full NI number; NI numbers are only ever shown masked unless your role allows otherwise."
+        actions={
+          // POST /tenancies/sync is requireRole() on the server: admin only.
+          user.role === 'admin' && (
+            <Button variant="default" leftSection={<IconRefresh size={16} aria-hidden />} onClick={() => setSyncing(true)}>
+              Sync from Veco
+            </Button>
+          )
+        }
+      />
+
+      <FilterBar active={q !== '' || status !== 'active'} onReset={() => setParams({}, { replace: true })}>
+        <SearchInput
           label="Search"
-          placeholder="TID, full NI number, name, room or postcode"
-          leftSection={<IconSearch size={16} />}
+          placeholder="TID, name or full NI number"
           value={q}
-          onChange={(e) => setQ(e.currentTarget.value)}
-          w={360}
+          onSearch={(v) => setFilter('q', v, '')}
+          w={300}
+          maxLength={TENANCY_QUERY_MAX}
+          autoComplete="off"
         />
-        <SegmentedControl
-          aria-label="Status"
-          value={status}
-          onChange={(v) => setStatus(v as StatusFilter)}
-          data={[
-            { value: 'active', label: 'Active' },
-            { value: 'ended', label: 'Ended' },
-            { value: 'all', label: 'All' },
-          ]}
-        />
-      </Group>
-      {search.isError && <Alert color="red">{search.error.message}</Alert>}
-      <Table striped highlightOnHover aria-label="Tenancies">
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th>TID</Table.Th>
-            <Table.Th>Tenant</Table.Th>
-            <Table.Th>NI</Table.Th>
-            <Table.Th>Room</Table.Th>
-            <Table.Th>Branch</Table.Th>
-            <Table.Th>Type</Table.Th>
-            <Table.Th>Rent</Table.Th>
-            <Table.Th>Status</Table.Th>
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>
-          {search.data?.map((t) => (
-            <Table.Tr key={t.tid} onClick={() => setSelected(t.tid)} style={{ cursor: 'pointer' }}>
-              <Table.Td>{t.tid}</Table.Td>
-              <Table.Td>{t.tenantName ?? '—'}</Table.Td>
-              <Table.Td>{t.niMasked ?? '—'}</Table.Td>
-              <Table.Td>{t.unitRef ?? t.propertyRef}</Table.Td>
-              <Table.Td>{t.branchCode}</Table.Td>
-              <Table.Td>{t.managementType}</Table.Td>
-              <Table.Td>{rentText(t.rent)}</Table.Td>
-              <Table.Td>
-                <Badge variant="light" color={t.status === 'active' ? 'green' : 'gray'}>
-                  {t.status}
-                </Badge>
-              </Table.Td>
-            </Table.Tr>
-          ))}
-        </Table.Tbody>
-      </Table>
-      {search.data?.length === 0 && <Text c="dimmed">No tenancies match.</Text>}
-      {search.data?.length === 50 && <Text c="dimmed">Showing the first 50 — narrow the search.</Text>}
-      <TenancyDrawer tid={selected} onClose={() => setSelected(null)} />
-    </Stack>
-  );
-}
-
-function TenancyDrawer({ tid, onClose }: { tid: string | null; onClose: () => void }) {
-  const { data: t, isError, error } = useTenancy(tid);
-  return (
-    <Drawer opened={tid !== null} onClose={onClose} position="right" title={tid ? `Tenancy ${tid}` : ''}>
-      {isError && <Alert color="red">{error.message}</Alert>}
-      {t && (
-        <Stack gap="xs">
-          <Text>
-            <b>Tenant:</b> {t.tenantName ?? '—'}
+        <Stack gap={4}>
+          <Text fz="sm" fw={500} id="tenancy-status-label">
+            Status
           </Text>
-          <Text>
-            <b>NI:</b> <span data-testid="tenancy-ni">{t.ni ?? t.niMasked ?? '—'}</span>
-          </Text>
-          <Text>
-            <b>Room:</b> {t.unitRef ?? '—'} ({t.propertyRef}), {t.address}, {t.postcode}
-          </Text>
-          <Text>
-            <b>Branch:</b> {t.branchCode} · <b>Type:</b> {t.managementType}
-          </Text>
-          <Text>
-            <b>Rent:</b> {rentText(t.rent)}
-          </Text>
-          <Text>
-            <b>Dates:</b> from {t.startDate}
-            {t.endDate ? ` to ${t.endDate}` : ''} ({t.status})
-          </Text>
-          <Text size="xs" c="dimmed">
-            Source: Veco (read-only). Change tenancy details in Veco; they arrive with the next sync.
-          </Text>
+          <SegmentedControl aria-labelledby="tenancy-status-label" value={status} onChange={(v) => setFilter('status', v, 'active')} data={STATUSES} />
         </Stack>
-      )}
-    </Drawer>
-  );
-}
+      </FilterBar>
 
-function SyncPanel() {
-  const sync = useVecoSync();
-  const [summary, setSummary] = useState<SyncSummary | null>(null);
-  const run = (dryRun: boolean) => sync.mutate({ dryRun }, { onSuccess: setSummary });
-  return (
-    <Stack gap="xs" align="end">
-      <Group gap="xs">
-        <Button variant="default" size="xs" onClick={() => run(true)} loading={sync.isPending}>
-          Preview sync
-        </Button>
-        <Button size="xs" leftSection={<IconRefresh size={16} />} onClick={() => run(false)} loading={sync.isPending}>
-          Sync from Veco now
-        </Button>
-      </Group>
-      {sync.isError && (
-        <Alert color="red" maw={420}>
-          {sync.error.message}
-        </Alert>
+      <DataTable
+        caption="Tenancies"
+        data={results.data}
+        loading={results.isPending}
+        error={results.error}
+        onRetry={() => void results.refetch()}
+        columns={columns}
+        getRowId={(t) => t.tid}
+        onRowClick={(t) => setOpen(t.tid)}
+        rowLabel={(t) => `Open tenancy ${t.tid}${t.tenantName ? `, ${t.tenantName}` : ''}`}
+        selectedRowId={open}
+        minWidth={1100}
+        empty={
+          q ? (
+            <EmptyState size="sm" title="No tenancies found" description={`Nothing matches “${q}”. Check the TID or spelling, or search by full NI number.`} />
+          ) : (
+            <EmptyState size="sm" title="No tenancies yet" description="Tenancies appear here after the first Veco sync." />
+          )
+        }
+      />
+      {capped && (
+        <Text fz="xs" c="dimmed" mt="xs">
+          Showing the first {TENANCY_SEARCH_LIMIT} results. Narrow the search to find a specific tenancy.
+        </Text>
       )}
-      {summary && !sync.isPending && <SyncResult s={summary} />}
-    </Stack>
-  );
-}
 
-function SyncResult({ s }: { s: SyncSummary }) {
-  return (
-    <Alert color={s.dryRun ? 'blue' : 'green'} title={s.dryRun ? 'Preview (nothing saved)' : 'Sync complete'} maw={420}>
-      <List size="sm" spacing={2}>
-        <List.Item>
-          {s.fetched} from Veco: {s.tenancies.inserted} new, {s.tenancies.updated} updated, {s.tenancies.reactivated}{' '}
-          reactivated, {s.tenancies.ended} ended
-        </List.Item>
-        <List.Item>{s.rentChanges} rent changes</List.Item>
-        <List.Item>
-          Type: {s.managementType.RG} RG, {s.managementType.MG} MG, {s.managementType.IRG} IRG (
-          {s.managementType.fromOwnerFlag} with no Xero property suffix, typed from the Veco owner)
-        </List.Item>
-        <List.Item>
-          NI: {s.ni.missing} missing, {s.ni.invalid} invalid, {s.ni.conflicts} shared with another tenant
-        </List.Item>
-        {s.rejected.length > 0 && (
-          <List.Item>
-            {s.rejected.length} rows rejected: {s.rejected.slice(0, 5).map((r) => `${r.tid ?? '?'} (${r.reason})`).join('; ')}
-          </List.Item>
-        )}
-      </List>
-    </Alert>
+      <TenancyDrawer tid={open} onClose={() => setOpen(null)} />
+      <VecoSyncModal opened={syncing} onClose={() => setSyncing(false)} />
+    </>
   );
 }

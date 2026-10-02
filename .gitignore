@@ -12,3 +12,5 @@ fixtures/private/
 
 # hx harness source drop (installed into .claude/ via kit install; not project code)
 hx-harness-latest-v0.6.0*/
+*.tsbuildinfo
+.vite/

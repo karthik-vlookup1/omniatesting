@@ -7,7 +7,17 @@ const PASSWORD = 'e2e-password-not-real';
 // Seeds the user through the real create-user job against the e2e database the API uses.
 // Runs node directly (no shell) so arguments with spaces survive on Windows.
 test.beforeAll(() => {
-  const args = ['--import', 'tsx', 'server/src/jobs/create-user.ts', '--email', EMAIL, '--name', 'E2E Admin', '--role', 'admin'];
+  const args = [
+    '--import',
+    'tsx',
+    'server/src/jobs/create-user.ts',
+    '--email',
+    EMAIL,
+    '--name',
+    'E2E Admin',
+    '--role',
+    'admin',
+  ];
   const res = spawnSync(process.execPath, args, {
     encoding: 'utf8',
     env: {
@@ -35,7 +45,7 @@ test('wrong password shows an error and stays on login', async ({ page }) => {
   await page.getByLabel('E-mail').fill(EMAIL);
   await page.getByRole('textbox', { name: 'Password' }).fill('definitely-wrong-password');
   await page.getByRole('button', { name: 'Sign in' }).click();
-  await expect(page.getByRole('alert')).toContainText('E-mail or password is incorrect');
+  await expect(page.getByRole('alert')).toContainText('e-mail or password is incorrect');
   await expect(page).toHaveURL(/\/login$/);
 });
 
@@ -46,13 +56,15 @@ test('sign in shows the app shell, survives reload, and sign out returns to logi
   await page.getByRole('button', { name: 'Sign in' }).click();
 
   await expect(page).toHaveURL(/\/$/);
-  await expect(page.getByRole('heading', { name: 'Welcome, E2E Admin' })).toBeVisible();
-  await expect(page.getByText('admin', { exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Home' })).toBeVisible();
+  await expect(page.getByText('Welcome back, E2E.')).toBeVisible();
+  await expect(page.getByTestId('current-user')).toHaveText('E2E Admin');
 
   await page.reload();
-  await expect(page.getByRole('heading', { name: 'Welcome, E2E Admin' })).toBeVisible();
+  await expect(page.getByTestId('current-user')).toHaveText('E2E Admin');
 
-  await page.getByRole('button', { name: 'Sign out' }).click();
+  await page.getByRole('button', { name: 'Account menu for E2E Admin' }).click();
+  await page.getByRole('menuitem', { name: 'Sign out' }).click();
   await expect(page).toHaveURL(/\/login$/);
   await page.goto('/');
   await expect(page).toHaveURL(/\/login$/);

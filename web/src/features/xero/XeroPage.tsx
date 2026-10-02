@@ -16,8 +16,9 @@ import {
 } from '@mantine/core';
 import { IconRefresh, IconSend } from '@tabler/icons-react';
 import { useState } from 'react';
-import { hasRole, useCurrentUser } from '../auth/useAuth';
-import { useBankAccounts } from '../upload/api';
+import { can, useCurrentUser } from '../../data/auth';
+import { errorMessage } from '../../lib/api';
+import { useBankAccounts } from '../../data/imports';
 import {
   useRefreshPropertyMap,
   useRetryBatch,
@@ -51,8 +52,8 @@ const STATUS_COLOR: Record<OutboxStatus, string> = {
 
 /** Posts confirmed receipts to Xero: one invoice per bank per bank date, through the Xero bridge. */
 export function XeroPage() {
-  const { data: user } = useCurrentUser();
-  if (!hasRole(user?.role, 'accounts')) {
+  const user = useCurrentUser();
+  if (!can(user, 'finance')) {
     return (
       <Stack>
         <Title order={2}>Xero</Title>
@@ -60,7 +61,7 @@ export function XeroPage() {
       </Stack>
     );
   }
-  return <XeroView isAdmin={hasRole(user?.role)} />;
+  return <XeroView isAdmin={can(user, 'settings')} />;
 }
 
 function XeroView({ isAdmin }: { isAdmin: boolean }) {
@@ -123,7 +124,7 @@ function PendingInvoices() {
       </Text>
       {stage.isError && (
         <Alert color="red" role="alert">
-          {stage.error.message}
+          {errorMessage(stage.error)}
         </Alert>
       )}
       {stage.isSuccess && (
@@ -235,7 +236,7 @@ function Outbox({ status }: { status: XeroStatus | undefined }) {
       )}
       {(runXero.error ?? retry.error) && (
         <Alert color="red" role="alert">
-          {(runXero.error ?? retry.error)!.message}
+          {errorMessage(runXero.error ?? retry.error)}
         </Alert>
       )}
       <SegmentedControl
@@ -394,7 +395,7 @@ function SettingsForm({ initial, bankCodes }: { initial: XeroSettings; bankCodes
       )}
       {(save.error ?? refresh.error) && (
         <Alert color="red" role="alert" mt="xs">
-          {(save.error ?? refresh.error)!.message}
+          {errorMessage(save.error ?? refresh.error)}
         </Alert>
       )}
     </Paper>

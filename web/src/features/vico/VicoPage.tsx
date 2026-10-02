@@ -1,7 +1,8 @@
 import { Alert, Button, Group, Modal, Paper, Stack, Table, Text, TextInput, Title } from '@mantine/core';
 import { IconDownload, IconFileExport } from '@tabler/icons-react';
 import { useState } from 'react';
-import { hasRole, useCurrentUser } from '../auth/useAuth';
+import { can, useCurrentUser } from '../../data/auth';
+import { errorMessage } from '../../lib/api';
 import {
   useCreateVicoExport,
   useDownloadVicoExport,
@@ -18,8 +19,8 @@ const ukDate = (iso: string) => iso.split('-').reverse().join('/');
 
 /** Confirmed receipts waiting for Vico, the one-click export file, and earlier exports. */
 export function VicoPage() {
-  const { data: user } = useCurrentUser();
-  if (!hasRole(user?.role, 'accounts')) {
+  const user = useCurrentUser();
+  if (!can(user, 'finance')) {
     return (
       <Stack>
         <Title order={2}>Vico export</Title>
@@ -27,7 +28,7 @@ export function VicoPage() {
       </Stack>
     );
   }
-  return <VicoExportView isAdmin={hasRole(user?.role)} />;
+  return <VicoExportView isAdmin={can(user, 'settings')} />;
 }
 
 function VicoExportView({ isAdmin }: { isAdmin: boolean }) {
@@ -49,9 +50,7 @@ function VicoExportView({ isAdmin }: { isAdmin: boolean }) {
     <Stack>
       <Title order={2}>Vico export</Title>
 
-      {settings.data && (
-        <BankDetails settings={settings.data} canEdit={isAdmin} />
-      )}
+      {settings.data && <BankDetails settings={settings.data} canEdit={isAdmin} />}
 
       {create.isSuccess && (
         <Alert color="green" role="status" title="File downloaded">
@@ -60,7 +59,7 @@ function VicoExportView({ isAdmin }: { isAdmin: boolean }) {
       )}
       {create.isError && (
         <Alert color="red" role="alert">
-          {create.error.message}
+          {errorMessage(create.error)}
         </Alert>
       )}
 
@@ -113,7 +112,7 @@ function VicoExportView({ isAdmin }: { isAdmin: boolean }) {
       </Text>
       {redownload.isError && (
         <Alert color="red" role="alert">
-          {redownload.error.message}
+          {errorMessage(redownload.error)}
         </Alert>
       )}
       <Table striped aria-label="Earlier Vico exports">
@@ -194,7 +193,13 @@ function BankDetails({ settings, canEdit }: { settings: VicoSettings; canEdit: b
         Bank details on every Vico row
       </Text>
       <Group align="end">
-        <TextInput label="Sort code" placeholder="12-34-56" value={sortCode} onChange={(e) => setSortCode(e.currentTarget.value)} w={140} />
+        <TextInput
+          label="Sort code"
+          placeholder="12-34-56"
+          value={sortCode}
+          onChange={(e) => setSortCode(e.currentTarget.value)}
+          w={140}
+        />
         <TextInput
           label="Account number"
           placeholder="12345678"
@@ -208,7 +213,7 @@ function BankDetails({ settings, canEdit }: { settings: VicoSettings; canEdit: b
       </Group>
       {save.isError && (
         <Alert color="red" role="alert" mt="xs">
-          {save.error.message}
+          {errorMessage(save.error)}
         </Alert>
       )}
       {save.isSuccess && (

@@ -16,9 +16,12 @@
     "typecheck": "npm run typecheck -w server && npm run typecheck -w web",
     "test:unit": "vitest run --project unit",
     "test:int": "vitest run --project int",
+    "test:web": "npm run test -w web",
     "test:e2e": "playwright test",
     "dev:server": "npm run dev -w server",
     "dev:web": "npm run dev -w web",
+    "dev:preview": "npm run dev:preview -w web",
+    "build:web": "npm run build -w web",
     "db:migrate": "tsx server/src/db/migrate.ts",
     "db:test": "tsx scripts/db-test.ts",
     "user:create": "tsx server/src/jobs/create-user.ts"
