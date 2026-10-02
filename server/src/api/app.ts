@@ -27,6 +27,10 @@ import { authenticate, csrfGuard } from './auth/middleware.js';
 import { authRouter, usersRouter } from './auth/routes.js';
 import { bankAccountsRouter, importsRouter } from './ingest/routes.js';
 import { vicoRouter } from './vico/routes.js';
+import { xeroRouter } from './xero/routes.js';
+import { createHttpBridge, loadXeroConfig, type XeroBridge, type XeroConfig } from '../services/xero/bridge.js';
+import { scheduleXeroWorker } from '../jobs/xero/worker.js';
+import type { SqlSource } from '../jobs/veco-sync/mcp-client.js';
 import { matchingRouter } from './matching/routes.js';
 import { tenanciesRouter } from './tenancy/routes.js';
 
@@ -36,9 +40,13 @@ export interface AppDeps {
   logger: Logger;
   /** Veco tenancy sync; defaults to a disabled runner (no VECO_MCP_URL). */
   vecoSync?: VecoSyncRunner;
+  /** Xero bridge and target; defaults to not configured (no bridge, treated as live). */
+  xero?: { bridge: XeroBridge | null; config: XeroConfig };
+  /** Veco read source for the Xero property map; defaults to none. */
+  vecoSource?: SqlSource | null;
 }
 
-export function createApp({ config, pool, logger, vecoSync }: AppDeps): Express {
+export function createApp({ config, pool, logger, vecoSync, xero, vecoSource }: AppDeps): Express {
   const keys = { hashKey: config.hashKey, encryptionKey: config.encryptionKey };
   const app = express();
   app.disable('x-powered-by');
@@ -92,6 +100,15 @@ export function createApp({ config, pool, logger, vecoSync }: AppDeps): Express 
   app.use('/api/matching', matchingRouter({ pool, threshold: config.autoMatchThreshold }));
   app.use('/api/vico', vicoRouter({ pool }));
   app.use(
+    '/api/xero',
+    xeroRouter({
+      pool,
+      bridge: xero?.bridge ?? null,
+      config: xero?.config ?? { url: null, key: null, targetEnv: 'live' },
+      vecoSource: vecoSource ?? null,
+    }),
+  );
+  app.use(
     '/api/tenancies',
     tenanciesRouter({ pool, ...keys, vecoSync: vecoSync ?? createVecoSyncRunner(pool, keys, null) }),
   );
@@ -140,7 +157,11 @@ async function main(): Promise<void> {
   const stopVecoSync = vecoSync.enabled ? scheduleNightly(vecoSync, veco.syncHour, logger) : () => {};
   logger.info({ enabled: vecoSync.enabled, hour: veco.syncHour }, 'veco nightly sync');
 
-  const app = createApp({ config, pool, logger, vecoSync });
+  const xeroConfig = loadXeroConfig();
+  const bridge = xeroConfig.url && xeroConfig.key ? createHttpBridge({ url: xeroConfig.url, key: xeroConfig.key }) : null;
+  const stopXeroWorker = scheduleXeroWorker(pool, bridge, xeroConfig, logger);
+
+  const app = createApp({ config, pool, logger, vecoSync, xero: { bridge, config: xeroConfig }, vecoSource: sourceFromConfig(veco) });
   const server: Server = app.listen(config.port, () => {
     logger.info({ port: config.port, env: config.nodeEnv }, 'omnia-recon API listening');
   });
@@ -159,6 +180,7 @@ async function main(): Promise<void> {
     logger.info({ signal }, 'shutting down');
     clearInterval(purge);
     stopVecoSync();
+    stopXeroWorker();
     server.close(() => {
       pool.end().finally(() => process.exit(0));
     });

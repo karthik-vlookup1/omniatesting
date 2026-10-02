@@ -114,3 +114,8 @@ dead end a future session might otherwise walk into again.
 
 - Source: manual (ISSUE-0003)
 - Accounts procedure showed Apollo HSBC as one signed Amount with 02-Oct-26 dates; profiles now accept either amount layout and any month-name date
+
+## 2026-10-02: Outbox must re-check source rows at send time
+
+- Source: manual (recon-303)
+- a receipt reversed between staging and sending would still post to Xero; a crash on the last attempt left a batch unrecoverable

@@ -625,8 +625,8 @@
           "kind": "cmd",
           "cmd": "npm run test:int -- vico",
           "exitCode": 0,
-          "testedAt": "2026-10-02T12:35:16.528Z",
-          "commit": "cf4d9b9"
+          "commit": "cf4d9b9",
+          "testedAt": "2026-10-02T12:35:16.528Z"
         }
       ],
       "notes": "",
@@ -655,12 +655,21 @@
           "cmd": "npm run test:int -- xero"
         }
       ],
-      "status": "not_started",
-      "evidence": [],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- xero",
+          "exitCode": 0,
+          "testedAt": "2026-10-02T14:33:22.959Z",
+          "commit": "6a4dbd8"
+        }
+      ],
       "notes": "",
       "dependsOn": [
         "recon-202"
-      ]
+      ],
+      "contractHash": "1516b6b943d0ce7d"
     },
     {
       "id": "recon-401",
