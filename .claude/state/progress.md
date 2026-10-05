@@ -114,6 +114,16 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 - Commit: 2b12371
 - Next best step: recon-103 — Rent terms: rent schedules, benefit awards (LHA/UC/HB), payer splits, payment methods; nightly charge generation job + rent account view per tenancy
 
+### Session 010
+
+- Date: 2026-10-05
+- Active feature: (none)
+- Passing features: 17
+- Blocked features: none
+- Verification runs this session: 1
+- Commit: 23ddcff
+- Next best step: (none — check feature_list.json)
+
 ### Session 006
 
 <!-- hx-session: a0fb6312-e41d-4465-8609-bdcde0566d31 -->
@@ -123,15 +133,5 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 - Passing features: 17
 - Blocked features: none
 - Verification runs this session: 1
-- Commit: cef1e82
-- Next best step: (none — check feature_list.json)
-
-### Session 010
-
-- Date: 2026-10-05
-- Active feature: (none)
-- Passing features: 17
-- Blocked features: none
-- Verification runs this session: 1
-- Commit: 23ddcff
+- Commit: 565d83c
 - Next best step: (none — check feature_list.json)
