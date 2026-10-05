@@ -818,8 +818,8 @@
           "kind": "cmd",
           "cmd": "npm run test:int -- export-statement",
           "exitCode": 0,
-          "testedAt": "2026-10-05T14:21:22.262Z",
-          "commit": "96b0d19"
+          "commit": "96b0d19",
+          "testedAt": "2026-10-05T14:21:22.262Z"
         }
       ],
       "notes": "",
@@ -952,13 +952,29 @@
           "cmd": "npm run test:e2e -- dashboard"
         }
       ],
-      "status": "not_started",
-      "evidence": [],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:e2e -- dashboard",
+          "exitCode": 0,
+          "commit": "cef1e82",
+          "testedAt": "2026-10-05T14:49:29.901Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:e2e -- dashboard",
+          "exitCode": 0,
+          "testedAt": "2026-10-05T15:37:33.458Z",
+          "commit": "cef1e82"
+        }
+      ],
       "notes": "",
       "dependsOn": [
         "recon-203",
         "recon-301"
-      ]
+      ],
+      "contractHash": "11d5feac453bbf71"
     }
   ]
 }

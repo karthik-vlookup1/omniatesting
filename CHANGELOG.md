@@ -73,6 +73,18 @@
 - UTF-8 BOM, CRLF line endings, formula escaping for safety; supports up to 50,000 rows per CSV
 - Migration 010 adds statement_exports table with audit trigger
 - Tests: export-statement int 20/20 (11 coder + 9 senior-tester), statement-csv unit 3/3, full int 341/341 (21 files), unit 99/99, db:test 2/2, lint/typecheck clean
+- Commit: cef1e82
+
+### recon-401
+
+**What changed:** Dashboard page (/dashboard, all roles) shows today's imports per bank, auto-match rate, review backlog and its oldest item, balances per payer type, and arrears ageing (0–30/31–60/61–90/91+ days, always summing to total arrears), in UK time. Staff (admin, accounts, staff) can download tenant rent statements as CSV or PDF with opening balance, charges, payments incl. reversals, adjustments, running and closing balance per payer. All downloads are logged for audit. Home remains the landing page.
+
+**Technical:**
+- Endpoints: GET /api/reports/dashboard (JSON), /api/reports/statement/:tid (JSON/CSV/PDF)
+- New services: dates (UK timezone utils), dashboard.service, statement.service, statement-csv, statement-pdf
+- Migration 011 creates report_downloads table with audit trigger and downloaded_at timestamp
+- pdfkit added to server package.json for PDF generation
+- Tests: reports int 37/37 (22 coder + 15 senior-tester), dashboard e2e 3/3, full int 378/378 (24 files), unit 99/99, db:test 2/2, lint/typecheck clean
 - Commit: this commit
 
 ---

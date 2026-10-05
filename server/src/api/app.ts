@@ -33,6 +33,7 @@ import { landlordsRouter } from './landlord/routes.js';
 import { payerAccountsRouter } from './payer-account/routes.js';
 import { propertiesRouter } from './property/routes.js';
 import { statementExportRouter } from './export/statement.routes.js';
+import { reportsRouter } from './reports/routes.js';
 import { vicoRouter } from './vico/routes.js';
 import { xeroRouter } from './xero/routes.js';
 import { createHttpBridge, loadXeroConfig, type XeroBridge, type XeroConfig } from '../services/xero/bridge.js';
@@ -120,6 +121,7 @@ export function createApp({ config, pool, logger, vecoSync, xero, vecoSource }: 
   app.use('/api/adjustments', adjustmentRouter({ pool }));
   app.use('/api/vico', vicoRouter({ pool }));
   app.use('/api/export', statementExportRouter({ pool }));
+  app.use('/api/reports', reportsRouter({ pool }));
   app.use(
     '/api/xero',
     xeroRouter({

@@ -7,6 +7,7 @@ import {
   IconFileSpreadsheet,
   IconHome,
   IconHome2,
+  IconLayoutDashboard,
   IconListCheck,
   IconReceipt,
   IconReceipt2,
@@ -46,6 +47,7 @@ export const NAV_SECTIONS: NavSection[] = [
     label: null,
     items: [
       { label: 'Home', to: '/', icon: IconHome },
+      { label: 'Dashboard', to: '/dashboard', icon: IconLayoutDashboard },
       { label: 'Upload statement', to: '/upload', icon: IconUpload },
       { label: 'Review queue', to: '/review', icon: IconListCheck },
       { label: 'Receipts', to: '/receipts', icon: IconReceipt, capability: 'finance' },

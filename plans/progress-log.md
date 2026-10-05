@@ -47,3 +47,11 @@
 **What changed:** Built bank statement CSV export feature. Admin, accounts, and staff can download filled-in statement CSVs (replacing Google Sheet), filtered by bank, date range (max 366 days), and status. Each line shows outcome (matched tenancy/tenant/property), payer (****last4 only), receipt parts, reversals, Xero/Vico state, notes; Bank amount column adds to statement total. Formula escaping prevents injection; full account/sort codes and NI never exposed. Endpoints: GET /api/export/statement/summary and .csv (writer role); 28 fixed STATEMENT_HEADER columns, UTF-8 BOM, CRLF, max 50,000 rows. Migration 010 adds statement_exports with audit trigger. Tested: export-statement 20/20 (11 base + 9 tester), statement-csv unit 3/3, full int 341/341 (21 files), unit 99/99, db:test 2/2, lint/typecheck clean.
 
 **Next:** recon-401 dashboard
+
+## 2026-10-05: recon-401 (HARD) — passing
+
+**Files changed:** 3 modified (app.ts, routes.tsx, navigation.ts); 12 new files (migration 011_report_downloads.sql, 5 report services {dates.ts, dashboard.service.ts, statement.service.ts, statement-csv.ts, statement-pdf.ts}, 2 API/service files, 3 test files, 1 e2e spec).
+
+**What changed:** Built Dashboard page (/dashboard, all roles) showing today's imports per bank, auto-match rate, review backlog with oldest item, balances per payer type, and arrears ageing (0–30/31–60/61–90/91+ days). Staff (admin, accounts, staff) download tenant rent statements as CSV or PDF with opening/closing balances, charges, payments, reversals, and adjustments per payer. UK time throughout. All downloads audit-logged. Home remains landing page. Migration 011 creates report_downloads table with audit trigger. pdfkit added to server. Tested: reports int 37/37 (22 coder + 15 senior-tester), dashboard e2e 3/3, full int 378/378 (24 files), unit 99/99, db:test 2/2, lint/typecheck clean.
+
+**Next:** Phase 1 complete; user manual testing of dashboard, then Phase 1 open questions.
