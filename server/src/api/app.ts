@@ -37,6 +37,8 @@ import { scheduleXeroWorker } from '../jobs/xero/worker.js';
 import type { SqlSource } from '../jobs/veco-sync/mcp-client.js';
 import { matchingRouter } from './matching/routes.js';
 import { tenanciesRouter } from './tenancy/routes.js';
+import { rentRouter } from './rent/routes.js';
+import { scheduleChargeGeneration } from '../jobs/generate-charges.js';
 
 export interface AppDeps {
   config: AppConfig;
@@ -120,6 +122,7 @@ export function createApp({ config, pool, logger, vecoSync, xero, vecoSource }: 
     '/api/tenancies',
     tenanciesRouter({ pool, ...keys, vecoSync: vecoSync ?? createVecoSyncRunner(pool, keys, null) }),
   );
+  app.use('/api/rent', rentRouter({ pool }));
 
   app.use('/api', (_req, _res, next) => next(new AppError('not_found', 'Not found')));
   app.use(errorHandler);
@@ -168,6 +171,7 @@ async function main(): Promise<void> {
   const xeroConfig = loadXeroConfig();
   const bridge = xeroConfig.url && xeroConfig.key ? createHttpBridge({ url: xeroConfig.url, key: xeroConfig.key }) : null;
   const stopXeroWorker = scheduleXeroWorker(pool, bridge, xeroConfig, logger);
+  const stopChargeGeneration = scheduleChargeGeneration(pool, logger);
 
   const app = createApp({ config, pool, logger, vecoSync, xero: { bridge, config: xeroConfig }, vecoSource: sourceFromConfig(veco) });
   const server: Server = app.listen(config.port, () => {
@@ -189,6 +193,7 @@ async function main(): Promise<void> {
     clearInterval(purge);
     stopVecoSync();
     stopXeroWorker();
+    stopChargeGeneration();
     server.close(() => {
       pool.end().finally(() => process.exit(0));
     });

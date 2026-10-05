@@ -70,6 +70,14 @@ export const routes: RouteObject[] = [
             lazy: async () => ({ Component: (await import('../features/tenancies/TenanciesPage')).TenanciesPage }),
           },
           {
+            path: 'rent',
+            lazy: async () => ({ Component: (await import('../features/rent-terms/RentLookupPage')).RentLookupPage }),
+          },
+          {
+            path: 'rent/:tid',
+            lazy: async () => ({ Component: (await import('../features/rent-terms/RentTermsPage')).RentTermsPage }),
+          },
+          {
             path: 'properties',
             lazy: async () => ({ Component: (await import('../features/properties/PropertiesPage')).PropertiesPage }),
           },
