@@ -123,5 +123,5 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 - Passing features: 10
 - Blocked features: none
 - Verification runs this session: 0
-- Commit: bc0d03e
+- Commit: ec0a141
 - Next best step: recon-101 — Branches, bank accounts, landlords, properties: API + UI (list, search, create, edit)

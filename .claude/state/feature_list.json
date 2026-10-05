@@ -270,7 +270,18 @@
         "server/src/{domain,services,api}/{branch,bank-account,landlord,property}*/**",
         "web/src/features/{branches,bank-accounts,landlords,properties}/**",
         "server/test/**/property*",
-        "e2e/property*"
+        "e2e/property*",
+        "server/src/api/app.ts",
+        "web/src/app/App.tsx",
+        "web/src/app/Shell.tsx",
+        "db/migrations/00[3-9]_*",
+        "db/migrations/0[1-9][0-9]_*",
+        "server/test/**",
+        "e2e/**",
+        "package.json",
+        "package-lock.json",
+        "server/package.json",
+        "web/package.json"
       ],
       "verification": [
         {
@@ -351,7 +362,18 @@
         "server/src/jobs/generate-charges*",
         "web/src/features/rent-terms/**",
         "server/test/**/rent*",
-        "e2e/rent*"
+        "e2e/rent*",
+        "server/src/api/app.ts",
+        "web/src/app/App.tsx",
+        "web/src/app/Shell.tsx",
+        "db/migrations/00[3-9]_*",
+        "db/migrations/0[1-9][0-9]_*",
+        "server/test/**",
+        "e2e/**",
+        "package.json",
+        "package-lock.json",
+        "server/package.json",
+        "web/package.json"
       ],
       "verification": [
         {
@@ -379,7 +401,18 @@
       "scope": [
         "server/src/{domain,services,api}/payer-account*/**",
         "web/src/features/payer-accounts/**",
-        "server/test/**/payer-account*"
+        "server/test/**/payer-account*",
+        "server/src/api/app.ts",
+        "web/src/app/App.tsx",
+        "web/src/app/Shell.tsx",
+        "db/migrations/00[3-9]_*",
+        "db/migrations/0[1-9][0-9]_*",
+        "server/test/**",
+        "e2e/**",
+        "package.json",
+        "package-lock.json",
+        "server/package.json",
+        "web/package.json"
       ],
       "verification": [
         {
@@ -406,7 +439,18 @@
         "server/src/api/imports/letmc*",
         "web/src/features/letmc-import/**",
         "fixtures/letmc/**",
-        "server/test/**/letmc*"
+        "server/test/**/letmc*",
+        "server/src/api/app.ts",
+        "web/src/app/App.tsx",
+        "web/src/app/Shell.tsx",
+        "db/migrations/00[3-9]_*",
+        "db/migrations/0[1-9][0-9]_*",
+        "server/test/**",
+        "e2e/**",
+        "package.json",
+        "package-lock.json",
+        "server/package.json",
+        "web/package.json"
       ],
       "verification": [
         {
@@ -560,7 +604,18 @@
       "scope": [
         "server/src/{domain,services,api}/{receipt,allocation,remittance,adjustment}*/**",
         "web/src/features/receipts/**",
-        "server/test/**/receipt*"
+        "server/test/**/receipt*",
+        "server/src/api/app.ts",
+        "web/src/app/App.tsx",
+        "web/src/app/Shell.tsx",
+        "db/migrations/00[3-9]_*",
+        "db/migrations/0[1-9][0-9]_*",
+        "server/test/**",
+        "e2e/**",
+        "package.json",
+        "package-lock.json",
+        "server/package.json",
+        "web/package.json"
       ],
       "verification": [
         {
@@ -584,7 +639,18 @@
       "scope": [
         "server/src/{services,api}/export/statement*",
         "web/src/features/export/**",
-        "server/test/**/export-statement*"
+        "server/test/**/export-statement*",
+        "server/src/api/app.ts",
+        "web/src/app/App.tsx",
+        "web/src/app/Shell.tsx",
+        "db/migrations/00[3-9]_*",
+        "db/migrations/0[1-9][0-9]_*",
+        "server/test/**",
+        "e2e/**",
+        "package.json",
+        "package-lock.json",
+        "server/package.json",
+        "web/package.json"
       ],
       "verification": [
         {
@@ -701,7 +767,18 @@
       "scope": [
         "server/src/{services,api}/reports/**",
         "web/src/features/dashboard/**",
-        "e2e/dashboard*"
+        "e2e/dashboard*",
+        "server/src/api/app.ts",
+        "web/src/app/App.tsx",
+        "web/src/app/Shell.tsx",
+        "db/migrations/00[3-9]_*",
+        "db/migrations/0[1-9][0-9]_*",
+        "server/test/**",
+        "e2e/**",
+        "package.json",
+        "package-lock.json",
+        "server/package.json",
+        "web/package.json"
       ],
       "verification": [
         {
