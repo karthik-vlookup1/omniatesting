@@ -281,7 +281,10 @@
         "package.json",
         "package-lock.json",
         "server/package.json",
-        "web/package.json"
+        "web/package.json",
+        "web/src/app/routes.tsx",
+        "web/src/app/navigation.ts",
+        "plans/**"
       ],
       "verification": [
         {
@@ -293,12 +296,42 @@
           "cmd": "npm run test:e2e -- property"
         }
       ],
-      "status": "not_started",
-      "evidence": [],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- property",
+          "exitCode": 0,
+          "commit": "2b12371",
+          "testedAt": "2026-10-05T09:57:23.537Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:e2e -- property",
+          "exitCode": 124,
+          "commit": "2b12371",
+          "testedAt": "2026-10-05T10:09:57.248Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- property",
+          "exitCode": 0,
+          "testedAt": "2026-10-05T10:11:13.326Z",
+          "commit": "2b12371"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:e2e -- property",
+          "exitCode": 0,
+          "testedAt": "2026-10-05T10:11:41.297Z",
+          "commit": "2b12371"
+        }
+      ],
       "notes": "",
       "dependsOn": [
         "recon-004"
-      ]
+      ],
+      "contractHash": "fa22445209d9c48a"
     },
     {
       "id": "recon-102",
@@ -373,7 +406,10 @@
         "package.json",
         "package-lock.json",
         "server/package.json",
-        "web/package.json"
+        "web/package.json",
+        "web/src/app/routes.tsx",
+        "web/src/app/navigation.ts",
+        "plans/**"
       ],
       "verification": [
         {
@@ -412,7 +448,10 @@
         "package.json",
         "package-lock.json",
         "server/package.json",
-        "web/package.json"
+        "web/package.json",
+        "web/src/app/routes.tsx",
+        "web/src/app/navigation.ts",
+        "plans/**"
       ],
       "verification": [
         {
@@ -450,7 +489,10 @@
         "package.json",
         "package-lock.json",
         "server/package.json",
-        "web/package.json"
+        "web/package.json",
+        "web/src/app/routes.tsx",
+        "web/src/app/navigation.ts",
+        "plans/**"
       ],
       "verification": [
         {
@@ -615,7 +657,10 @@
         "package.json",
         "package-lock.json",
         "server/package.json",
-        "web/package.json"
+        "web/package.json",
+        "web/src/app/routes.tsx",
+        "web/src/app/navigation.ts",
+        "plans/**"
       ],
       "verification": [
         {
@@ -650,7 +695,10 @@
         "package.json",
         "package-lock.json",
         "server/package.json",
-        "web/package.json"
+        "web/package.json",
+        "web/src/app/routes.tsx",
+        "web/src/app/navigation.ts",
+        "plans/**"
       ],
       "verification": [
         {
@@ -748,8 +796,8 @@
           "kind": "cmd",
           "cmd": "npm run test:int -- xero",
           "exitCode": 1,
-          "testedAt": "2026-10-05T08:49:32.049Z",
-          "commit": "e8e0949"
+          "commit": "e8e0949",
+          "testedAt": "2026-10-05T08:49:32.049Z"
         }
       ],
       "notes": "",
@@ -778,7 +826,10 @@
         "package.json",
         "package-lock.json",
         "server/package.json",
-        "web/package.json"
+        "web/package.json",
+        "web/src/app/routes.tsx",
+        "web/src/app/navigation.ts",
+        "plans/**"
       ],
       "verification": [
         {

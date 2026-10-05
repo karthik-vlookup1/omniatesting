@@ -129,3 +129,18 @@ dead end a future session might otherwise walk into again.
 
 - Source: manual (manual)
 - Checking out a local ref that predates .claude/bin (local final at aeee874) flags settings.json/hx.cjs even when the end state is identical; run git status on the flagged paths before reverting anything
+
+## 2026-10-05: Run hx verify with CI=1 for e2e levels
+
+- Source: manual (recon-101)
+- Without CI, playwright reuses the vite server (reuseExistingServer: !CI) and under hx's execSync the run hung until the 600s timeout (exit 124); with CI=1 property e2e passed 3/3 in 24s
+
+## 2026-10-05: Test DB env vars must point at 5433
+
+- Source: manual (recon-101)
+- vitest/playwright/db:test default to 5432 (Windows PG). Export TEST_DATABASE_URL=.../omnia_test, E2E_DATABASE_URL=.../omnia_e2e, DBTEST_DATABASE_URL=.../omnia_dbtest on localhost:5433, and OMNIA_DB_PORT=5433 before db:test or it recreates the container on 5432
+
+## 2026-10-05: npm run test:web flaky under load
+
+- Source: manual (recon-101)
+- Full test:web shows 5-11 random timeouts under load; users/tenancies files pass alone (16/16). Not in any verify ladder yet; investigate before relying on it

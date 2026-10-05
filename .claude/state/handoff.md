@@ -4,17 +4,21 @@
 
 ## Verified Now
 
-- Passing features: recon-001, recon-002, recon-003, recon-004, recon-102, recon-201, recon-202, recon-203, recon-302, recon-303
-- Verification runs this session: 0
+- Passing features: recon-001, recon-002, recon-003, recon-004, recon-101, recon-102, recon-201, recon-202, recon-203, recon-302, recon-303
+- Verification runs this session: 2
 
 ## Changed This Session
 
-- Commit: ec0a141
-- Files changed: (none)
+- Commit: 2b12371
+- Files changed: server/src/api/app.ts, web/src/app/navigation.ts, web/src/app/routes.tsx, db/migrations/005_reference_data_audit.sql, e2e/property.spec.ts, plans/recon-101.coder-report.md, plans/recon-101.md, server/src/api/bank-account/routes.ts, server/src/api/branch/routes.ts, server/src/api/landlord/routes.ts, server/src/api/property/routes.ts, server/src/services/bank-account/bank-account.service.ts, server/src/services/branch/branch.service.ts, server/src/services/landlord/landlord.service.ts, server/src/services/property/property.service.ts, server/test/int/property-edge.test.ts, server/test/int/property.test.ts, web/src/features/bank-accounts/BankAccountFormModal.tsx, web/src/features/bank-accounts/BankAccountsPage.tsx, web/src/features/bank-accounts/api.ts, web/src/features/branches/BranchFormModal.tsx, web/src/features/branches/BranchesPage.tsx, web/src/features/branches/api.ts, web/src/features/landlords/LandlordFormModal.tsx, web/src/features/landlords/LandlordsPage.tsx, web/src/features/landlords/api.ts, web/src/features/properties/PropertiesPage.tsx, web/src/features/properties/PropertyFormModal.tsx, web/src/features/properties/api.ts
 
 ## Broken Or Unverified
 
 - Blocked: none
+
+### Verification failures this session
+
+- `(command not recorded)` exited ? (recon-101)
 
 ## Waiting on a human
 
@@ -22,13 +26,13 @@
 
 ## Next Best Step
 
-- Highest-priority unfinished feature: recon-101
-- Why it is next: dependencies (recon-004) are all passing, and it is the highest-priority (p601) not_started feature left
-- What counts as passing: npm run test:int -- property && npm run test:e2e -- property
-- What must not change: stay within server/src/{domain,services,api}/{branch,bank-account,landlord,property}*/**, web/src/features/{branches,bank-accounts,landlords,properties}/**, server/test/**/property*, e2e/property*; avoid package.json, package-lock.json, docker-compose.yml, .github/**, server/package.json, server/tsconfig*.json, web/package.json, web/tsconfig*.json, web/vite.config.ts, README.md, docs/ARCHITECTURE.md, .env.example, eslint.config.*, vitest.config.*, playwright.config.*, server/src/db/migrate.ts, scripts/db-test.*, server/src/lib/crypto*, server/src/config/**, server/test/unit/crypto*, server/test/unit/config*, server/test/int/crypto*, server/src/api/auth/**, server/src/services/auth*, server/src/db/context*, server/src/api/app.ts, web/src/app/**, web/src/features/auth/**, server/test/**/auth*, e2e/auth*, server/src/{domain,services,api}/{tenant,tenancy}*/**, server/src/jobs/veco-sync/**, web/src/features/{tenants,tenancies}/**, server/test/**/tenan*, server/test/**/veco*, e2e/tenan*, web/src/app/App.tsx, web/src/app/Shell.tsx, server/src/{domain,services,api}/{rent,benefit,payer-split,payment-method}*/**, server/src/jobs/generate-charges*, web/src/features/rent-terms/**, server/test/**/rent*, e2e/rent*, server/src/{domain,services,api}/payer-account*/**, web/src/features/payer-accounts/**, server/test/**/payer-account*, server/src/jobs/letmc-import/**, server/src/api/imports/letmc*, web/src/features/letmc-import/**, fixtures/letmc/**, server/test/**/letmc*, server/src/{domain,services,api}/ingest/**, web/src/features/{upload,csv-profiles}/**, fixtures/banks/**, server/test/**/ingest*, server/src/{services,api}/matching/**, server/test/**/matching*, db/migrations/004_*, server/src/api/ingest/routes.ts, web/src/features/upload/**, server/test/int/ingest.test.ts, web/src/features/review/**, e2e/review*, server/src/{domain,services,api}/{receipt,allocation,remittance,adjustment}*/**, web/src/features/receipts/**, server/test/**/receipt*, server/src/{services,api}/export/statement*, web/src/features/export/**, server/test/**/export-statement*, server/src/{services,api,jobs}/vico/**, web/src/features/vico/**, server/test/**/vico*, server/src/{services,api,jobs}/xero/**, web/src/features/xero/**, server/test/**/xero*, server/src/{services,api}/reports/**, web/src/features/dashboard/**, e2e/dashboard* (belongs to other features)
+- Highest-priority unfinished feature: recon-103
+- Why it is next: dependencies (recon-102) are all passing, and it is the highest-priority (p603) not_started feature left
+- What counts as passing: npm run test:int -- rent && npm run test:e2e -- rent
+- What must not change: stay within server/src/{domain,services,api}/{rent,benefit,payer-split,payment-method}*/**, server/src/jobs/generate-charges*, web/src/features/rent-terms/**, server/test/**/rent*, e2e/rent*, server/src/api/app.ts, web/src/app/App.tsx, web/src/app/Shell.tsx, db/migrations/00[3-9]_*, db/migrations/0[1-9][0-9]_*, server/test/**, e2e/**, package.json, package-lock.json, server/package.json, web/package.json, web/src/app/routes.tsx, web/src/app/navigation.ts, plans/**; avoid package.json, package-lock.json, docker-compose.yml, .github/**, server/package.json, server/tsconfig*.json, web/package.json, web/tsconfig*.json, web/vite.config.ts, README.md, docs/ARCHITECTURE.md, .env.example, eslint.config.*, vitest.config.*, playwright.config.*, server/src/db/migrate.ts, scripts/db-test.*, server/src/lib/crypto*, server/src/config/**, server/test/unit/crypto*, server/test/unit/config*, server/test/int/crypto*, server/src/api/auth/**, server/src/services/auth*, server/src/db/context*, server/src/api/app.ts, web/src/app/**, web/src/features/auth/**, server/test/**/auth*, e2e/auth*, server/src/{domain,services,api}/{branch,bank-account,landlord,property}*/**, web/src/features/{branches,bank-accounts,landlords,properties}/**, server/test/**/property*, e2e/property*, web/src/app/App.tsx, web/src/app/Shell.tsx, db/migrations/00[3-9]_*, db/migrations/0[1-9][0-9]_*, server/test/**, e2e/**, web/src/app/routes.tsx, web/src/app/navigation.ts, plans/**, server/src/{domain,services,api}/{tenant,tenancy}*/**, server/src/jobs/veco-sync/**, web/src/features/{tenants,tenancies}/**, server/test/**/tenan*, server/test/**/veco*, e2e/tenan*, server/src/{domain,services,api}/payer-account*/**, web/src/features/payer-accounts/**, server/test/**/payer-account*, server/src/jobs/letmc-import/**, server/src/api/imports/letmc*, web/src/features/letmc-import/**, fixtures/letmc/**, server/test/**/letmc*, server/src/{domain,services,api}/ingest/**, web/src/features/{upload,csv-profiles}/**, fixtures/banks/**, server/test/**/ingest*, server/src/{services,api}/matching/**, server/test/**/matching*, db/migrations/004_*, server/src/api/ingest/routes.ts, web/src/features/upload/**, server/test/int/ingest.test.ts, web/src/features/review/**, e2e/review*, server/src/{domain,services,api}/{receipt,allocation,remittance,adjustment}*/**, web/src/features/receipts/**, server/test/**/receipt*, server/src/{services,api}/export/statement*, web/src/features/export/**, server/test/**/export-statement*, server/src/{services,api,jobs}/vico/**, web/src/features/vico/**, server/test/**/vico*, server/src/{services,api,jobs}/xero/**, web/src/features/xero/**, server/test/**/xero*, server/src/{services,api}/reports/**, web/src/features/dashboard/**, e2e/dashboard* (belongs to other features)
 
 ## Commands
 
 - Startup: `hx start`
-- Verification: `hx verify recon-101`
+- Verification: `hx verify recon-103`
 - Focused debug: `hx logs diagnose`

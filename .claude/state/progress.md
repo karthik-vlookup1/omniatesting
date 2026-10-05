@@ -11,7 +11,7 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 - Repository root: {{PROJECT_ROOT}}
 - Standard startup: `hx start`
 - Standard verification: `hx verify <feature-id>`
-- Current highest-priority unfinished feature: recon-101
+- Current highest-priority unfinished feature: recon-103
 - Current blocker: none
 
 ## Session Log
@@ -90,18 +90,6 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 - Commit: e8e0949
 - Next best step: recon-101 — Branches, bank accounts, landlords, properties: API + UI (list, search, create, edit)
 
-### Session 008
-
-<!-- hx-session: e59e6bf1-9e40-4165-a109-d0dd8add1f5b -->
-
-- Date: 2026-10-05
-- Active feature: (none)
-- Passing features: 10
-- Blocked features: none
-- Verification runs this session: 2
-- Commit: e8e0949
-- Next best step: recon-101 — Branches, bank accounts, landlords, properties: API + UI (list, search, create, edit)
-
 ### Session 009
 
 <!-- hx-session: 8e2d16bf-04ba-4bcf-908c-245bb6447c07 -->
@@ -114,14 +102,26 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 - Commit: e8e0949
 - Next best step: recon-101 — Branches, bank accounts, landlords, properties: API + UI (list, search, create, edit)
 
+### Session 008
+
+<!-- hx-session: e59e6bf1-9e40-4165-a109-d0dd8add1f5b -->
+
+- Date: 2026-10-05
+- Active feature: recon-101
+- Passing features: 10
+- Blocked features: none
+- Verification runs this session: 1
+- Commit: 2b12371
+- Next best step: recon-103 — Rent terms: rent schedules, benefit awards (LHA/UC/HB), payer splits, payment methods; nightly charge generation job + rent account view per tenancy
+
 ### Session 006
 
 <!-- hx-session: a0fb6312-e41d-4465-8609-bdcde0566d31 -->
 
 - Date: 2026-10-05
 - Active feature: (none)
-- Passing features: 10
+- Passing features: 11
 - Blocked features: none
-- Verification runs this session: 0
-- Commit: ec0a141
-- Next best step: recon-101 — Branches, bank accounts, landlords, properties: API + UI (list, search, create, edit)
+- Verification runs this session: 2
+- Commit: 2b12371
+- Next best step: recon-103 — Rent terms: rent schedules, benefit awards (LHA/UC/HB), payer splits, payment methods; nightly charge generation job + rent account view per tenancy
