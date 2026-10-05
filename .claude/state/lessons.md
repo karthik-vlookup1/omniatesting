@@ -124,3 +124,8 @@ dead end a future session might otherwise walk into again.
 
 - Source: manual (manual)
 - Set OMNIA_DB_PORT=5433 in the shell before docker compose, and start the server with node --env-file=<file> --import tsx
+
+## 2026-10-05: Stale local branch checkout trips post-shell protected-file alarm
+
+- Source: manual (manual)
+- Checking out a local ref that predates .claude/bin (local final at aeee874) flags settings.json/hx.cjs even when the end state is identical; run git status on the flagged paths before reverting anything
