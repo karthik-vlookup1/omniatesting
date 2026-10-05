@@ -102,18 +102,6 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 - Commit: e8e0949
 - Next best step: recon-101 — Branches, bank accounts, landlords, properties: API + UI (list, search, create, edit)
 
-### Session 006
-
-<!-- hx-session: a0fb6312-e41d-4465-8609-bdcde0566d31 -->
-
-- Date: 2026-10-05
-- Active feature: (none)
-- Passing features: 10
-- Blocked features: none
-- Verification runs this session: 0
-- Commit: e8e0949
-- Next best step: recon-101 — Branches, bank accounts, landlords, properties: API + UI (list, search, create, edit)
-
 ### Session 009
 
 <!-- hx-session: 8e2d16bf-04ba-4bcf-908c-245bb6447c07 -->
@@ -124,4 +112,16 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 - Blocked features: none
 - Verification runs this session: 0
 - Commit: e8e0949
+- Next best step: recon-101 — Branches, bank accounts, landlords, properties: API + UI (list, search, create, edit)
+
+### Session 006
+
+<!-- hx-session: a0fb6312-e41d-4465-8609-bdcde0566d31 -->
+
+- Date: 2026-10-05
+- Active feature: (none)
+- Passing features: 10
+- Blocked features: none
+- Verification runs this session: 0
+- Commit: bc0d03e
 - Next best step: recon-101 — Branches, bank accounts, landlords, properties: API + UI (list, search, create, edit)
