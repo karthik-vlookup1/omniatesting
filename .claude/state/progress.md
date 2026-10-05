@@ -11,7 +11,7 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 - Repository root: {{PROJECT_ROOT}}
 - Standard startup: `hx start`
 - Standard verification: `hx verify <feature-id>`
-- Current highest-priority unfinished feature: recon-104
+- Current highest-priority unfinished feature: recon-105
 - Current blocker: none
 
 ## Session Log
@@ -120,8 +120,8 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 
 - Date: 2026-10-05
 - Active feature: (none)
-- Passing features: 12
+- Passing features: 13
 - Blocked features: none
 - Verification runs this session: 2
-- Commit: b6c527d
-- Next best step: recon-104 — Known payer accounts: add/link landlord, relative or tenant accounts (hash + last4) to a tenancy or landlord
+- Commit: 33c6dc1
+- Next best step: recon-105 — LetMC import: tenants, tenancies, properties, landlords + opening balances at a cutover date; dry-run report before commit

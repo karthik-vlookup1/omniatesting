@@ -15,3 +15,11 @@
 **What changed:** Built complete rent terms feature with rent schedules, benefit awards (HB/UC/DHP), payer splits, payment methods, and nightly charge generation. Migration 006 adds charges_from opt-in column, rent_charge_dirty table, 3-arg generate_rent_charges, and dirty-tracking triggers. Rent account view shows periods/balances per payer with running statements. Tested: rent-terms int 22/22 (11 base + 11 tester-added), unit 89/89 (6 money), full int 243/243, e2e 2/2, db:test 2/2, lint/typecheck clean. Key decision: rent account expected-vs-received only (Xero remains ledger). Nightly job 05:00 after Veco sync. Open: Veco frequency change impact on splits (ISSUE-0004).
 
 **Next:** recon-104 known payer accounts
+
+## 2026-10-05: recon-104 (HARD) — passing
+
+**Files changed:** 3 modified (app.ts, routes.tsx, navigation.ts); 9 new files (migration 007_payer_accounts.sql, 2 API/service routers, 1 web feature set, 3 test files).
+
+**What changed:** Built payer account feature: staff record known bank accounts (tenant, relative, or landlord) against tenancies and landlords for payment matching. Sort codes are hashed using secure_hash (identical to ingest) and full sort codes are never stored; UI shows last 4 digits only. Trigger always nulls sort_code column. Writers can POST new accounts, PATCH to reactivate on duplicate (409), and GET the list. Tested: payer-account 20/20 (11 base + 9 senior-tester), full int 263/263, unit 89/89, db:test 2/2, lint/typecheck clean. Follow-up: ISSUE-0005 (bank_transactions still stores full sort codes).
+
+**Next:** recon-105 LetMC import + master-record CSV upload

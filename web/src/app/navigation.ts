@@ -12,6 +12,7 @@ import {
   IconUserCog,
   IconUserStar,
   IconUsers,
+  IconWallet,
   type Icon,
 } from '@tabler/icons-react';
 import type { Capability } from '../data/auth';
@@ -50,6 +51,7 @@ export const NAV_SECTIONS: NavSection[] = [
       { label: 'Landlords', to: '/landlords', icon: IconUserStar },
       { label: 'Branches', to: '/branches', icon: IconBuilding },
       { label: 'Bank accounts', to: '/bank-accounts', icon: IconCreditCard },
+      { label: 'Payer accounts', to: '/payer-accounts', icon: IconWallet },
       { label: 'Vico export', to: '/vico', icon: IconFileExport, capability: 'finance' },
       { label: 'Xero', to: '/xero', icon: IconSend, capability: 'finance' },
       { label: 'CSV profiles', to: '/csv-profiles', icon: IconBuildingBank },

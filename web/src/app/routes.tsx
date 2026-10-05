@@ -94,6 +94,12 @@ export const routes: RouteObject[] = [
             lazy: async () => ({ Component: (await import('../features/bank-accounts/BankAccountsPage')).BankAccountsPage }),
           },
           {
+            path: 'payer-accounts',
+            lazy: async () => ({
+              Component: (await import('../features/payer-accounts/PayerAccountsPage')).PayerAccountsPage,
+            }),
+          },
+          {
             path: 'vico',
             lazy: async () => ({ Component: (await import('../features/vico/VicoPage')).VicoPage }),
           },

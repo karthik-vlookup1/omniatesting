@@ -441,15 +441,15 @@
           "kind": "cmd",
           "cmd": "npm run test:int -- rent",
           "exitCode": 0,
-          "testedAt": "2026-10-05T10:39:55.634Z",
-          "commit": "b6c527d"
+          "commit": "b6c527d",
+          "testedAt": "2026-10-05T10:39:55.634Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:e2e -- rent",
           "exitCode": 0,
-          "testedAt": "2026-10-05T10:40:15.819Z",
-          "commit": "b6c527d"
+          "commit": "b6c527d",
+          "testedAt": "2026-10-05T10:40:15.819Z"
         }
       ],
       "notes": "",
@@ -489,13 +489,29 @@
           "cmd": "npm run test:int -- payer-account"
         }
       ],
-      "status": "not_started",
-      "evidence": [],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- payer-account",
+          "exitCode": 0,
+          "commit": "33c6dc1",
+          "testedAt": "2026-10-05T10:50:08.151Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- payer-account",
+          "exitCode": 0,
+          "testedAt": "2026-10-05T10:54:08.319Z",
+          "commit": "33c6dc1"
+        }
+      ],
       "notes": "",
       "dependsOn": [
         "recon-102",
         "recon-003"
-      ]
+      ],
+      "contractHash": "ce464d7f3a68dd7e"
     },
     {
       "id": "recon-105",

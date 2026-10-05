@@ -29,6 +29,7 @@ import { bankAccountsRouter, importsRouter } from './ingest/routes.js';
 import { bankAccountAdminRouter } from './bank-account/routes.js';
 import { branchesRouter } from './branch/routes.js';
 import { landlordsRouter } from './landlord/routes.js';
+import { payerAccountsRouter } from './payer-account/routes.js';
 import { propertiesRouter } from './property/routes.js';
 import { vicoRouter } from './vico/routes.js';
 import { xeroRouter } from './xero/routes.js';
@@ -123,6 +124,7 @@ export function createApp({ config, pool, logger, vecoSync, xero, vecoSource }: 
     tenanciesRouter({ pool, ...keys, vecoSync: vecoSync ?? createVecoSyncRunner(pool, keys, null) }),
   );
   app.use('/api/rent', rentRouter({ pool }));
+  app.use('/api/payer-accounts', payerAccountsRouter({ pool, hashKey: config.hashKey }));
 
   app.use('/api', (_req, _res, next) => next(new AppError('not_found', 'Not found')));
   app.use(errorHandler);
