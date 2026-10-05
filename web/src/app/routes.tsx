@@ -112,6 +112,10 @@ export const routes: RouteObject[] = [
             lazy: async () => ({ Component: (await import('../features/csv-profiles/CsvProfilesPage')).CsvProfilesPage }),
           },
           {
+            path: 'letmc-import',
+            lazy: guarded('finance', async () => (await import('../features/letmc-import/LetmcImportPage')).LetmcImportPage),
+          },
+          {
             path: 'users',
             lazy: guarded('manageUsers', async () => (await import('../features/users/UsersPage')).UsersPage),
           },

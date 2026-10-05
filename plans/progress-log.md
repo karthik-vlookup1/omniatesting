@@ -23,3 +23,11 @@
 **What changed:** Built payer account feature: staff record known bank accounts (tenant, relative, or landlord) against tenancies and landlords for payment matching. Sort codes are hashed using secure_hash (identical to ingest) and full sort codes are never stored; UI shows last 4 digits only. Trigger always nulls sort_code column. Writers can POST new accounts, PATCH to reactivate on duplicate (409), and GET the list. Tested: payer-account 20/20 (11 base + 9 senior-tester), full int 263/263, unit 89/89, db:test 2/2, lint/typecheck clean. Follow-up: ISSUE-0005 (bank_transactions still stores full sort codes).
 
 **Next:** recon-105 LetMC import + master-record CSV upload
+
+## 2026-10-05: recon-105 (HARD) — passing
+
+**Files changed:** 3 modified (app.ts, routes.tsx, navigation.ts); 18 new files (migration 008_letmc_import.sql, 4 job files {layout,parse,apply,index}.ts, 2 API/service files, 7 web feature files, 3 test files, fixtures/letmc with README).
+
+**What changed:** Built LetMC import feature with CSV upload, preview (create/update/unchanged/duplicate/rejected counts), error report download, all-or-nothing commit. Synthetic layout with header aliases supports landlords, properties, tenants, tenancies + opening balances. Opening balances at cutover: arrears → opening_balance charges, credits → negative adjustments in exact pence. Existing Veco data never overwritten (blanks filled, conflicts warned). Migration 008 adds letmc_import_runs, letmc_opening_balances, adjustment_kind 'opening_balance'. File checksum + advisory lock prevent re-run. Tested: letmc-import 12/12 + edge 17/17, full int 292/292, unit 96/96, web 2/2, e2e 4/4, db:test 2/2, lint/typecheck clean. Follow-up: ISSUE-0006 (test:web flaky).
+
+**Next:** recon-204 receipt operations

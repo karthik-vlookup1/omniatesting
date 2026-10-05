@@ -502,8 +502,8 @@
           "kind": "cmd",
           "cmd": "npm run test:int -- payer-account",
           "exitCode": 0,
-          "testedAt": "2026-10-05T10:54:08.319Z",
-          "commit": "33c6dc1"
+          "commit": "33c6dc1",
+          "testedAt": "2026-10-05T10:54:08.319Z"
         }
       ],
       "notes": "",
@@ -546,12 +546,35 @@
           "cmd": "npm run test:int -- letmc"
         }
       ],
-      "status": "not_started",
-      "evidence": [],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- letmc",
+          "exitCode": 1,
+          "commit": "240a191",
+          "testedAt": "2026-10-05T11:20:34.723Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- letmc",
+          "exitCode": 0,
+          "commit": "240a191",
+          "testedAt": "2026-10-05T11:20:51.043Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- letmc",
+          "exitCode": 0,
+          "testedAt": "2026-10-05T11:39:02.542Z",
+          "commit": "240a191"
+        }
+      ],
       "notes": "",
       "dependsOn": [
         "recon-103"
-      ]
+      ],
+      "contractHash": "be21529a547dd1b2"
     },
     {
       "id": "recon-201",

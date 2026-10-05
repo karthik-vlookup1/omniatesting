@@ -1,0 +1,8 @@
+Tenant Ref,Title,First Name,Surname,Email,Mobile,NI Number
+LT8001,Mr,Alex,Testone,lt8001@example.test,07700 900801,AB200001C
+LT8002,Ms,Bo,Testtwo,,07700 900802,AB200002C
+LT8003,Mx,Cam,Testthree,,,AB200003C
+LT8004,,Dee,Vecomatch,,,AB100001C
+LT8001,Mr,Alex,Testone,lt8001@example.test,07700 900801,AB200001C
+LT8005,Mr,Eve,Badni,,,XX12
+LT8006,Mr,Fay,,,,AB200006C

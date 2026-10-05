@@ -1,0 +1,8 @@
+Property Ref,Branch,Landlord Ref,Address 1,Address 2,Town,Postcode,Bedrooms,Management Type
+P8001,TSA,L8001,1 Test Lane,,Testville,ZZ2 2ZZ,3,RG
+P8002,TSB,L8002,2 Test Lane,,Testville,ZZ2 2ZZ,2,MG
+P9000,TSB,L8003,,,Testville,,,
+P8002,TSB,L8002,2 Test Lane,,Testville,ZZ2 2ZZ,2,MG
+P8003,NOPE,L8001,3 Test Lane,,Testville,ZZ2 2ZZ,2,RG
+P8004,TSA,L8001,4 Test Lane,,Testville,XYZ,2,RG
+P8005,TSA,L9999,5 Test Lane,,Testville,ZZ2 2ZZ,2,RG

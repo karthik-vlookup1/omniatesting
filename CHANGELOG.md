@@ -37,6 +37,18 @@
 - Hash = secure_hash(sort digits + account digits), identical to ingest
 - Page /payer-accounts with list/add/reactivate UI
 - Tests: payer-account 20/20 (11 base + 9 senior-tester), full int 263/263, unit 89/89, db:test 2/2
+- Commit: 240a191
+
+### recon-105
+
+**What changed:** Staff can import LetMC data: choose record type (landlords, properties, tenants, tenancies + opening balances), upload CSV, see a preview with counts (create/update/unchanged/duplicate/rejected), see and download an error report of bad rows, and commit only when nothing is rejected. Commits are all-or-nothing; re-uploading the same file adds nothing. Existing Veco data is never overwritten (blanks filled, conflicts warned). Opening balances at a cutover date: arrears become opening_balance charges, credits become negative adjustments, in exact pence.
+
+**Technical:**
+- Migration 008 adds letmc_import_runs, letmc_opening_balances tables, and adjustment_kind 'opening_balance'
+- Server job: /jobs/letmc-import/{layout,parse,apply,index}.ts with synthetic layout supporting header aliases
+- Endpoints: POST /api/imports/letmc with preview/commit, file checksum + advisory lock prevents re-run
+- Fixtures: synthetic LetMC layout with header aliases documented in fixtures/letmc/README
+- Tests: letmc-import 12/12, edge 17/17, full int 292/292 (18 files), unit 96/96, web 2/2, e2e 4/4, db:test 2/2
 - Commit: this commit
 
 ---

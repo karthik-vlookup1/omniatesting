@@ -11,7 +11,7 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 - Repository root: {{PROJECT_ROOT}}
 - Standard startup: `hx start`
 - Standard verification: `hx verify <feature-id>`
-- Current highest-priority unfinished feature: recon-105
+- Current highest-priority unfinished feature: recon-204
 - Current blocker: none
 
 ## Session Log
@@ -120,8 +120,8 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 
 - Date: 2026-10-05
 - Active feature: (none)
-- Passing features: 13
+- Passing features: 14
 - Blocked features: none
-- Verification runs this session: 2
-- Commit: 33c6dc1
-- Next best step: recon-105 — LetMC import: tenants, tenancies, properties, landlords + opening balances at a cutover date; dry-run report before commit
+- Verification runs this session: 1
+- Commit: 240a191
+- Next best step: recon-204 — Receipt operations: split a bulk council payment / upload remittance, manual allocation override, reverse a receipt, adjustments (write-off, refund)
