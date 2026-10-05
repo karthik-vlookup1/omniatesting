@@ -764,8 +764,8 @@
           "kind": "cmd",
           "cmd": "npm run test:int -- receipt",
           "exitCode": 0,
-          "testedAt": "2026-10-05T13:58:05.933Z",
-          "commit": "c11dbd6"
+          "commit": "c11dbd6",
+          "testedAt": "2026-10-05T13:58:05.933Z"
         }
       ],
       "notes": "",
@@ -805,12 +805,28 @@
           "cmd": "npm run test:int -- export-statement"
         }
       ],
-      "status": "not_started",
-      "evidence": [],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- export-statement",
+          "exitCode": 0,
+          "commit": "96b0d19",
+          "testedAt": "2026-10-05T14:13:50.718Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- export-statement",
+          "exitCode": 0,
+          "testedAt": "2026-10-05T14:21:22.262Z",
+          "commit": "96b0d19"
+        }
+      ],
       "notes": "",
       "dependsOn": [
         "recon-202"
-      ]
+      ],
+      "contractHash": "0f95de608f798380"
     },
     {
       "id": "recon-302",

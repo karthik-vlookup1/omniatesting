@@ -39,3 +39,11 @@
 **What changed:** Built receipt operations feature: staff split bulk council payments across tenancies, upload remittance CSV with preview and error reporting (total validated against bank line), allocate manually or automatically, reverse receipts (blocked if sent to Xero/Vico without manual correction), and record write-offs/refunds. Migration 009 adds allocation_mode, reversed_by/at, external_correction on receipts; reverses_adjustment_id on adjustments; superseded_at on remittance_advices. DB functions: recompute_line_status, allocate_oldest_first (skips manual receipts), refresh_rent_charges (pins capped at outstanding). Tested: receipt int 29/29 (8 coder + 21 senior-tester), full int 321/321 (20 files), unit 96/96, e2e 3/3, db:test 2/2, lint/typecheck clean. Overrides and adjustments stay inside Recon (Xero remains ledger).
 
 **Next:** recon-301 bank statement CSV download
+
+## 2026-10-05: recon-301 (HARD) — passing
+
+**Files changed:** 3 modified (app.ts, routes.tsx, navigation.ts); 9 new files (migration 010_statement_exports.sql, 2 API/service files, 1 web feature set, 4 test files).
+
+**What changed:** Built bank statement CSV export feature. Admin, accounts, and staff can download filled-in statement CSVs (replacing Google Sheet), filtered by bank, date range (max 366 days), and status. Each line shows outcome (matched tenancy/tenant/property), payer (****last4 only), receipt parts, reversals, Xero/Vico state, notes; Bank amount column adds to statement total. Formula escaping prevents injection; full account/sort codes and NI never exposed. Endpoints: GET /api/export/statement/summary and .csv (writer role); 28 fixed STATEMENT_HEADER columns, UTF-8 BOM, CRLF, max 50,000 rows. Migration 010 adds statement_exports with audit trigger. Tested: export-statement 20/20 (11 base + 9 tester), statement-csv unit 3/3, full int 341/341 (21 files), unit 99/99, db:test 2/2, lint/typecheck clean.
+
+**Next:** recon-401 dashboard

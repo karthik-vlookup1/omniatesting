@@ -61,6 +61,18 @@
 - APIs: POST/PATCH /api/receipts (split, allocations, reverse), POST /api/remittances (preview/commit), POST /api/adjustments
 - Shared util: isCalendarDate
 - Tests: receipt int 29/29 (8 coder + 21 senior-tester), full int 321/321 (20 files), unit 96/96, e2e receipts 3/3, db:test 2/2, lint/typecheck clean
+- Commit: 96b0d19
+
+### recon-301
+
+**What changed:** Admin, accounts, and staff can download a filled-in bank statement CSV to replace the Google Sheet. Downloads are filtered by bank, date range (maximum 366 days), and status. Each bank line shows its matched outcome (tenancy, tenant, or property), payer (masked as ****last4), receipt parts, reversals, Xero/Vico state, and notes. The Bank amount column sums correctly to the statement total. Files open cleanly in Excel with formula escaping enabled to prevent code injection; full account numbers, sort codes, and NI are never exposed. Every download is logged for audit.
+
+**Technical:**
+- Endpoints: GET /api/export/statement/summary and /api/export/statement.csv (both require writer role)
+- 28 fixed columns from STATEMENT_HEADER constant (default until Accounts share revised sheet headers)
+- UTF-8 BOM, CRLF line endings, formula escaping for safety; supports up to 50,000 rows per CSV
+- Migration 010 adds statement_exports table with audit trigger
+- Tests: export-statement int 20/20 (11 coder + 9 senior-tester), statement-csv unit 3/3, full int 341/341 (21 files), unit 99/99, db:test 2/2, lint/typecheck clean
 - Commit: this commit
 
 ---

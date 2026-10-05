@@ -108,6 +108,10 @@ export const routes: RouteObject[] = [
             lazy: async () => ({ Component: (await import('../features/vico/VicoPage')).VicoPage }),
           },
           {
+            path: 'export/statement',
+            lazy: guarded('write', async () => (await import('../features/export/StatementExportPage')).StatementExportPage),
+          },
+          {
             path: 'xero',
             lazy: async () => ({ Component: (await import('../features/xero/XeroPage')).XeroPage }),
           },
