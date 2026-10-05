@@ -1,6 +1,6 @@
 {
   "project": "omnia-recon",
-  "last_updated": "2026-10-02",
+  "last_updated": "2026-10-05",
   "rules": {
     "single_active_feature": true,
     "passing_requires_evidence": true,
@@ -661,8 +661,29 @@
           "kind": "cmd",
           "cmd": "npm run test:int -- xero",
           "exitCode": 0,
-          "testedAt": "2026-10-02T14:33:22.959Z",
-          "commit": "6a4dbd8"
+          "commit": "6a4dbd8",
+          "testedAt": "2026-10-02T14:33:22.959Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- xero",
+          "exitCode": 1,
+          "commit": "e8e0949",
+          "testedAt": "2026-10-05T08:49:11.905Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- xero",
+          "exitCode": 1,
+          "commit": "e8e0949",
+          "testedAt": "2026-10-05T08:49:27.689Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- xero",
+          "exitCode": 1,
+          "testedAt": "2026-10-05T08:49:32.049Z",
+          "commit": "e8e0949"
         }
       ],
       "notes": "",
