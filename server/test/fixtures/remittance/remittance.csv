@@ -1,0 +1,4 @@
+TID,Claim Ref,Tenant Name,Period From,Period To,Amount
+T9001,,Test Tenant1,01/09/2026,28/09/2026,200.00
+T9002,,Test Tenant2,01/09/2026,28/09/2026,150.00
+,HBC-77001,Test Tenant3,01/09/2026,28/09/2026,100.00

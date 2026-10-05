@@ -66,6 +66,10 @@ export const routes: RouteObject[] = [
             },
           },
           {
+            path: 'receipts',
+            lazy: guarded('finance', async () => (await import('../features/receipts/ReceiptsPage')).ReceiptsPage),
+          },
+          {
             path: 'tenancies',
             lazy: async () => ({ Component: (await import('../features/tenancies/TenanciesPage')).TenanciesPage }),
           },

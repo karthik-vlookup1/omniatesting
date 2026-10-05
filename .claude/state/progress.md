@@ -11,7 +11,7 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 - Repository root: {{PROJECT_ROOT}}
 - Standard startup: `hx start`
 - Standard verification: `hx verify <feature-id>`
-- Current highest-priority unfinished feature: recon-204
+- Current highest-priority unfinished feature: recon-301
 - Current blocker: none
 
 ## Session Log
@@ -120,8 +120,8 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 
 - Date: 2026-10-05
 - Active feature: (none)
-- Passing features: 14
+- Passing features: 15
 - Blocked features: none
-- Verification runs this session: 1
-- Commit: 240a191
-- Next best step: recon-204 — Receipt operations: split a bulk council payment / upload remittance, manual allocation override, reverse a receipt, adjustments (write-off, refund)
+- Verification runs this session: 2
+- Commit: c11dbd6
+- Next best step: recon-301 — Filled-in bank statement CSV download (replaces the Google Sheet) with filters by bank/date/status

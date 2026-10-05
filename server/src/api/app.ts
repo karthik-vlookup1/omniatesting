@@ -38,6 +38,9 @@ import { createHttpBridge, loadXeroConfig, type XeroBridge, type XeroConfig } fr
 import { scheduleXeroWorker } from '../jobs/xero/worker.js';
 import type { SqlSource } from '../jobs/veco-sync/mcp-client.js';
 import { matchingRouter } from './matching/routes.js';
+import { receiptRouter } from './receipt/routes.js';
+import { remittanceRouter } from './remittance/routes.js';
+import { adjustmentRouter } from './adjustment/routes.js';
 import { tenanciesRouter } from './tenancy/routes.js';
 import { rentRouter } from './rent/routes.js';
 import { scheduleChargeGeneration } from '../jobs/generate-charges.js';
@@ -111,6 +114,9 @@ export function createApp({ config, pool, logger, vecoSync, xero, vecoSource }: 
   app.use('/api/imports/letmc', letmcImportRouter({ pool, keys }));
   app.use('/api/imports', importsRouter({ pool, hashKey: config.hashKey, threshold: config.autoMatchThreshold }));
   app.use('/api/matching', matchingRouter({ pool, threshold: config.autoMatchThreshold }));
+  app.use('/api/receipts', receiptRouter({ pool }));
+  app.use('/api/remittances', remittanceRouter({ pool }));
+  app.use('/api/adjustments', adjustmentRouter({ pool }));
   app.use('/api/vico', vicoRouter({ pool }));
   app.use(
     '/api/xero',

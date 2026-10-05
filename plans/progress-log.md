@@ -31,3 +31,11 @@
 **What changed:** Built LetMC import feature with CSV upload, preview (create/update/unchanged/duplicate/rejected counts), error report download, all-or-nothing commit. Synthetic layout with header aliases supports landlords, properties, tenants, tenancies + opening balances. Opening balances at cutover: arrears → opening_balance charges, credits → negative adjustments in exact pence. Existing Veco data never overwritten (blanks filled, conflicts warned). Migration 008 adds letmc_import_runs, letmc_opening_balances, adjustment_kind 'opening_balance'. File checksum + advisory lock prevent re-run. Tested: letmc-import 12/12 + edge 17/17, full int 292/292, unit 96/96, web 2/2, e2e 4/4, db:test 2/2, lint/typecheck clean. Follow-up: ISSUE-0006 (test:web flaky).
 
 **Next:** recon-204 receipt operations
+
+## 2026-10-05: recon-204 (HARD) — passing
+
+**Files changed:** 3 modified (app.ts, routes.tsx, navigation.ts); 21 new files (migration 009_receipt_operations.sql, 3 domain models, 3 services, 3 API routers, 1 web feature set, 5 test files, 2 function files).
+
+**What changed:** Built receipt operations feature: staff split bulk council payments across tenancies, upload remittance CSV with preview and error reporting (total validated against bank line), allocate manually or automatically, reverse receipts (blocked if sent to Xero/Vico without manual correction), and record write-offs/refunds. Migration 009 adds allocation_mode, reversed_by/at, external_correction on receipts; reverses_adjustment_id on adjustments; superseded_at on remittance_advices. DB functions: recompute_line_status, allocate_oldest_first (skips manual receipts), refresh_rent_charges (pins capped at outstanding). Tested: receipt int 29/29 (8 coder + 21 senior-tester), full int 321/321 (20 files), unit 96/96, e2e 3/3, db:test 2/2, lint/typecheck clean. Overrides and adjustments stay inside Recon (Xero remains ledger).
+
+**Next:** recon-301 bank statement CSV download

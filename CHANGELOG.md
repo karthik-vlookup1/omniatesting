@@ -49,6 +49,18 @@
 - Endpoints: POST /api/imports/letmc with preview/commit, file checksum + advisory lock prevents re-run
 - Fixtures: synthetic LetMC layout with header aliases documented in fixtures/letmc/README
 - Tests: letmc-import 12/12, edge 17/17, full int 292/292 (18 files), unit 96/96, web 2/2, e2e 4/4, db:test 2/2
+- Commit: c11dbd6
+
+### recon-204
+
+**What changed:** Staff can manage bulk council payments: split across multiple tenancies, upload the council's remittance CSV with preview and error reporting (total must match bank line), set allocations manually or reset to automatic, reverse a receipt, and record write-offs and refunds. Receipts sent to Xero or exported to Vico can only be reversed after staff record the manual correction there (Xero credit-note number / Vico note); in-flight sends are blocked. All overrides and adjustments stay inside Recon.
+
+**Technical:**
+- Migration 009 adds receipts table (allocation_mode, reversed_by/at, external_correction), adjustments (reverses_adjustment_id), remittance_advices (superseded_at + partial unique index)
+- DB functions: recompute_line_status, allocate_oldest_first (skips manual receipts), refresh_rent_charges (re-applies manual pins capped at outstanding)
+- APIs: POST/PATCH /api/receipts (split, allocations, reverse), POST /api/remittances (preview/commit), POST /api/adjustments
+- Shared util: isCalendarDate
+- Tests: receipt int 29/29 (8 coder + 21 senior-tester), full int 321/321 (20 files), unit 96/96, e2e receipts 3/3, db:test 2/2, lint/typecheck clean
 - Commit: this commit
 
 ---
