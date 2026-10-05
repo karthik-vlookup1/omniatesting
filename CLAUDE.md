@@ -1,0 +1,2 @@
+## OMNIA_MAIN loop
+Work through hx features in order. For each: planner -> coder -> senior-tester -> hx verify -> docs-writer -> commit on `backend` and `git push -u origin backend` to github.com/suhasintern2/Omnia_recon. Never touch main. Test DB is Docker Postgres on port 5433. Stop and ask me only when: verify fails twice, a push fails, a protected file must change, a phase ends, or an open decision comes up (own ledger vs Xero, bank CSV formats, Xero credentials).

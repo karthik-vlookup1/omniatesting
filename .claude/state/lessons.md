@@ -119,3 +119,8 @@ dead end a future session might otherwise walk into again.
 
 - Source: manual (recon-303)
 - a receipt reversed between staging and sending would still post to Xero; a crash on the last attempt left a batch unrecoverable
+
+## 2026-10-02: No .env exists and nothing loads one; bare 'docker compose up' falls back to port 5432 and recreates the DB container on the Windows PostgreSQL port
+
+- Source: manual (manual)
+- Set OMNIA_DB_PORT=5433 in the shell before docker compose, and start the server with node --env-file=<file> --import tsx

@@ -77,3 +77,15 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 - Verification runs this session: 2
 - Commit: ad9c221
 - Next best step: recon-101 — Branches, bank accounts, landlords, properties: API + UI (list, search, create, edit)
+
+### Session 006
+
+<!-- hx-session: a0fb6312-e41d-4465-8609-bdcde0566d31 -->
+
+- Date: 2026-10-05
+- Active feature: (none)
+- Passing features: 10
+- Blocked features: none
+- Verification runs this session: 6
+- Commit: 2f2e689
+- Next best step: recon-101 — Branches, bank accounts, landlords, properties: API + UI (list, search, create, edit)
