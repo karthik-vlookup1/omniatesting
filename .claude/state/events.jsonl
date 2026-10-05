@@ -1365,3 +1365,5 @@
 {"ts":"2026-10-05T15:43:49.647Z","type":"exit.check","check":"feature-state-truthful","ok":true,"status":"pass","detail":"No feature marked passing without recorded evidence."}
 {"ts":"2026-10-05T15:43:49.647Z","type":"exit.check","check":"no-undocumented-changes","ok":true,"status":"pass","detail":"No undocumented drift, debug code, or test weakening found in changed files."}
 {"ts":"2026-10-05T15:43:49.648Z","type":"exit.check","check":"next-session-continues","ok":true,"status":"pass","detail":"Startup path works, no hook errors this session, and no in-progress feature is missing a Next Best Step."}
+{"ts":"2026-10-05T15:44:48.641Z","type":"protected.baseline","files":{".claude/settings.json":"d8059ade55f7d2ee8841ace84842785db7d0cc9e",".claude/settings.local.json":"276b019c49e8601c2f10983acd42384af120343d",".claude/hx.config.json":"fe4fe4ebbc515cbd9cf4f677498689875f52df30",".claude/bin/hx.cjs":"49ea3591b817c8b6c581afea4270be1dbab85019"}}
+{"ts":"2026-10-05T15:44:59.762Z","type":"handoff","sessionNum":10,"commit":"23ddcff"}
