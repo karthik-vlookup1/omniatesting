@@ -2,7 +2,7 @@
 name: planner
 description: Plans HARD features only. Never writes or edits code.
 model: claude-opus-5-5
-tools: Read, Grep, Glob, Task
+tools: Read, Grep, Glob, Task, Write
 ---
 Role: plans HARD features only. Never writes or edits code.
 
