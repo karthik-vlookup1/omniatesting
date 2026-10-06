@@ -1,4 +1,4 @@
-import { Alert, Anchor, Button, Group, Loader, SegmentedControl, Select, Stack, Text } from '@mantine/core';
+import { Alert, Anchor, Button, Divider, Group, Loader, SegmentedControl, Select, Stack, Text } from '@mantine/core';
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { PageHeader } from '../../components';
@@ -16,6 +16,7 @@ import {
   type MatchStatus,
 } from './api';
 import { IntakeUploadCard } from './IntakeUploadCard';
+import { JournalSection } from './JournalSection';
 import { LinesTable } from './LinesTable';
 import { ReassignModal } from './ReassignModal';
 
@@ -120,6 +121,8 @@ export function AgentosPage() {
           )}
         </>
       )}
+      <Divider />
+      <JournalSection writer={writer} />
       <ReassignModal line={reassigning} onClose={() => setReassigning(null)} />
     </Stack>
   );

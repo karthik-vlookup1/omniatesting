@@ -1,0 +1,218 @@
+/** agentOS Journal Transfer: zero-sum entries, validation, export-once CSV bytes, mark posted, audit. */
+import { readFileSync } from 'node:fs';
+import { randomUUID } from 'node:crypto';
+import request from 'supertest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { createApp } from '../../src/api/app.js';
+import { CSRF_HEADER, CSRF_HEADER_VALUE, SESSION_COOKIE } from '../../src/api/auth/middleware.js';
+import { loadConfig } from '../../src/config/env.js';
+import { createPool, type Pool } from '../../src/db/pool.js';
+import { createLogger } from '../../src/lib/logger.js';
+import { upsertUser, type Role } from '../../src/services/auth.service.js';
+import { seedAgentosTenants } from '../../src/services/agentos/seed.js';
+import { JOURNAL_HEADER } from '../../src/services/agentos/journal.service.js';
+import { BOM } from '../../src/services/export/statement-csv.js';
+
+const PASSWORD = 'correct-horse-battery';
+const config = loadConfig();
+const logger = createLogger({ level: 'silent' });
+const run = randomUUID().slice(0, 8);
+let pool: Pool;
+const cookies = {} as Record<Role, string>;
+
+const fixtureBytes = (name: string) => readFileSync(new URL(`../fixtures/agentos/${name}`, import.meta.url));
+const app = () => createApp({ config, pool, logger });
+
+async function signIn(role: Role): Promise<string> {
+  const email = `${role}-aoj-${run}@example.test`;
+  await upsertUser(pool, { email, fullName: `Aoj ${role}`, role, password: PASSWORD });
+  const res = await request(app()).post('/api/auth/login').set(CSRF_HEADER, CSRF_HEADER_VALUE).send({ email, password: PASSWORD });
+  return (res.headers['set-cookie'] as unknown as string[]).find((c) => c.startsWith(`${SESSION_COOKIE}=`))!.split(';')[0]!;
+}
+
+const post = (path: string, role: Role) =>
+  request(app()).post(path).set('Cookie', cookies[role]).set(CSRF_HEADER, CSRF_HEADER_VALUE);
+const get = (path: string, role: Role) => request(app()).get(path).set('Cookie', cookies[role]);
+const getCsv = (path: string) =>
+  get(path, 'readonly')
+    .buffer(true)
+    .parse((res, cb) => {
+      const b: Buffer[] = [];
+      res.on('data', (c: Buffer) => b.push(c));
+      res.on('end', () => cb(null, Buffer.concat(b)));
+    });
+
+async function clean() {
+  await pool.query('TRUNCATE agentos_journal_exports, agentos_journal_transfers CASCADE');
+  await pool.query('DELETE FROM agentos_tenants');
+  await pool.query(
+    "DELETE FROM audit_log WHERE table_name IN ('agentos_journal_exports', 'agentos_journal_transfers', 'agentos_journal_entries', 'agentos_tenants')",
+  );
+}
+
+const valid = {
+  fromTid: '9201',
+  toTid: '9202',
+  amountPence: 12345,
+  description: '=SUM(A1) moved',
+  nominalCode: '1100',
+  accountType: ' Rent ',
+};
+const count = async (sql: string) => Number((await pool.query<{ n: string }>(sql)).rows[0]!.n);
+
+let transferId = '';
+
+beforeAll(async () => {
+  pool = createPool({ databaseUrl: config.databaseUrl, hashKey: config.hashKey, max: 6 }, logger);
+  await clean();
+  await seedAgentosTenants(pool, fixtureBytes('match-tenants.csv').toString('utf8'));
+  for (const role of ['admin', 'accounts', 'staff', 'readonly'] as const) cookies[role] = await signIn(role);
+});
+
+afterAll(async () => {
+  await clean();
+  await pool?.end();
+});
+
+describe('journal transfers', () => {
+  it('staff creates a transfer with two zero-sum entries and a trimmed account type', async () => {
+    const res = await post('/api/agentos/journal/transfers', 'staff').send(valid);
+    expect(res.status).toBe(201);
+    const t = res.body.transfer;
+    transferId = t.id;
+    expect(t.accountType).toBe('Rent');
+    expect(t.postingStatus).toBe('not_exported');
+    expect(t.entries.map((e: { side: string; amountPence: number }) => [e.side, e.amountPence])).toEqual([
+      ['from', -12345],
+      ['to', 12345],
+    ]);
+    expect(t.entries.reduce((s: number, e: { amountPence: number }) => s + e.amountPence, 0)).toBe(0);
+    expect(t.entries.map((e: { person: string }) => e.person)).toEqual(['9201 Alex Testperson', "9202 Mary Jo O'Testson"]);
+    const stored = await pool.query<{ account_type: string }>('SELECT account_type FROM agentos_journal_transfers WHERE id = $1', [transferId]);
+    expect(stored.rows[0]!.account_type).toBe('Rent');
+  });
+
+  it('the database refuses a transfer whose entries do not sum to 0', async () => {
+    const c = await pool.connect();
+    try {
+      await c.query('BEGIN');
+      const u = (await c.query<{ id: string }>('SELECT id FROM app_users LIMIT 1')).rows[0]!.id;
+      const t = await c.query<{ id: string }>(
+        `INSERT INTO agentos_journal_transfers (from_tid, to_tid, amount_pence, description, nominal_code, account_type, created_by)
+         VALUES ('9201', '9202', 100, 'd', 'n', 'a', $1) RETURNING id`,
+        [u],
+      );
+      await c.query(
+        `INSERT INTO agentos_journal_entries (transfer_id, side, tid, person, branch, property, amount_pence)
+         VALUES ($1, 'from', '9201', 'p', 'b', 'r', -100)`,
+        [t.rows[0]!.id],
+      );
+      await expect(c.query('COMMIT')).rejects.toThrow(/summing to 0/);
+    } finally {
+      await c.query('ROLLBACK').catch(() => {});
+      c.release();
+    }
+  });
+
+  it('rejects bad input without leaving rows', async () => {
+    const before = await count('SELECT count(*) AS n FROM agentos_journal_transfers');
+    const same = await post('/api/agentos/journal/transfers', 'staff').send({ ...valid, toTid: '9201' });
+    expect(same.status).toBe(400);
+    const unknown = await post('/api/agentos/journal/transfers', 'staff').send({ ...valid, toTid: '9299' });
+    expect(unknown.status).toBe(400);
+    expect(unknown.body.error?.message ?? unknown.body.message ?? JSON.stringify(unknown.body)).toContain('No agentOS tenant has TID 9299');
+    for (const amountPence of [0, -5, 1.5]) {
+      expect((await post('/api/agentos/journal/transfers', 'staff').send({ ...valid, amountPence })).status).toBe(400);
+    }
+    expect((await post('/api/agentos/journal/transfers', 'staff').send({ ...valid, description: '   ' })).status).toBe(400);
+    expect((await post('/api/agentos/journal/transfers', 'staff').send({ ...valid, nominalCode: 'x'.repeat(51) })).status).toBe(400);
+    expect(await count('SELECT count(*) AS n FROM agentos_journal_transfers')).toBe(before);
+  });
+
+  it('enforces roles', async () => {
+    const anonGet = await request(app()).get('/api/agentos/journal/transfers');
+    expect(anonGet.status).toBe(401);
+    const anonPost = await request(app()).post('/api/agentos/journal/transfers').set(CSRF_HEADER, CSRF_HEADER_VALUE).send(valid);
+    expect(anonPost.status).toBe(401);
+    const list = await get('/api/agentos/journal/transfers', 'readonly');
+    expect(list.status).toBe(200);
+    expect(list.body.transfers).toHaveLength(1);
+    expect((await post('/api/agentos/journal/transfers', 'readonly').send(valid)).status).toBe(403);
+    expect((await post('/api/agentos/journal/exports', 'readonly')).status).toBe(403);
+    expect((await post(`/api/agentos/journal/transfers/${transferId}/posted`, 'readonly')).status).toBe(403);
+  });
+});
+
+describe('journal export and posting', () => {
+  let exportId = '';
+
+  it('marking a not-exported transfer posted is a 409', async () => {
+    expect((await post(`/api/agentos/journal/transfers/${transferId}/posted`, 'staff')).status).toBe(409);
+  });
+
+  it('export returns the exact CSV bytes', async () => {
+    const res = await post('/api/agentos/journal/exports', 'staff');
+    expect(res.status).toBe(201);
+    expect(res.body.export.transfersTotal).toBe(1);
+    expect(res.body.export.amountTotalPence).toBe(12345);
+    exportId = res.body.export.id;
+    const csv = await getCsv(`/api/agentos/journal/exports/${exportId}.csv`);
+    expect(csv.status).toBe(200);
+    expect(csv.headers['content-type']).toContain('text/csv');
+    expect(csv.headers['content-disposition']).toContain('agentos-journal-transfer-');
+    expect(csv.headers['content-disposition']).toContain(`-${exportId.slice(0, 8)}.csv"`);
+    const { rows } = await pool.query<{ tid: string; person: string; branch: string; property: string }>(
+      `SELECT t.tid, t.forename, t.surname, t.managed_by AS branch, t.residence AS property,
+              CASE WHEN t.tid = '9201' THEN '9201 Alex Testperson' ELSE '9202 Mary Jo O''Testson' END AS person
+         FROM agentos_tenants t WHERE t.tid IN ('9201', '9202') ORDER BY t.tid`,
+    );
+    const q = (v: string) => (/[",\r\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v);
+    const desc = `'=SUM(A1) moved | Recon ${transferId}`;
+    const line = (r: (typeof rows)[number], amount: string) =>
+      [desc, '1100', q(r.branch), q(r.person), q(r.property), 'Rent', '', amount].join(',');
+    const expected = BOM + [JOURNAL_HEADER.join(','), line(rows[0]!, '-123.45'), line(rows[1]!, '123.45')].join('\r\n') + '\r\n';
+    expect(Buffer.isBuffer(csv.body) && (csv.body as Buffer).equals(Buffer.from(expected, 'utf8'))).toBe(true);
+  });
+
+  it('a second export is header-only', async () => {
+    const res = await post('/api/agentos/journal/exports', 'staff');
+    expect(res.status).toBe(201);
+    expect(res.body.export.transfersTotal).toBe(0);
+    const csv = await getCsv(`/api/agentos/journal/exports/${res.body.export.id}.csv`);
+    expect((csv.body as Buffer).toString('utf8')).toBe(`${BOM}${JOURNAL_HEADER.join(',')}\r\n`);
+    expect((await get(`/api/agentos/journal/exports/${randomUUID()}.csv`, 'readonly')).status).toBe(404);
+    expect((await get('/api/agentos/journal/exports/nope.csv', 'readonly')).status).toBe(404);
+  });
+
+  it('mark posted works once, then 409, and unknown ids are 404', async () => {
+    const ok = await post(`/api/agentos/journal/transfers/${transferId}/posted`, 'staff');
+    expect(ok.status).toBe(200);
+    expect(ok.body.transfer.postingStatus).toBe('posted');
+    const { rows } = await pool.query<{ posted_at: Date | null; posted_by: string | null }>(
+      'SELECT posted_at, posted_by FROM agentos_journal_transfers WHERE id = $1',
+      [transferId],
+    );
+    expect(rows[0]!.posted_at).not.toBeNull();
+    expect(rows[0]!.posted_by).not.toBeNull();
+    expect((await post(`/api/agentos/journal/transfers/${transferId}/posted`, 'staff')).status).toBe(409);
+    expect((await post(`/api/agentos/journal/transfers/${randomUUID()}/posted`, 'staff')).status).toBe(404);
+    expect((await post('/api/agentos/journal/transfers/nope/posted', 'staff')).status).toBe(404);
+  });
+
+  it('two concurrent exports split a new transfer exactly once', async () => {
+    expect((await post('/api/agentos/journal/transfers', 'staff').send(valid)).status).toBe(201);
+    const [a, b] = await Promise.all([post('/api/agentos/journal/exports', 'staff'), post('/api/agentos/journal/exports', 'staff')]);
+    expect(a.status).toBe(201);
+    expect(b.status).toBe(201);
+    expect([a.body.export.transfersTotal, b.body.export.transfersTotal].sort()).toEqual([0, 1]);
+  });
+
+  it('writes audit rows', async () => {
+    const n = (table: string, action: string) =>
+      count(`SELECT count(*) AS n FROM audit_log WHERE table_name = '${table}' AND action = '${action}'`);
+    expect(await n('agentos_journal_transfers', 'INSERT')).toBeGreaterThanOrEqual(1);
+    expect(await n('agentos_journal_entries', 'INSERT')).toBeGreaterThanOrEqual(2);
+    expect(await n('agentos_journal_exports', 'INSERT')).toBeGreaterThanOrEqual(1);
+    expect(await n('agentos_journal_transfers', 'UPDATE')).toBeGreaterThanOrEqual(1);
+  });
+});

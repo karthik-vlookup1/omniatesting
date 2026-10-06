@@ -152,3 +152,89 @@ export function useMarkPosted() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['agentos'] }),
   });
 }
+
+export interface JournalEntry {
+  side: 'from' | 'to';
+  tid: string;
+  person: string;
+  branch: string;
+  property: string;
+  amountPence: number;
+}
+
+export interface JournalTransfer {
+  id: string;
+  fromTid: string;
+  toTid: string;
+  amountPence: number;
+  description: string;
+  nominalCode: string;
+  accountType: string;
+  postingStatus: 'not_exported' | 'exported' | 'posted';
+  exportId: string | null;
+  postedAt: string | null;
+  createdAt: string;
+  entries: JournalEntry[];
+}
+
+export interface JournalExport {
+  id: string;
+  transfersTotal: number;
+  amountTotalPence: number;
+  createdAt: string;
+}
+
+export interface NewJournalTransfer {
+  fromTid: string;
+  toTid: string;
+  amountPence: number;
+  description: string;
+  nominalCode: string;
+  accountType: string;
+}
+
+export const JOURNAL_STATUS_LABELS: Record<JournalTransfer['postingStatus'], string> = {
+  not_exported: 'Not exported',
+  exported: 'Exported',
+  posted: 'Posted',
+};
+
+export const journalCsvUrl = (id: string): string => buildUrl(`/agentos/journal/exports/${id}.csv`);
+
+export function useJournalTransfers() {
+  return useQuery({
+    queryKey: ['agentos', 'journal'],
+    queryFn: async ({ signal }) =>
+      (await apiRequest<{ transfers: JournalTransfer[] }>('/agentos/journal/transfers', { signal })).transfers,
+  });
+}
+
+export function useCreateJournalTransfer() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: NewJournalTransfer) =>
+      (await apiRequest<{ transfer: JournalTransfer }>('/agentos/journal/transfers', { method: 'POST', body })).transfer,
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['agentos'] }),
+  });
+}
+
+export function useCreateJournalExport() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async () => (await apiRequest<{ export: JournalExport }>('/agentos/journal/exports', { method: 'POST' })).export,
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['agentos'] }),
+  });
+}
+
+export function useMarkJournalPosted() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (transferId: string) =>
+      (
+        await apiRequest<{ transfer: JournalTransfer }>(`/agentos/journal/transfers/${encodeURIComponent(transferId)}/posted`, {
+          method: 'POST',
+        })
+      ).transfer,
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['agentos'] }),
+  });
+}
