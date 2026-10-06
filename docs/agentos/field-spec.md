@@ -179,13 +179,27 @@ A web interface at `/agentos` lets staff upload, filter, fix, and export intake 
 
 **Access:** Writers upload and export. Readonly users view only. Routes: `GET /api/agentos/tenants` (3 tenants: TID, name `<tid> <name>`, deposit-to), `POST /api/agentos/lines/:id/reassign` (body `{tid}`, returns updated line and previous state).
 
+## 9. Journal Transfer (/agentos)
+
+**Purpose**: Move money from one tenant account to another (confirmed by user 2026-10-06).
+
+**Staff workflow:** Create a transfer (From TID, To TID, Amount, Description, Nominal Code, Account Type) → Export to Journal Transfer CSV (BOM, CRLF, once per transfer) → Enter in agentOS → Mark posted.
+
+**Rules**: Zero-sum enforced in DB (entries: -amount from, +amount to). From and to tenants must differ. Nominal Code and Account Type are free text until dropdown values supplied.
+
+**CSV columns** (Account Balance left blank): Description, Nominal Code, Branch, Person, Property, Account Type, Account Balance, Amount.
+
+**API routes** (`/api/agentos/journal`): `GET /journal/transfers`, `POST /journal/transfers`, `POST /journal/exports`, `GET /journal/exports/:id.csv`, `POST /journal/transfers/:id/posted`.
+
+**Schema**: Migration 015 creates `agentos_journal_transfers`, `agentos_journal_entries`, `agentos_journal_exports` tables.
+
 ## Open questions
 1. `second step.png` is identical to `first step.png`. What happens between search and record (click hit? choose among several hits)?
 2. Where is "Take a Payment" in the Actions menu? The visible list ends at "Send Chase Letter". Is it lower in Accounting, or is "Make a Payment" the same thing?
 3. Full list of **Type** values in Take a Payment (Cash, Card, BACS, Standing Order, UC…?). Which Type do bank-statement receipts use?
 4. Which tenant record fields are mandatory? No `*` is visible on any tab.
 5. Is the **TID** the 4-digit number in Forename (e.g. 6568-style) or the `ten-<n>` ID? Which one appears on bank references?
-6. **Journal Transfer**: when is it used instead of Take a Payment (misallocated receipt, split across tenants, UC)? What Nominal Code values and Account Type values exist? Must entries sum to £0.00?
+6. **Journal Transfer** = moving money from one tenant account to another (confirmed by user 2026-10-06).
 7. **Will deposit to**: list of client accounts and how one maps to our bank accounts.
 8. Sign convention: Overview shows Amount Outstanding `-£873.22` but Balance `£873.22`, and Outstanding Rent `171.78`. Which number means "tenant owes"?
 9. Unreadable: Date of Birth input, IBAN Code input, Collect Rent by DD value, Rent Chasing right-hand section header (`?`), and the Right to Rent and CRM tabs (no screenshot).

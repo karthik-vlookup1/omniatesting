@@ -1214,15 +1214,15 @@
           "kind": "cmd",
           "cmd": "npm run test:int -- agentos-reassign",
           "exitCode": 0,
-          "testedAt": "2026-10-06T14:09:23.737Z",
-          "commit": "8a2ff06"
+          "commit": "8a2ff06",
+          "testedAt": "2026-10-06T14:09:23.737Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:e2e -- agentos",
           "exitCode": 0,
-          "testedAt": "2026-10-06T14:09:47.732Z",
-          "commit": "8a2ff06"
+          "commit": "8a2ff06",
+          "testedAt": "2026-10-06T14:09:47.732Z"
         }
       ],
       "notes": "HARD",
@@ -1235,13 +1235,16 @@
       "id": "recon-506",
       "priority": 1006,
       "area": "phase-5-agentos",
-      "title": "Journal Transfer export (Description, Nominal Code, entries Branch/Person/Property/Account Type/Account Balance/Amount) - blocked on field-spec Q6",
+      "title": "Journal Transfer export: move an amount from one tenant account to another (from/to tenancy, zero-sum), Nominal Code and Account Type as free text until real values supplied",
       "user_visible_behavior": "",
       "scope": [
         "server/src/{services,api}/agentos/journal*",
         "server/test/**/agentos-journal*",
         "web/src/features/agentos/**",
-        "plans/**"
+        "plans/**",
+        "server/src/api/agentos/routes.ts",
+        "db/migrations/015_*",
+        "e2e/agentos-journal*"
       ],
       "verification": [
         {
@@ -1249,14 +1252,21 @@
           "cmd": "npm run test:int -- agentos-journal"
         }
       ],
-      "status": "blocked",
-      "evidence": [],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos-journal",
+          "exitCode": 0,
+          "testedAt": "2026-10-06T15:01:24.250Z",
+          "commit": "7b75a99"
+        }
+      ],
       "notes": "HARD",
-      "blockedReason": "Needs field-spec Q6: when Journal Transfer is used, Nominal Code and Account Type values, zero-sum rule",
-      "blockedBy": "human",
       "dependsOn": [
         "recon-505"
-      ]
+      ],
+      "contractHash": "755cc5104b6e11fa"
     }
   ]
 }
