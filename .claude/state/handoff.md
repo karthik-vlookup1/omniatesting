@@ -4,13 +4,13 @@
 
 ## Verified Now
 
-- Passing features: recon-001, recon-002, recon-003, recon-004, recon-101, recon-102, recon-103, recon-104, recon-105, recon-201, recon-202, recon-203, recon-204, recon-301, recon-302, recon-303, recon-401, recon-501, recon-502, recon-503, recon-504, recon-505, recon-506, recon-507
+- Passing features: recon-001, recon-002, recon-003, recon-004, recon-101, recon-102, recon-103, recon-104, recon-105, recon-201, recon-202, recon-203, recon-204, recon-301, recon-302, recon-303, recon-401, recon-501, recon-502, recon-503, recon-504, recon-505, recon-506, recon-507, recon-508
 - Verification runs this session: 1
 
 ## Changed This Session
 
-- Commit: 5544986
-- Files changed: server/src/domain/agentos/intake.ts, server/src/services/agentos/reassign.service.ts, server/test/int/agentos-match.test.ts, server/test/unit/agentos-intake.test.ts
+- Commit: 6beb4e7
+- Files changed: docs/agentos/field-spec.md, fixtures/agentos/demo-2026-08-05/bank-formatted.csv, fixtures/agentos/demo-2026-08-05/bank-with-outgoing.csv, fixtures/agentos/demo-2026-08-05/tenants.csv, plans/recon-508.md, server/scripts/seed-agentos-demo.ts, server/test/int/agentos-pipeline.test.ts
 
 ## Broken Or Unverified
 
@@ -22,13 +22,13 @@
 
 ## Next Best Step
 
-- Highest-priority unfinished feature: recon-508
-- Why it is next: feature "recon-508" is already active (WIP=1) — finish or block it first
+- Highest-priority unfinished feature: (none)
+- Why it is next: (no unstarted feature found)
 - What counts as passing: (n/a)
 - What must not change: (n/a)
 
 ## Commands
 
 - Startup: `hx start`
-- Verification: `hx verify recon-508`
+- Verification: `hx verify <feature-id>`
 - Focused debug: `hx logs diagnose`

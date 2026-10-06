@@ -204,3 +204,15 @@ A web interface at `/agentos` lets staff upload, filter, fix, and export intake 
 8. Sign convention: Overview shows Amount Outstanding `-£873.22` but Balance `£873.22`, and Outstanding Rent `171.78`. Which number means "tenant owes"?
 9. Unreadable: Date of Birth input, IBAN Code input, Collect Rent by DD value, Rent Chasing right-hand section header (`?`), and the Right to Rent and CRM tabs (no screenshot).
 10. What should "Description and Card Authorisation Code" contain for a bank receipt (bank reference, statement date, our receipt id)?
+
+## 10. Try it yourself (5 Aug 2026 demo)
+All data in `fixtures/agentos/demo-2026-08-05/` is synthetic (fake names, ZZ postcodes, example.test emails).
+1. Seed the tenants: `npx tsx server/scripts/seed-agentos-demo.ts` (needs DATABASE_URL, HASH_KEY, ENCRYPTION_KEY, SESSION_SECRET).
+2. Upload `bank-formatted.csv` at /agentos; expect 13 rows with 8 matched, 2 name mismatch, 1 deposit mismatch, 2 unmatched.
+3. Fix row 12 (Ivy Fixturely) by reassigning it to TID 9309 (the reassign box takes 4 digits, no T).
+4. Export Take a Payment: 9 rows. Mark rows posted once entered in agentOS.
+5. Optional: create a Journal Transfer (9301 to 9302, 50.00, nominal DEMO, Rent), export it and mark it posted.
+6. Upload `bank-with-outgoing.csv` to see the whole file rejected because of its outgoing payment.
+Note: EMail and Mobile Phone in tenants.csv are not stored yet (no columns in agentos_tenants).
+The seed script only runs against a local database (localhost, 127.0.0.1 or ::1) unless `--allow-remote` is passed.
+The same flow runs as `server/test/int/agentos-pipeline.test.ts`.
