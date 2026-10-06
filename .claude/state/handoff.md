@@ -4,12 +4,12 @@
 
 ## Verified Now
 
-- Passing features: recon-001, recon-002, recon-003, recon-004, recon-101, recon-102, recon-103, recon-104, recon-105, recon-201, recon-202, recon-203, recon-204, recon-301, recon-302, recon-303, recon-401, recon-501, recon-502, recon-503, recon-504, recon-505, recon-506
-- Verification runs this session: 3
+- Passing features: recon-001, recon-002, recon-003, recon-004, recon-101, recon-102, recon-103, recon-104, recon-105, recon-201, recon-202, recon-203, recon-204, recon-301, recon-302, recon-303, recon-401, recon-501, recon-502, recon-503, recon-504, recon-505, recon-506, recon-507, recon-508
+- Verification runs this session: 1
 
 ## Changed This Session
 
-- Commit: 88374ae
+- Commit: 7c8bd86
 - Files changed: (none)
 
 ## Broken Or Unverified

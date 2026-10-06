@@ -33,7 +33,8 @@ export async function listReassignTenants(pool: Pool): Promise<ReassignTenantDto
   }));
 }
 
-export async function reassignLineTid(db: ActorDb, input: { lineId: string; tid: string }): Promise<ReassignResult> {
+export async function reassignLineTid(db: ActorDb, rawInput: { lineId: string; tid: string }): Promise<ReassignResult> {
+  const input = { ...rawInput, tid: rawInput.tid.trim().replace(/^[Tt]/, '') };
   return db.tx(async (c) => {
     await c.query("SELECT pg_advisory_xact_lock(hashtext('agentos-export'))");
     const { rows } = await c.query<{

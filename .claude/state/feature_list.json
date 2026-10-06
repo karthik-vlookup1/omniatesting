@@ -1265,8 +1265,8 @@
           "kind": "cmd",
           "cmd": "npm run test:int -- agentos-journal",
           "exitCode": 0,
-          "testedAt": "2026-10-06T15:02:44.971Z",
-          "commit": "75e338d"
+          "commit": "75e338d",
+          "testedAt": "2026-10-06T15:02:44.971Z"
         }
       ],
       "notes": "HARD",
@@ -1274,6 +1274,97 @@
         "recon-505"
       ],
       "contractHash": "755cc5104b6e11fa"
+    },
+    {
+      "id": "recon-507",
+      "priority": 1007,
+      "area": "phase-5-agentos",
+      "title": "Accept TID with or without leading T (T1234 or 1234) in formatted intake and matching",
+      "user_visible_behavior": "A formatted file can use T1234 as written in the bank sheet; it matches agentOS tenant 1234.",
+      "scope": [
+        "server/src/domain/agentos/intake.ts",
+        "server/src/domain/agentos/match.ts",
+        "server/src/services/agentos/reassign*",
+        "server/test/unit/agentos-intake*",
+        "server/test/int/agentos-match*",
+        "server/test/fixtures/agentos/**",
+        "plans/**",
+        "docs/agentos/**"
+      ],
+      "verification": [
+        {
+          "level": "unit",
+          "cmd": "npm run test:unit -- agentos-intake"
+        },
+        {
+          "level": "integration",
+          "cmd": "npm run test:int -- agentos-match"
+        }
+      ],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:unit -- agentos-intake",
+          "exitCode": 0,
+          "commit": "5544986",
+          "testedAt": "2026-10-06T15:40:01.993Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos-match",
+          "exitCode": 0,
+          "commit": "5544986",
+          "testedAt": "2026-10-06T15:40:05.614Z"
+        }
+      ],
+      "notes": "MEDIUM",
+      "dependsOn": [
+        "recon-506"
+      ],
+      "contractHash": "8023e59fff0dd66d"
+    },
+    {
+      "id": "recon-508",
+      "priority": 1008,
+      "area": "phase-5-agentos",
+      "title": "Synthetic 5 Aug 2026 demo dataset shaped like the Apollo HSBC sheet (13 incoming with TID, 1 outgoing) + matching agentOS tenants + dev seed script + end-to-end pipeline int test",
+      "user_visible_behavior": "Staff can seed a local DB and upload the 5 Aug 2026 formatted file to watch the whole agentOS pipeline run.",
+      "scope": [
+        "fixtures/agentos/demo-2026-08-05/**",
+        "server/scripts/seed-agentos-demo*",
+        "server/test/int/agentos-pipeline*",
+        "plans/**",
+        "docs/agentos/**"
+      ],
+      "verification": [
+        {
+          "level": "integration",
+          "cmd": "npm run test:int -- agentos-pipeline"
+        }
+      ],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos-pipeline",
+          "exitCode": 0,
+          "commit": "6beb4e7",
+          "testedAt": "2026-10-06T15:53:38.006Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos-pipeline",
+          "exitCode": 0,
+          "testedAt": "2026-10-06T15:54:45.079Z",
+          "commit": "7c8bd86"
+        }
+      ],
+      "notes": "MEDIUM",
+      "dependsOn": [
+        "recon-507"
+      ],
+      "contractHash": "06b79759d89e9465"
     }
   ]
 }
