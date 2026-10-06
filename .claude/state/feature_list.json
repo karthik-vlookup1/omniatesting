@@ -1072,15 +1072,15 @@
           "kind": "cmd",
           "cmd": "npm run test:unit -- agentos-intake",
           "exitCode": 0,
-          "testedAt": "2026-10-06T13:12:39.064Z",
-          "commit": "8364973"
+          "commit": "8364973",
+          "testedAt": "2026-10-06T13:12:39.064Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:int -- agentos-intake",
           "exitCode": 0,
-          "testedAt": "2026-10-06T13:12:43.077Z",
-          "commit": "8364973"
+          "commit": "8364973",
+          "testedAt": "2026-10-06T13:12:43.077Z"
         }
       ],
       "notes": "HARD",
@@ -1100,7 +1100,8 @@
         "server/src/services/agentos/intake*",
         "server/test/**/agentos-match*",
         "server/test/fixtures/agentos/**",
-        "plans/**"
+        "plans/**",
+        "server/test/int/agentos-intake.test.ts"
       ],
       "verification": [
         {
@@ -1108,12 +1109,28 @@
           "cmd": "npm run test:int -- agentos-match"
         }
       ],
-      "status": "not_started",
-      "evidence": [],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos-match",
+          "exitCode": 0,
+          "commit": "03d1323",
+          "testedAt": "2026-10-06T13:21:08.920Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos-match",
+          "exitCode": 0,
+          "testedAt": "2026-10-06T13:27:30.642Z",
+          "commit": "03d1323"
+        }
+      ],
       "notes": "HARD",
       "dependsOn": [
         "recon-502"
-      ]
+      ],
+      "contractHash": "ca8ec115f0011036"
     },
     {
       "id": "recon-504",

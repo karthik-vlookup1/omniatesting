@@ -158,6 +158,10 @@ Post a CSV to `POST /api/agentos/intake` (writer role). Returns `201` on success
 
 CSV header (exact order): `Date,TID,Payer Name,Amount,Type,Will deposit to,Description`. Dates are `dd/mm/yyyy`. Amounts are 2 decimal places, stored as pence, and must be above 0. One invalid row rejects the entire file. Unknown `Type` values are accepted with an `unverified_type` warning. Stored in `agentos_intake` table (migration 013).
 
+## 6. Matching lines to tenancies
+
+Matching runs automatically during the upload transaction. Every intake line is assigned one of four statuses: `matched`, `name_mismatch`, `deposit_mismatch`, or `unmatched`. Matching requires an exact TID. Names are normalised: trimmed, lowercased, whitespace collapsed to single spaces, and the leading TID prefix stripped from the tenant's forename. Precedence (first match wins): blank or unknown TID → unmatched; name mismatch → name_mismatch; deposit mismatch → deposit_mismatch; otherwise → matched. For joint tenants, a name match on any tenant counts. No fuzzy or suggestion matching is performed. The upload response includes `matchCounts` with totals for each status.
+
 ## Open questions
 1. `second step.png` is identical to `first step.png`. What happens between search and record (click hit? choose among several hits)?
 2. Where is "Take a Payment" in the Actions menu? The visible list ends at "Send Chase Letter". Is it lower in Accounting, or is "Make a Payment" the same thing?

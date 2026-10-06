@@ -1,12 +1,14 @@
 /**
  * agentOS formatted bank record intake: whole-file validation, SHA-256 dedupe, batch + line insert.
- * Lines are stored 'pending'; matching is added in recon-503.
+ * Lines are matched to an agentOS tenant in the same transaction (recon-503).
  */
 import { createHash } from 'node:crypto';
 import type { ActorDb } from '../../db/context.js';
 import type { Pool } from '../../db/pool.js';
 import { AppError } from '../../lib/errors.js';
 import { londonToday, parseIntakeCsv } from '../../domain/agentos/intake.js';
+import type { MatchCounts } from '../../domain/agentos/match.js';
+import { matchIntakeBatch } from './match.service.js';
 
 export interface IntakeImportResult {
   batchId: string;
@@ -16,6 +18,7 @@ export interface IntakeImportResult {
   periodFrom: string;
   periodTo: string;
   linesWithWarnings: number;
+  matchCounts: MatchCounts;
 }
 
 export interface IntakeBatchDto {
@@ -41,6 +44,7 @@ export interface IntakeLineDto {
   description: string;
   warnings: string[];
   matchStatus: string;
+  agentosTenantId: string | null;
   postingStatus: string;
 }
 
@@ -128,7 +132,7 @@ async function importInTx(
       );
     }
 
-    // recon-503: match lines here, inside this transaction
+    const matchCounts = await matchIntakeBatch(c, batchId);
 
     return {
       batchId,
@@ -138,6 +142,7 @@ async function importInTx(
       periodFrom,
       periodTo,
       linesWithWarnings: lines.filter((l) => l.warnings.length > 0).length,
+      matchCounts,
     };
   });
 }
@@ -187,10 +192,10 @@ export async function getIntakeBatch(
   const { rows: lines } = await pool.query<{
     id: string; line_no: number; received_on: string; tid_raw: string | null; payer_name: string;
     amount_pence: number; payment_type: string; deposit_to: string; description: string;
-    warnings: string[]; match_status: string; posting_status: string;
+    warnings: string[]; match_status: string; agentos_tenant_id: string | null; posting_status: string;
   }>(
     `SELECT id, line_no, to_char(received_on, 'YYYY-MM-DD') AS received_on, tid_raw, payer_name, amount_pence,
-            payment_type, deposit_to, description, warnings, match_status, posting_status
+            payment_type, deposit_to, description, warnings, match_status, agentos_tenant_id, posting_status
        FROM agentos_intake_lines WHERE batch_id = $1 ORDER BY line_no`,
     [id],
   );
@@ -208,6 +213,7 @@ export async function getIntakeBatch(
       description: l.description,
       warnings: l.warnings,
       matchStatus: l.match_status,
+      agentosTenantId: l.agentos_tenant_id,
       postingStatus: l.posting_status,
     })),
   };

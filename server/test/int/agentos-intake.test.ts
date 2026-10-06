@@ -72,7 +72,7 @@ describe('POST /api/agentos/intake', () => {
       [firstBatchId],
     );
     expect(rows).toHaveLength(6);
-    expect(rows.every((r) => r.match_status === 'pending' && r.posting_status === 'not_ready')).toBe(true);
+    expect(rows.every((r) => r.match_status !== 'pending' && r.posting_status === 'not_ready')).toBe(true);
   });
 
   it('rejects the same file again with the first batch id', async () => {
