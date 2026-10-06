@@ -33,7 +33,7 @@ describe('parseIntakeCsv', () => {
 
   it('parses a BOM + CRLF copy the same way', () => {
     const plain = parseIntakeCsv(fixture('intake-valid.csv'), TODAY);
-    const copy = '﻿' + fixture('intake-valid.csv').replace(/\n/g, '\r\n');
+    const copy = '﻿' + fixture('intake-valid.csv').replace(/\r?\n/g, '\r\n');
     expect(parseIntakeCsv(copy, TODAY)).toEqual(plain);
   });
 
