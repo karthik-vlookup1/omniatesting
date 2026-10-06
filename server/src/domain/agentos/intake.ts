@@ -116,7 +116,8 @@ export function parseIntakeCsv(content: Buffer | string, today: string): IntakeP
       ];
       const d = parseUkDate(date, today);
       if (!d.ok) err('Date', d.reason);
-      if (tid !== '' && !/^\d{4}$/.test(tid)) err('TID', 'must be 4 digits or blank');
+      const tidDigits = tid.replace(/^[Tt]/, '');
+      if (tid !== '' && !/^\d{4}$/.test(tidDigits)) err('TID', 'must be 4 digits (optionally prefixed with T) or blank');
       if (payer === '') err('Payer Name', 'required');
       else if (payer.length > 200) err('Payer Name', 'too long (max 200)');
       const a = parseAmountPence(amount);
@@ -131,7 +132,7 @@ export function parseIntakeCsv(content: Buffer | string, today: string): IntakeP
         lines.push({
           lineNo: line,
           receivedOn: d.iso,
-          tid: tid === '' ? null : tid,
+          tid: tid === '' ? null : tidDigits,
           payerName: payer,
           amountPence: a.pence,
           paymentType: type,

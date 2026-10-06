@@ -52,6 +52,29 @@ describe('parseIntakeCsv', () => {
     expect(r.rowErrors.map((e) => e.field)).toEqual(['Date', 'TID', 'Payer Name', 'row', 'Amount']);
   });
 
+  it('accepts a TID with or without a leading T and stores 4 digits', () => {
+    const csv = [
+      HEADER,
+      '02/03/2026,T1234,Ann Lee,10.00,Cash,Acct A,',
+      '02/03/2026,t1234,Ann Lee,10.00,Cash,Acct A,',
+      '02/03/2026,1234,Ann Lee,10.00,Cash,Acct A,',
+    ].join('\n');
+    const r = parseIntakeCsv(csv, TODAY);
+    if (!r.ok) throw new Error(JSON.stringify(r));
+    expect(r.lines.map((l) => l.tid)).toEqual(['1234', '1234', '1234']);
+  });
+
+  it('rejects TT1234, T123 and X1234 with line numbers', () => {
+    const csv = [
+      HEADER,
+      '02/03/2026,TT1234,Ann Lee,10.00,Cash,Acct A,',
+      '02/03/2026,T123,Ann Lee,10.00,Cash,Acct A,',
+      '02/03/2026,X1234,Ann Lee,10.00,Cash,Acct A,',
+    ].join('\n');
+    const r = failed(parseIntakeCsv(csv, TODAY));
+    expect(r.rowErrors.map((e) => [e.line, e.field])).toEqual([[2, 'TID'], [3, 'TID'], [4, 'TID']]);
+  });
+
   it('rejects a bad header', () => {
     const r = failed(parseIntakeCsv(fixture('intake-bad-header.csv'), TODAY));
     expect(r.code).toBe('bad_header');

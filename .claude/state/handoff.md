@@ -4,13 +4,13 @@
 
 ## Verified Now
 
-- Passing features: recon-001, recon-002, recon-003, recon-004, recon-101, recon-102, recon-103, recon-104, recon-105, recon-201, recon-202, recon-203, recon-204, recon-301, recon-302, recon-303, recon-401, recon-501, recon-502, recon-503, recon-504, recon-505, recon-506
-- Verification runs this session: 3
+- Passing features: recon-001, recon-002, recon-003, recon-004, recon-101, recon-102, recon-103, recon-104, recon-105, recon-201, recon-202, recon-203, recon-204, recon-301, recon-302, recon-303, recon-401, recon-501, recon-502, recon-503, recon-504, recon-505, recon-506, recon-507
+- Verification runs this session: 1
 
 ## Changed This Session
 
-- Commit: 88374ae
-- Files changed: (none)
+- Commit: 5544986
+- Files changed: server/src/domain/agentos/intake.ts, server/src/services/agentos/reassign.service.ts, server/test/int/agentos-match.test.ts, server/test/unit/agentos-intake.test.ts
 
 ## Broken Or Unverified
 
@@ -22,13 +22,13 @@
 
 ## Next Best Step
 
-- Highest-priority unfinished feature: (none)
-- Why it is next: (no unstarted feature found)
+- Highest-priority unfinished feature: recon-508
+- Why it is next: feature "recon-508" is already active (WIP=1) — finish or block it first
 - What counts as passing: (n/a)
 - What must not change: (n/a)
 
 ## Commands
 
 - Startup: `hx start`
-- Verification: `hx verify <feature-id>`
+- Verification: `hx verify recon-508`
 - Focused debug: `hx logs diagnose`

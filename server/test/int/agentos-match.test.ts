@@ -134,6 +134,25 @@ describe('intake matching end to end', () => {
     ).toEqual(expectedRows());
   });
 
+  it('a T-prefixed TID is normalised and ends up matched', async () => {
+    const csv = [
+      'Date,TID,Payer Name,Amount,Type,Will deposit to,Description',
+      '01/09/2026,T9201,Alex Testperson,10.00,Cash,Test Lettings - Client Account,t prefix',
+      '01/09/2026,t9202,Mary Jo O\'Testson,10.00,Cash,Test Lettings - Client Account,lower t',
+    ].join('\n');
+    const res = await uploadBytes('staff', Buffer.from(csv));
+    expect(res.status).toBe(201);
+    expect(res.body.batch.matchCounts).toEqual({ matched: 2, name_mismatch: 0, deposit_mismatch: 0, unmatched: 0 });
+    const { rows } = await pool.query<{ tid_raw: string; match_status: string; agentos_tenant_id: string }>(
+      'SELECT tid_raw, match_status, agentos_tenant_id FROM agentos_intake_lines WHERE batch_id = $1 ORDER BY line_no',
+      [res.body.batch.batchId],
+    );
+    expect(rows.map((r) => [r.tid_raw, r.match_status, r.agentos_tenant_id])).toEqual([
+      ['9201', 'matched', tenantId['9201']],
+      ['9202', 'matched', tenantId['9202']],
+    ]);
+  });
+
   it('with no tenants every line is unmatched', async () => {
     await pool.query('DELETE FROM agentos_tenants');
     const res = await uploadBytes('staff', Buffer.concat([fixtureBytes('match-lines.csv'), Buffer.from('\n')]));
