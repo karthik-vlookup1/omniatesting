@@ -11,7 +11,7 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 - Repository root: {{PROJECT_ROOT}}
 - Standard startup: `hx start`
 - Standard verification: `hx verify <feature-id>`
-- Current highest-priority unfinished feature: recon-502
+- Current highest-priority unfinished feature: recon-503
 - Current blocker: recon-506
 
 ## Session Log
@@ -142,8 +142,8 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 
 - Date: 2026-10-06
 - Active feature: (none)
-- Passing features: 18
+- Passing features: 19
 - Blocked features: recon-506
-- Verification runs this session: 3
-- Commit: f3ecfd6
-- Next best step: recon-502 — Formatted bank record intake: fixed CSV Date,TID,Payer Name,Amount,Type,Will deposit to,Description; incoming only; whole-file reject with line numbers; file-hash dedupe; batches + lines tables
+- Verification runs this session: 1
+- Commit: 8364973
+- Next best step: recon-503 — Match formatted lines to agentOS TID: exact TID + normalised name + deposit-to check -> matched / name_mismatch / deposit_mismatch / unmatched; no fuzzy auto-match

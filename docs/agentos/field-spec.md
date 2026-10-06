@@ -152,6 +152,12 @@ Fixture: `fixtures/agentos/tenants.csv` (12 synthetic rows, TIDs 9101–9112). H
 Loaded by `seedAgentosTenants()` in `server/src/services/agentos/seed.ts` into `agentos_tenants` table (migration 012).
 All-or-nothing upsert on TID, idempotent. Tenancy ID links by `tenancies.tid` with no foreign key (other suites TRUNCATE tenancies).
 
+## 5. Uploading the formatted bank record
+
+Post a CSV to `POST /api/agentos/intake` (writer role). Returns `201` on success, `400` if any row is malformed (listing bad line numbers), or `409` if the same file was already uploaded (idempotent by file hash). Retrieve with `GET /api/agentos/intake` (list all) or `GET /api/agentos/intake/:id` (one record).
+
+CSV header (exact order): `Date,TID,Payer Name,Amount,Type,Will deposit to,Description`. Dates are `dd/mm/yyyy`. Amounts are 2 decimal places, stored as pence, and must be above 0. One invalid row rejects the entire file. Unknown `Type` values are accepted with an `unverified_type` warning. Stored in `agentos_intake` table (migration 013).
+
 ## Open questions
 1. `second step.png` is identical to `first step.png`. What happens between search and record (click hit? choose among several hits)?
 2. Where is "Take a Payment" in the Actions menu? The visible list ends at "Send Chase Letter". Is it lower in Accounting, or is "Make a Payment" the same thing?

@@ -1,0 +1,6 @@
+Date,TID,Payer Name,Amount,Type,Will deposit to,Description
+31/02/2026,9101,Alice Example,10.00,Cash,Test Deposit Account,bad date
+03/03/2026,91A1,Bob Sample,10.00,Cash,Test Deposit Account,bad tid
+04/03/2026,9103,,10.00,Cash,Test Deposit Account,no payer
+05/03/2026,9104,Dan Synthetic,10.00,Cash,Test Deposit Account,extra,column
+06/03/2026,9105,Eve Fictional,12.345,Cash,Test Deposit Account,bad amount
