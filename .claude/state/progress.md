@@ -11,7 +11,7 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 - Repository root: {{PROJECT_ROOT}}
 - Standard startup: `hx start`
 - Standard verification: `hx verify <feature-id>`
-- Current highest-priority unfinished feature: recon-505
+- Current highest-priority unfinished feature: (none)
 - Current blocker: recon-506
 
 ## Session Log
@@ -142,8 +142,8 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 
 - Date: 2026-10-06
 - Active feature: (none)
-- Passing features: 21
+- Passing features: 22
 - Blocked features: recon-506
 - Verification runs this session: 1
-- Commit: d3780aa
-- Next best step: recon-505 — agentOS review UI at /agentos: upload, status filter, reassign TID (audited), export, mark posted
+- Commit: 8d93832
+- Next best step: (none — check feature_list.json)

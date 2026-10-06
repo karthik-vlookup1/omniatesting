@@ -166,6 +166,19 @@ Matching runs automatically during the upload transaction. Every intake line is 
 
 A writer exports one intake batch's `matched` lines via `POST /api/agentos/exports` (201 with export id), immutably stored as a BOM + CRLF CSV. Each line is exported only once; a global advisory lock prevents double exports. The CSV columns are: TID, Payment From, Will deposit to, Type, Amount, Description and Card Authorisation Code. Formula-safe cells use `'` prefix. Staff download via `GET /api/agentos/exports/:id.csv` (200 text/csv), enter each row in agentOS Take a Payment, then `POST /api/agentos/lines/:id/posted` (200) to mark it imported. Migration 014 adds `agentos_exports` table and posting columns to `agentos_intake_lines`.
 
+## 8. Review page (/agentos)
+
+A web interface at `/agentos` lets staff upload, filter, fix, and export intake batches.
+
+**Staff workflow:**
+1. **Upload** a formatted CSV via the file input.
+2. **Filter** the batch's lines by status: Matched, Name mismatch, Deposit mismatch, or Unmatched.
+3. **Fix non-matched lines** with Reassign TID (audited by staff email; rules re-run; blocked once exported or posted).
+4. **Export matched lines** via the Export button, download the CSV.
+5. **Enter each row** in agentOS Actions > Accounting > Take a Payment, then Mark posted here.
+
+**Access:** Writers upload and export. Readonly users view only. Routes: `GET /api/agentos/tenants` (3 tenants: TID, name `<tid> <name>`, deposit-to), `POST /api/agentos/lines/:id/reassign` (body `{tid}`, returns updated line and previous state).
+
 ## Open questions
 1. `second step.png` is identical to `first step.png`. What happens between search and record (click hit? choose among several hits)?
 2. Where is "Take a Payment" in the Actions menu? The visible list ends at "Send Chase Letter". Is it lower in Accounting, or is "Make a Payment" the same thing?

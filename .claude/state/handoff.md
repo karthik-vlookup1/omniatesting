@@ -4,13 +4,13 @@
 
 ## Verified Now
 
-- Passing features: recon-001, recon-002, recon-003, recon-004, recon-101, recon-102, recon-103, recon-104, recon-105, recon-201, recon-202, recon-203, recon-204, recon-301, recon-302, recon-303, recon-401, recon-501, recon-502, recon-503, recon-504
+- Passing features: recon-001, recon-002, recon-003, recon-004, recon-101, recon-102, recon-103, recon-104, recon-105, recon-201, recon-202, recon-203, recon-204, recon-301, recon-302, recon-303, recon-401, recon-501, recon-502, recon-503, recon-504, recon-505
 - Verification runs this session: 1
 
 ## Changed This Session
 
-- Commit: d3780aa
-- Files changed: server/src/api/agentos/routes.ts, db/migrations/014_agentos_exports.sql, plans/recon-504.md, server/src/services/agentos/export.service.ts, server/test/fixtures/agentos/export-lines.csv, server/test/fixtures/agentos/take-payment.golden.csv, server/test/int/agentos-export.test.ts
+- Commit: 8d93832
+- Files changed: server/src/api/agentos/routes.ts, web/src/app/navigation.ts, web/src/app/routes.tsx, e2e/agentos.spec.ts, plans/recon-505.md, server/src/services/agentos/reassign.service.ts, server/test/fixtures/agentos-reassign-seed.ts, server/test/int/agentos-reassign.test.ts, web/src/features/agentos/AgentosPage.tsx, web/src/features/agentos/IntakeUploadCard.tsx, web/src/features/agentos/LinesTable.tsx, web/src/features/agentos/ReassignModal.tsx, web/src/features/agentos/agentos.test.tsx, web/src/features/agentos/api.ts
 
 ## Broken Or Unverified
 
@@ -22,13 +22,13 @@
 
 ## Next Best Step
 
-- Highest-priority unfinished feature: recon-505
-- Why it is next: dependencies (recon-504) are all passing, and it is the highest-priority (p1005) not_started feature left
-- What counts as passing: npm run test:int -- agentos-reassign && npm run test:e2e -- agentos
-- What must not change: stay within web/src/features/agentos/**, web/src/app/routes.tsx, web/src/app/navigation.ts, server/src/{services,api}/agentos/reassign*, server/src/api/agentos/routes.ts, server/test/**/agentos-reassign*, e2e/agentos*, plans/**; avoid package.json, package-lock.json, docker-compose.yml, .github/**, server/package.json, server/tsconfig*.json, web/package.json, web/tsconfig*.json, web/vite.config.ts, README.md, docs/ARCHITECTURE.md, .env.example, eslint.config.*, vitest.config.*, playwright.config.*, server/src/db/migrate.ts, scripts/db-test.*, server/src/lib/crypto*, server/src/config/**, server/test/unit/crypto*, server/test/unit/config*, server/test/int/crypto*, server/src/api/auth/**, server/src/services/auth*, server/src/db/context*, server/src/api/app.ts, web/src/app/**, web/src/features/auth/**, server/test/**/auth*, e2e/auth*, server/src/{domain,services,api}/{branch,bank-account,landlord,property}*/**, web/src/features/{branches,bank-accounts,landlords,properties}/**, server/test/**/property*, e2e/property*, web/src/app/App.tsx, web/src/app/Shell.tsx, db/migrations/00[3-9]_*, db/migrations/0[1-9][0-9]_*, server/test/**, e2e/**, web/src/app/routes.tsx, web/src/app/navigation.ts, plans/**, server/src/{domain,services,api}/{tenant,tenancy}*/**, server/src/jobs/veco-sync/**, web/src/features/{tenants,tenancies}/**, server/test/**/tenan*, server/test/**/veco*, e2e/tenan*, server/src/{domain,services,api}/{rent,benefit,payer-split,payment-method}*/**, server/src/jobs/generate-charges*, web/src/features/rent-terms/**, server/test/**/rent*, e2e/rent*, server/src/{domain,services,api}/payer-account*/**, web/src/features/payer-accounts/**, server/test/**/payer-account*, server/src/jobs/letmc-import/**, server/src/api/imports/letmc*, web/src/features/letmc-import/**, fixtures/letmc/**, server/test/**/letmc*, server/src/{domain,services,api}/ingest/**, web/src/features/{upload,csv-profiles}/**, fixtures/banks/**, server/test/**/ingest*, server/src/{services,api}/matching/**, server/test/**/matching*, db/migrations/004_*, server/src/api/ingest/routes.ts, web/src/features/upload/**, server/test/int/ingest.test.ts, web/src/features/review/**, e2e/review*, server/src/{domain,services,api}/{receipt,allocation,remittance,adjustment}*/**, web/src/features/receipts/**, server/test/**/receipt*, server/src/{services,api}/export/statement*, web/src/features/export/**, server/test/**/export-statement*, server/src/{services,api,jobs}/vico/**, web/src/features/vico/**, server/test/**/vico*, server/src/{services,api,jobs}/xero/**, web/src/features/xero/**, server/test/**/xero*, server/src/{services,api}/reports/**, web/src/features/dashboard/**, e2e/dashboard*, db/migrations/012_*, server/src/{domain,services}/agentos/seed*, server/src/domain/agentos/types.ts, fixtures/agentos/**, server/test/**/agentos-seed*, docs/agentos/**, db/migrations/013_*, server/src/{domain,services,api}/agentos/intake*, server/src/api/agentos/routes.ts, server/test/**/agentos-intake*, server/test/fixtures/agentos/**, server/src/{domain,services}/agentos/match*, server/src/services/agentos/intake*, server/test/**/agentos-match*, server/test/int/agentos-intake.test.ts, db/migrations/014_*, server/src/{services,api}/agentos/export*, server/test/**/agentos-export*, server/src/{services,api}/agentos/journal*, server/test/**/agentos-journal*, web/src/features/agentos/** (belongs to other features)
+- Highest-priority unfinished feature: (none)
+- Why it is next: (no unstarted feature found)
+- What counts as passing: (n/a)
+- What must not change: (n/a)
 
 ## Commands
 
 - Startup: `hx start`
-- Verification: `hx verify recon-505`
+- Verification: `hx verify <feature-id>`
 - Focused debug: `hx logs diagnose`

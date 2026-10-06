@@ -5,6 +5,8 @@
  * /api/agentos/exports       POST { batchId } (writers) - Take a Payment CSV of the batch's unexported matched lines
  * /api/agentos/exports/:id.csv  GET the stored CSV (signed in)
  * /api/agentos/lines/:id/posted POST (writers) - mark an exported line as posted
+ * /api/agentos/tenants       GET agentOS tenants for the reassign picker (signed in)
+ * /api/agentos/lines/:id/reassign POST { tid } (writers) - move a line to another TID and re-run the match rules (audited)
  */
 import { Router } from 'express';
 import multer from 'multer';
@@ -12,6 +14,7 @@ import { z } from 'zod';
 import type { Pool } from '../../db/pool.js';
 import { AppError } from '../../lib/errors.js';
 import { createAgentosExport, getAgentosExportCsv, markLinePosted } from '../../services/agentos/export.service.js';
+import { listReassignTenants, reassignLineTid } from '../../services/agentos/reassign.service.js';
 import { getIntakeBatch, importIntakeCsv, listIntakeBatches } from '../../services/agentos/intake.service.js';
 import { requireAuth, requireWriter } from '../auth/middleware.js';
 
@@ -85,6 +88,20 @@ export function agentosRouter({ pool }: { pool: Pool }): Router {
     if (!id.success) throw new AppError('not_found', 'No such intake line');
     const line = await markLinePosted(req.db, { lineId: id.data, userId: req.user!.id });
     res.status(200).json({ line });
+  });
+
+  router.get('/tenants', async (_req, res) => {
+    res.json({ tenants: await listReassignTenants(pool) });
+  });
+
+  router.post('/lines/:id/reassign', requireWriter, async (req, res) => {
+    const id = z.uuid().safeParse(req.params.id);
+    if (!id.success) throw new AppError('not_found', 'No such intake line');
+    const body = z.object({ tid: z.string().regex(/^\d{4}$/) }).safeParse(req.body);
+    if (!body.success) throw new AppError('bad_request', 'tid must be 4 digits');
+    const result = await reassignLineTid(req.db, { lineId: id.data, tid: body.data.tid });
+    req.log.info({ agentosReassign: { lineId: id.data, tid: body.data.tid, status: result.line.matchStatus } }, 'agentos line reassigned');
+    res.status(200).json(result);
   });
 
   return router;
