@@ -2005,3 +2005,6 @@
 {"ts":"2026-10-06T15:01:35.851Z","type":"exit.check","check":"feature-state-truthful","ok":true,"status":"pass","detail":"No feature marked passing without recorded evidence."}
 {"ts":"2026-10-06T15:01:35.851Z","type":"exit.check","check":"no-undocumented-changes","ok":true,"status":"pass","detail":"No undocumented drift, debug code, or test weakening found in changed files."}
 {"ts":"2026-10-06T15:01:35.852Z","type":"exit.check","check":"next-session-continues","ok":true,"status":"pass","detail":"Startup path works, no hook errors this session, and no in-progress feature is missing a Next Best Step."}
+{"ts":"2026-10-06T15:02:45.096Z","type":"evaluate","featureId":"recon-506","verdict":"Revise","scores":{"Correctness":"n/a","Verification":2,"Scope discipline":2,"Reliability":"n/a","Maintainability":"n/a","Handoff readiness":1},"divergences":[]}
+{"ts":"2026-10-06T15:02:45.195Z","type":"verify","id":"recon-506","allPassed":true,"commit":"75e338d","diffHash":"da39a3ee5e6b4b0d3255bfef95601890afd80709","attestNote":"re-verify on committed tree after docs-only field-spec edit: agentos-journal int 10/10 pass","attestNoteChars":91}
+{"ts":"2026-10-06T15:02:45.195Z","type":"feature.pass","id":"recon-506","commit":"75e338d"}

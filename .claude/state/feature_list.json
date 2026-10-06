@@ -1258,8 +1258,15 @@
           "kind": "cmd",
           "cmd": "npm run test:int -- agentos-journal",
           "exitCode": 0,
-          "testedAt": "2026-10-06T15:01:24.250Z",
-          "commit": "7b75a99"
+          "commit": "7b75a99",
+          "testedAt": "2026-10-06T15:01:24.250Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos-journal",
+          "exitCode": 0,
+          "testedAt": "2026-10-06T15:02:44.971Z",
+          "commit": "75e338d"
         }
       ],
       "notes": "HARD",
