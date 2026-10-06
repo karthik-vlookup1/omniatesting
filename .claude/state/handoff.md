@@ -9,8 +9,8 @@
 
 ## Changed This Session
 
-- Commit: 8d93832
-- Files changed: server/src/api/agentos/routes.ts, web/src/app/navigation.ts, web/src/app/routes.tsx, e2e/agentos.spec.ts, plans/recon-505.md, server/src/services/agentos/reassign.service.ts, server/test/fixtures/agentos-reassign-seed.ts, server/test/int/agentos-reassign.test.ts, web/src/features/agentos/AgentosPage.tsx, web/src/features/agentos/IntakeUploadCard.tsx, web/src/features/agentos/LinesTable.tsx, web/src/features/agentos/ReassignModal.tsx, web/src/features/agentos/agentos.test.tsx, web/src/features/agentos/api.ts
+- Commit: 8a2ff06
+- Files changed: (none)
 
 ## Broken Or Unverified
 

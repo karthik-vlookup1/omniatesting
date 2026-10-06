@@ -1200,15 +1200,29 @@
           "kind": "cmd",
           "cmd": "npm run test:int -- agentos-reassign",
           "exitCode": 0,
-          "testedAt": "2026-10-06T14:07:57.707Z",
-          "commit": "8d93832"
+          "commit": "8d93832",
+          "testedAt": "2026-10-06T14:07:57.707Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:e2e -- agentos",
           "exitCode": 0,
-          "testedAt": "2026-10-06T14:08:22.437Z",
-          "commit": "8d93832"
+          "commit": "8d93832",
+          "testedAt": "2026-10-06T14:08:22.437Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos-reassign",
+          "exitCode": 0,
+          "testedAt": "2026-10-06T14:09:23.737Z",
+          "commit": "8a2ff06"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:e2e -- agentos",
+          "exitCode": 0,
+          "testedAt": "2026-10-06T14:09:47.732Z",
+          "commit": "8a2ff06"
         }
       ],
       "notes": "HARD",

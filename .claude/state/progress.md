@@ -145,5 +145,5 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 - Passing features: 22
 - Blocked features: recon-506
 - Verification runs this session: 1
-- Commit: 8d93832
+- Commit: 8a2ff06
 - Next best step: (none — check feature_list.json)
