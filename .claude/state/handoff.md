@@ -9,12 +9,16 @@
 
 ## Changed This Session
 
-- Commit: 565d83c
-- Files changed: (none)
+- Commit: 8bf9367
+- Files changed: Accounts procedure (1).docx, docs/agentos/field-spec.md, docs/exec-plans/active/2026-10-06-agentos-receipts.md, letmc guide/actions page ,4th step.png, letmc guide/first step.png, letmc guide/journal transfer.png, letmc guide/second step.png, letmc guide/take payment 5th step.png, letmc guide/tenancy_details/admin details.png, letmc guide/tenancy_details/bank details.png, letmc guide/tenancy_details/notes.png, letmc guide/tenancy_details/personal details.png, letmc guide/tenancy_details/rent chasing details.png, letmc guide/tenancy_details/tenancy details.png, letmc guide/third step.png, omnia_test_Data/Bank Statement 2025 _26 final - Apollo HSBC.csv
 
 ## Broken Or Unverified
 
 - Blocked: none
+
+### Verification failures this session
+
+- `(command not recorded)` exited ? (recon-401)
 
 ## Waiting on a human
 

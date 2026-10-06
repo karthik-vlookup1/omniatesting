@@ -19,10 +19,10 @@ over time — distinct from the evaluator rubric, which grades one session's out
 | Domain | Grade | Verification | Agent Legibility | Test Stability | Key Gaps | Last Updated |
 | --- | --- | --- | --- | --- | --- | --- |
 | phase-0-foundation | B | 4/4 passing | n/a (no automated signal) | n/a (no automated signal) | - | 2026-10-05 |
-| phase-1-tenants | C | 1/5 passing | n/a (no automated signal) | n/a (no automated signal) | recon-101 (in_progress), recon-103 (not_started), recon-104 (not_started), recon-105 (not_started) | 2026-10-05 |
-| phase-2-matching | C | 3/4 passing | n/a (no automated signal) | n/a (no automated signal) | recon-204 (not_started) | 2026-10-05 |
-| phase-3-outputs | C | 2/3 passing | n/a (no automated signal) | n/a (no automated signal) | recon-301 (not_started) | 2026-10-05 |
-| phase-4-reporting | D | 0/1 passing | n/a (no automated signal) | n/a (no automated signal) | recon-401 (not_started) | 2026-10-05 |
+| phase-1-tenants | A | 5/5 passing | n/a (no automated signal) | n/a (no automated signal) | - | 2026-10-05 |
+| phase-2-matching | A | 4/4 passing | n/a (no automated signal) | n/a (no automated signal) | - | 2026-10-05 |
+| phase-3-outputs | A | 3/3 passing | n/a (no automated signal) | n/a (no automated signal) | - | 2026-10-05 |
+| phase-4-reporting | B | 1/1 passing | n/a (no automated signal) | n/a (no automated signal) | - | 2026-10-05 |
 
 ## Architectural Layers
 
@@ -124,4 +124,10 @@ over time — distinct from the evaluator rubric, which grades one session's out
 
 - Changes: regenerated Product Domains and Architectural Layers from feature status, evaluator verdicts, and rule violations (`hx quality update`).
 - Domains promoted: -
+- Domains demoted: -
+
+### 2026-10-05
+
+- Changes: regenerated Product Domains and Architectural Layers from feature status, evaluator verdicts, and rule violations (`hx quality update`).
+- Domains promoted: phase-1-tenants (C -> A), phase-2-matching (C -> A), phase-3-outputs (C -> A), phase-4-reporting (D -> B)
 - Domains demoted: -
