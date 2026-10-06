@@ -162,6 +162,10 @@ CSV header (exact order): `Date,TID,Payer Name,Amount,Type,Will deposit to,Descr
 
 Matching runs automatically during the upload transaction. Every intake line is assigned one of four statuses: `matched`, `name_mismatch`, `deposit_mismatch`, or `unmatched`. Matching requires an exact TID. Names are normalised: trimmed, lowercased, whitespace collapsed to single spaces, and the leading TID prefix stripped from the tenant's forename. Precedence (first match wins): blank or unknown TID → unmatched; name mismatch → name_mismatch; deposit mismatch → deposit_mismatch; otherwise → matched. For joint tenants, a name match on any tenant counts. No fuzzy or suggestion matching is performed. The upload response includes `matchCounts` with totals for each status.
 
+## 7. Exporting to agentOS (Take a Payment)
+
+A writer exports one intake batch's `matched` lines via `POST /api/agentos/exports` (201 with export id), immutably stored as a BOM + CRLF CSV. Each line is exported only once; a global advisory lock prevents double exports. The CSV columns are: TID, Payment From, Will deposit to, Type, Amount, Description and Card Authorisation Code. Formula-safe cells use `'` prefix. Staff download via `GET /api/agentos/exports/:id.csv` (200 text/csv), enter each row in agentOS Take a Payment, then `POST /api/agentos/lines/:id/posted` (200) to mark it imported. Migration 014 adds `agentos_exports` table and posting columns to `agentos_intake_lines`.
+
 ## Open questions
 1. `second step.png` is identical to `first step.png`. What happens between search and record (click hit? choose among several hits)?
 2. Where is "Take a Payment" in the Actions menu? The visible list ends at "Send Chase Letter". Is it lower in Accounting, or is "Make a Payment" the same thing?

@@ -1,0 +1,7 @@
+Date,TID,Payer Name,Amount,Type,Will deposit to,Description
+01/09/2026,9201,Alex Testperson,100.00,Cash,Test Lettings - Client Account,Rent Sept
+02/09/2026,9202,Mary Jo O'Testson,"1,045.00",BACS,Test Lettings - Client Account,"=HYPERLINK(""x""), ref 7"
+03/09/2026,9201,Alex Testpersen,10.00,Cash,Test Lettings - Client Account,nm
+04/09/2026,9203,Sam Sampleton,20.00,Cash,Test Lettings - Client Account,dm
+05/09/2026,,Alex Testperson,5.00,Cash,Test Lettings - Client Account,blank
+06/09/2026,9201,ALEX TESTPERSON,0.01,Cash,test lettings - client account,

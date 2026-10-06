@@ -1122,8 +1122,8 @@
           "kind": "cmd",
           "cmd": "npm run test:int -- agentos-match",
           "exitCode": 0,
-          "testedAt": "2026-10-06T13:27:30.642Z",
-          "commit": "03d1323"
+          "commit": "03d1323",
+          "testedAt": "2026-10-06T13:27:30.642Z"
         }
       ],
       "notes": "HARD",
@@ -1152,12 +1152,21 @@
           "cmd": "npm run test:int -- agentos-export"
         }
       ],
-      "status": "not_started",
-      "evidence": [],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos-export",
+          "exitCode": 0,
+          "testedAt": "2026-10-06T13:42:18.244Z",
+          "commit": "d3780aa"
+        }
+      ],
       "notes": "HARD",
       "dependsOn": [
         "recon-503"
-      ]
+      ],
+      "contractHash": "a77cc45e68b2e552"
     },
     {
       "id": "recon-505",

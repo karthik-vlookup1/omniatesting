@@ -1,0 +1,4 @@
+﻿TID,Payment From,Will deposit to,Type,Amount,Description and Card Authorisation Code
+9201,9201 Alex Testperson,Test Lettings - Client Account,Cash,100.00,Rent Sept | Recon 00000000-0000-4000-8000-000000000002
+9202,9202 Mary Jo O'Testson,Test Lettings - Client Account,BACS,1045.00,"'=HYPERLINK(""x""), ref 7 | Recon 00000000-0000-4000-8000-000000000003"
+9201,9201 Alex Testperson,Test Lettings - Client Account,Cash,0.01,Recon 00000000-0000-4000-8000-000000000007

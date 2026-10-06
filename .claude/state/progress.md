@@ -11,7 +11,7 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 - Repository root: {{PROJECT_ROOT}}
 - Standard startup: `hx start`
 - Standard verification: `hx verify <feature-id>`
-- Current highest-priority unfinished feature: recon-504
+- Current highest-priority unfinished feature: recon-505
 - Current blocker: recon-506
 
 ## Session Log
@@ -142,8 +142,8 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 
 - Date: 2026-10-06
 - Active feature: (none)
-- Passing features: 20
+- Passing features: 21
 - Blocked features: recon-506
 - Verification runs this session: 1
-- Commit: 03d1323
-- Next best step: recon-504 — Post to agentOS: Take a Payment CSV export (TID, Payment From, Will deposit to, Type, Amount, Description and Card Authorisation Code), export-once, mark posted
+- Commit: d3780aa
+- Next best step: recon-505 — agentOS review UI at /agentos: upload, status filter, reassign TID (audited), export, mark posted
