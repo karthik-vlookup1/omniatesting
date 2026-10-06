@@ -146,6 +146,12 @@ Confidential Notes (textarea), Referencing Notes (textarea).
 | (grid footer) | computed total | n/a | `£0.00`; grid pages 5 items per page |
 Then press **Journal Transfer** (or Close).
 
+## 4. Test data
+
+Fixture: `fixtures/agentos/tenants.csv` (12 synthetic rows, TIDs 9101–9112). Headers: `TID, Tenant ID, CRM ID, Forename, Surname, Managed by, Residence, Tenancy, Is Head Tenant, Will deposit to`.
+Loaded by `seedAgentosTenants()` in `server/src/services/agentos/seed.ts` into `agentos_tenants` table (migration 012).
+All-or-nothing upsert on TID, idempotent. Tenancy ID links by `tenancies.tid` with no foreign key (other suites TRUNCATE tenancies).
+
 ## Open questions
 1. `second step.png` is identical to `first step.png`. What happens between search and record (click hit? choose among several hits)?
 2. Where is "Take a Payment" in the Actions menu? The visible list ends at "Send Chase Letter". Is it lower in Accounting, or is "Make a Payment" the same thing?

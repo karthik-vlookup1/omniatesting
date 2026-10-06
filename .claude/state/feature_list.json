@@ -979,8 +979,8 @@
           "kind": "cmd",
           "cmd": "npm run test:e2e -- dashboard",
           "exitCode": 1,
-          "testedAt": "2026-10-06T10:25:52.879Z",
-          "commit": "8bf9367"
+          "commit": "8bf9367",
+          "testedAt": "2026-10-06T10:25:52.879Z"
         }
       ],
       "notes": "",
@@ -1011,12 +1011,35 @@
           "cmd": "npm run test:int -- agentos-seed"
         }
       ],
-      "status": "not_started",
-      "evidence": [],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos-seed",
+          "exitCode": 0,
+          "commit": "f3ecfd6",
+          "testedAt": "2026-10-06T13:00:25.097Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos-seed",
+          "exitCode": 0,
+          "commit": "f3ecfd6",
+          "testedAt": "2026-10-06T13:00:31.989Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos-seed",
+          "exitCode": 0,
+          "testedAt": "2026-10-06T13:00:43.115Z",
+          "commit": "f3ecfd6"
+        }
+      ],
       "notes": "MEDIUM",
       "dependsOn": [
         "recon-102"
-      ]
+      ],
+      "contractHash": "5d04ce3bdc187176"
     },
     {
       "id": "recon-502",
@@ -1155,10 +1178,10 @@
         }
       ],
       "status": "blocked",
-      "blockedBy": "human",
-      "blockedReason": "Needs field-spec Q6: when Journal Transfer is used, Nominal Code and Account Type values, zero-sum rule",
       "evidence": [],
       "notes": "HARD",
+      "blockedReason": "Needs field-spec Q6: when Journal Transfer is used, Nominal Code and Account Type values, zero-sum rule",
+      "blockedBy": "human",
       "dependsOn": [
         "recon-505"
       ]
