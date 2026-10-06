@@ -60,6 +60,7 @@ export const NAV_SECTIONS: NavSection[] = [
       { label: 'Payer accounts', to: '/payer-accounts', icon: IconWallet },
       { label: 'Vico export', to: '/vico', icon: IconFileExport, capability: 'finance' },
       { label: 'Statement download', to: '/export/statement', icon: IconFileSpreadsheet, capability: 'write' },
+      { label: 'agentOS receipts', to: '/agentos', icon: IconFileImport, matchPrefix: true },
       { label: 'Xero', to: '/xero', icon: IconSend, capability: 'finance' },
       { label: 'CSV profiles', to: '/csv-profiles', icon: IconBuildingBank },
       { label: 'LetMC import', to: '/letmc-import', icon: IconFileImport, capability: 'finance' },

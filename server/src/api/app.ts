@@ -25,6 +25,7 @@ import {
 import { purgeExpiredSessions } from '../services/auth.service.js';
 import { authenticate, csrfGuard } from './auth/middleware.js';
 import { authRouter, usersRouter } from './auth/routes.js';
+import { agentosRouter } from './agentos/routes.js';
 import { bankAccountsRouter, importsRouter } from './ingest/routes.js';
 import { letmcImportRouter } from './imports/letmc.routes.js';
 import { bankAccountAdminRouter } from './bank-account/routes.js';
@@ -137,6 +138,7 @@ export function createApp({ config, pool, logger, vecoSync, xero, vecoSource }: 
   );
   app.use('/api/rent', rentRouter({ pool }));
   app.use('/api/payer-accounts', payerAccountsRouter({ pool, hashKey: config.hashKey }));
+  app.use('/api/agentos', agentosRouter({ pool }));
 
   app.use('/api', (_req, _res, next) => next(new AppError('not_found', 'Not found')));
   app.use(errorHandler);

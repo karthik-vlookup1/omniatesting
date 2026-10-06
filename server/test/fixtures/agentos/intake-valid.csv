@@ -1,0 +1,8 @@
+Date,TID,Payer Name,Amount,Type,Will deposit to,Description
+02/03/2026,9101,Alice Example,873.22,Cash,Test Deposit Account,March rent
+03/03/2026,9102,Bob Sample,"1,045.00",Cash,Test Deposit Account,March rent
+04/03/2026,,Carol Placeholder,£50.00,Cash,Test Deposit Account,No TID given
+
+05/03/2026,9104,Dan Synthetic,12.5,BACS,Test Deposit Account,Part payment
+06/03/2026,9105,Eve Fictional,600,Cash,Test Deposit Account,
+07/03/2026,9106,Fay Testcase,0.01,Cash,Test Deposit Account,Penny

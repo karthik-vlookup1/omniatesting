@@ -1,0 +1,13 @@
+TID,Tenant ID,CRM ID,Forename,Surname,Managed by,Residence,Tenancy,Is Head Tenant,Will deposit to
+9101,ten-9001,crm-9501,9101 Alex,Testperson,Test Lettings,"Room 1, Flat 1, Test House, Sample Estate, London, ZZ1 1ZZ",Signed Periodic Tenancy (First Let) 01/02/2025 - No End Date,YES,Test Lettings - Client Account
+9102,ten-9002,crm-9502,9102 Blair,Sampleton,Sample Estates,"Room 2, Flat 1, Test House, Sample Estate, London, ZZ1 1ZZ",Signed Periodic Tenancy (First Let) 01/03/2025 - No End Date,YES,Sample Estates - Client Account
+9103,ten-9003,crm-9503,9103 Casey,Exampleby,Test Lettings,"Room 3, Flat 1, Test House, Sample Estate, London, ZZ1 1ZZ",Signed Fixed Term Tenancy (First Let) 01/04/2025 - 31/03/2026,NO,Test Lettings - Client Account
+9104,ten-9004,crm-9504,9104 Drew,Fakeman,Sample Estates,"Room 4, Flat 1, Test House, Sample Estate, London, ZZ1 1ZZ",Signed Periodic Tenancy (Renewal) 01/05/2025 - No End Date,YES,Sample Estates - Client Account
+9105,ten-9005,crm-9505,9105 Emery,Mockley,Test Lettings,"Room 5, Flat 2, Test House, Sample Estate, London, ZZ1 1ZZ",Signed Periodic Tenancy (First Let) 01/06/2025 - No End Date,YES,Test Lettings - Client Account
+9106,ten-9006,crm-9506,9106 Finn,Dummerton,Sample Estates,"Room 6, Flat 2, Test House, Sample Estate, London, ZZ1 1ZZ",Signed Periodic Tenancy (First Let) 01/07/2025 - No End Date,NO,Sample Estates - Client Account
+9107,ten-9007,crm-9507,9107 Gray,Placeholder,Test Lettings,"Room 7, Flat 2, Test House, Sample Estate, London, ZZ1 1ZZ",Signed Fixed Term Tenancy (First Let) 01/08/2025 - 31/07/2026,YES,Test Lettings - Client Account
+9108,ten-9008,crm-9508,9108 Harper,Notreal,Sample Estates,"Room 8, Flat 2, Test House, Sample Estate, London, ZZ1 1ZZ",Signed Periodic Tenancy (First Let) 01/09/2025 - No End Date,YES,Sample Estates - Client Account
+9109,ten-9009,crm-9509,9109 Indy,Testwell,Test Lettings,"Room 9, Flat 3, Test House, Sample Estate, London, ZZ1 1ZZ",Signed Periodic Tenancy (Renewal) 01/10/2025 - No End Date,YES,Test Lettings - Client Account
+9110,ten-9010,crm-9510,9110 Jules,Sampleford,Sample Estates,"Room 10, Flat 3, Test House, Sample Estate, London, ZZ1 1ZZ",Signed Periodic Tenancy (First Let) 01/11/2025 - No End Date,NO,Sample Estates - Client Account
+9111,ten-9011,crm-9511,9111 Kit,Fixtureson,Test Lettings,"Room 11, Flat 3, Test House, Sample Estate, London, ZZ1 1ZZ",Signed Periodic Tenancy (First Let) 01/12/2025 - No End Date,YES,Test Lettings - Client Account
+9112,ten-9012,crm-9512,9112 Lane,Synthwick,Sample Estates,"Room 12, Flat 3, Test House, Sample Estate, London, ZZ1 1ZZ",Signed Periodic Tenancy (First Let) 01/01/2026 - No End Date,YES,Sample Estates - Client Account

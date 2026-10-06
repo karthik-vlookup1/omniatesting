@@ -1,6 +1,6 @@
 {
   "project": "omnia-recon",
-  "last_updated": "2026-10-05",
+  "last_updated": "2026-10-06",
   "rules": {
     "single_active_feature": true,
     "passing_requires_evidence": true,
@@ -972,8 +972,15 @@
           "kind": "cmd",
           "cmd": "npm run test:e2e -- dashboard",
           "exitCode": 0,
-          "testedAt": "2026-10-05T15:46:32.843Z",
-          "commit": "565d83c"
+          "commit": "565d83c",
+          "testedAt": "2026-10-05T15:46:32.843Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:e2e -- dashboard",
+          "exitCode": 1,
+          "commit": "8bf9367",
+          "testedAt": "2026-10-06T10:25:52.879Z"
         }
       ],
       "notes": "",
@@ -982,6 +989,274 @@
         "recon-301"
       ],
       "contractHash": "11d5feac453bbf71"
+    },
+    {
+      "id": "recon-501",
+      "priority": 1001,
+      "area": "phase-5-agentos",
+      "title": "Synthetic agentOS tenant seed: agentos_tenants table (TID, ten-/crm- refs, forename '<TID> <First>', surname, managed by, residence, tenancy descriptor, deposit-to client account) + fixture CSV + seed function",
+      "user_visible_behavior": "",
+      "scope": [
+        "db/migrations/012_*",
+        "server/src/{domain,services}/agentos/seed*",
+        "server/src/domain/agentos/types.ts",
+        "fixtures/agentos/**",
+        "server/test/**/agentos-seed*",
+        "plans/**",
+        "docs/agentos/**"
+      ],
+      "verification": [
+        {
+          "level": "integration",
+          "cmd": "npm run test:int -- agentos-seed"
+        }
+      ],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos-seed",
+          "exitCode": 0,
+          "commit": "f3ecfd6",
+          "testedAt": "2026-10-06T13:00:25.097Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos-seed",
+          "exitCode": 0,
+          "commit": "f3ecfd6",
+          "testedAt": "2026-10-06T13:00:31.989Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos-seed",
+          "exitCode": 0,
+          "commit": "f3ecfd6",
+          "testedAt": "2026-10-06T13:00:43.115Z"
+        }
+      ],
+      "notes": "MEDIUM",
+      "dependsOn": [
+        "recon-102"
+      ],
+      "contractHash": "5d04ce3bdc187176"
+    },
+    {
+      "id": "recon-502",
+      "priority": 1002,
+      "area": "phase-5-agentos",
+      "title": "Formatted bank record intake: fixed CSV Date,TID,Payer Name,Amount,Type,Will deposit to,Description; incoming only; whole-file reject with line numbers; file-hash dedupe; batches + lines tables",
+      "user_visible_behavior": "",
+      "scope": [
+        "db/migrations/013_*",
+        "server/src/{domain,services,api}/agentos/intake*",
+        "server/src/api/agentos/routes.ts",
+        "server/src/api/app.ts",
+        "server/test/**/agentos-intake*",
+        "server/test/fixtures/agentos/**",
+        "plans/**"
+      ],
+      "verification": [
+        {
+          "level": "unit",
+          "cmd": "npm run test:unit -- agentos-intake"
+        },
+        {
+          "level": "integration",
+          "cmd": "npm run test:int -- agentos-intake"
+        }
+      ],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:unit -- agentos-intake",
+          "exitCode": 0,
+          "commit": "8364973",
+          "testedAt": "2026-10-06T13:12:39.064Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos-intake",
+          "exitCode": 0,
+          "commit": "8364973",
+          "testedAt": "2026-10-06T13:12:43.077Z"
+        }
+      ],
+      "notes": "HARD",
+      "dependsOn": [
+        "recon-501"
+      ],
+      "contractHash": "5e9d58455037f950"
+    },
+    {
+      "id": "recon-503",
+      "priority": 1003,
+      "area": "phase-5-agentos",
+      "title": "Match formatted lines to agentOS TID: exact TID + normalised name + deposit-to check -> matched / name_mismatch / deposit_mismatch / unmatched; no fuzzy auto-match",
+      "user_visible_behavior": "",
+      "scope": [
+        "server/src/{domain,services}/agentos/match*",
+        "server/src/services/agentos/intake*",
+        "server/test/**/agentos-match*",
+        "server/test/fixtures/agentos/**",
+        "plans/**",
+        "server/test/int/agentos-intake.test.ts"
+      ],
+      "verification": [
+        {
+          "level": "integration",
+          "cmd": "npm run test:int -- agentos-match"
+        }
+      ],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos-match",
+          "exitCode": 0,
+          "commit": "03d1323",
+          "testedAt": "2026-10-06T13:21:08.920Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos-match",
+          "exitCode": 0,
+          "commit": "03d1323",
+          "testedAt": "2026-10-06T13:27:30.642Z"
+        }
+      ],
+      "notes": "HARD",
+      "dependsOn": [
+        "recon-502"
+      ],
+      "contractHash": "ca8ec115f0011036"
+    },
+    {
+      "id": "recon-504",
+      "priority": 1004,
+      "area": "phase-5-agentos",
+      "title": "Post to agentOS: Take a Payment CSV export (TID, Payment From, Will deposit to, Type, Amount, Description and Card Authorisation Code), export-once, mark posted",
+      "user_visible_behavior": "",
+      "scope": [
+        "db/migrations/014_*",
+        "server/src/{services,api}/agentos/export*",
+        "server/src/api/agentos/routes.ts",
+        "server/test/**/agentos-export*",
+        "server/test/fixtures/agentos/**",
+        "plans/**"
+      ],
+      "verification": [
+        {
+          "level": "integration",
+          "cmd": "npm run test:int -- agentos-export"
+        }
+      ],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos-export",
+          "exitCode": 0,
+          "commit": "d3780aa",
+          "testedAt": "2026-10-06T13:42:18.244Z"
+        }
+      ],
+      "notes": "HARD",
+      "dependsOn": [
+        "recon-503"
+      ],
+      "contractHash": "a77cc45e68b2e552"
+    },
+    {
+      "id": "recon-505",
+      "priority": 1005,
+      "area": "phase-5-agentos",
+      "title": "agentOS review UI at /agentos: upload, status filter, reassign TID (audited), export, mark posted",
+      "user_visible_behavior": "Accounts staff upload the formatted bank record, fix non-matched lines, download the Take a Payment sheet and tick lines as posted.",
+      "scope": [
+        "web/src/features/agentos/**",
+        "web/src/app/routes.tsx",
+        "web/src/app/navigation.ts",
+        "server/src/{services,api}/agentos/reassign*",
+        "server/src/api/agentos/routes.ts",
+        "server/test/**/agentos-reassign*",
+        "e2e/agentos*",
+        "plans/**"
+      ],
+      "verification": [
+        {
+          "level": "integration",
+          "cmd": "npm run test:int -- agentos-reassign"
+        },
+        {
+          "level": "e2e",
+          "cmd": "npm run test:e2e -- agentos"
+        }
+      ],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos-reassign",
+          "exitCode": 0,
+          "commit": "8d93832",
+          "testedAt": "2026-10-06T14:07:57.707Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:e2e -- agentos",
+          "exitCode": 0,
+          "commit": "8d93832",
+          "testedAt": "2026-10-06T14:08:22.437Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos-reassign",
+          "exitCode": 0,
+          "testedAt": "2026-10-06T14:09:23.737Z",
+          "commit": "8a2ff06"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:e2e -- agentos",
+          "exitCode": 0,
+          "testedAt": "2026-10-06T14:09:47.732Z",
+          "commit": "8a2ff06"
+        }
+      ],
+      "notes": "HARD",
+      "dependsOn": [
+        "recon-504"
+      ],
+      "contractHash": "174d04bbb7988521"
+    },
+    {
+      "id": "recon-506",
+      "priority": 1006,
+      "area": "phase-5-agentos",
+      "title": "Journal Transfer export (Description, Nominal Code, entries Branch/Person/Property/Account Type/Account Balance/Amount) - blocked on field-spec Q6",
+      "user_visible_behavior": "",
+      "scope": [
+        "server/src/{services,api}/agentos/journal*",
+        "server/test/**/agentos-journal*",
+        "web/src/features/agentos/**",
+        "plans/**"
+      ],
+      "verification": [
+        {
+          "level": "integration",
+          "cmd": "npm run test:int -- agentos-journal"
+        }
+      ],
+      "status": "blocked",
+      "evidence": [],
+      "notes": "HARD",
+      "blockedReason": "Needs field-spec Q6: when Journal Transfer is used, Nominal Code and Account Type values, zero-sum rule",
+      "blockedBy": "human",
+      "dependsOn": [
+        "recon-505"
+      ]
     }
   ]
 }

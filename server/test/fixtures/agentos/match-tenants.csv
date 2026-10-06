@@ -1,0 +1,4 @@
+TID,Tenant ID,CRM ID,Forename,Surname,Managed by,Residence,Tenancy,Is Head Tenant,Will deposit to
+9201,ten-9201,crm-9701,9201 Alex,Testperson,Test Lettings,"Room 1, Flat 2, Test House, Sample Estate, London, ZZ1 1ZZ",Signed Periodic Tenancy (First Let) 01/02/2025 - No End Date,YES,Test Lettings - Client Account
+9202,ten-9202,crm-9702,9202 Mary  Jo,O'Testson,Test Lettings,"Room 2, Flat 2, Test House, Sample Estate, London, ZZ1 1ZZ",Signed Periodic Tenancy (First Let) 01/03/2025 - No End Date,YES,Test Lettings - Client Account
+9203,ten-9203,crm-9703,9203 Sam,Sampleton,Other Branch,"Room 3, Flat 2, Test House, Sample Estate, London, ZZ1 1ZZ",Signed Periodic Tenancy (First Let) 01/04/2025 - No End Date,YES,Other Branch - Client Account

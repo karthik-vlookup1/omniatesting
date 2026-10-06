@@ -1,0 +1,5 @@
+Date,TID,Payer Name,Amount,Type,Will deposit to,Description
+02/03/2026,9101,Alice Example,873.22,Cash,Test Deposit Account,ok
+03/03/2026,9102,Bob Sample,-120.00,Cash,Test Deposit Account,refund
+04/03/2026,9103,Carol Placeholder,50.00,Cash,Test Deposit Account,ok
+05/03/2026,9104,Dan Synthetic,0.00,Cash,Test Deposit Account,zero
