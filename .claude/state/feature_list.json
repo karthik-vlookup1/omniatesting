@@ -1466,22 +1466,43 @@
           "kind": "cmd",
           "cmd": "npm run test:unit -- agentos-sync",
           "exitCode": 0,
-          "testedAt": "2026-10-07T11:59:45.081Z",
-          "commit": "f31a68b"
+          "commit": "f31a68b",
+          "testedAt": "2026-10-07T11:59:45.081Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:int -- agentos-sync",
           "exitCode": 0,
-          "testedAt": "2026-10-07T11:59:47.408Z",
-          "commit": "f31a68b"
+          "commit": "f31a68b",
+          "testedAt": "2026-10-07T11:59:47.408Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:int -- agentos",
           "exitCode": 0,
-          "testedAt": "2026-10-07T12:00:00.017Z",
-          "commit": "f31a68b"
+          "commit": "f31a68b",
+          "testedAt": "2026-10-07T12:00:00.017Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:unit -- agentos-sync",
+          "exitCode": 0,
+          "testedAt": "2026-10-07T13:26:42.891Z",
+          "commit": "9eb7d5e"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos-sync",
+          "exitCode": 0,
+          "testedAt": "2026-10-07T13:26:45.785Z",
+          "commit": "9eb7d5e"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos",
+          "exitCode": 0,
+          "testedAt": "2026-10-07T13:26:58.922Z",
+          "commit": "9eb7d5e"
         }
       ],
       "notes": "HARD",
