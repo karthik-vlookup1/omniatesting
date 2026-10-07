@@ -122,4 +122,15 @@ Final gate: `npm run lint`, `npm run typecheck`, `npm run test:web` (baseline be
 | 5. Accounts pages restyle | done | Restyled to PageHeader + Card sections + Loading/Error/Empty states: agentOS receipts (FileButton keeps `data-testid=agentos-file`), Vico export, Xero, Statement download. Upload/Review/Receipts already consistent; Recent imports period no longer wraps. |
 | 6. Lettings pages restyle | done | Properties, Landlords, Payer accounts, Rent lookup already consistent (checked). |
 | 7. Office pages restyle | done | CSV profiles restyled (PageHeader, card table, no-wrap cells, confirm before Add default banks). Users, Branches, Bank accounts, LetMC import already consistent. Read-only role checked in browser (Actions disabled, statement explains). |
-| 8. Error pages, docs update, lint/typecheck/tests, hx verify | todo | |
+| 8. Error pages, docs update, lint/typecheck/tests, hx verify | done (verify pending) | 404/403/error pages inherit the frame (checked). Every save now confirms: `components/useConfirmAction.tsx` (+2 tests) wraps BenefitAward/PayerSplit/PaymentMethod/AddPayerAccount; `e2e/rent.spec.ts` clicks the new confirm (e2e **not run** here: needs Playwright Chromium + its own API on :3001). docs/FRONTEND.md §4 corrected, §7 added; FRONTEND_REFERENCE.md §4 points here. Final gate 2026-10-07: `npm run lint` exit 0, `npm run typecheck` clean, `npm run test:web` 26 files / 184 tests passed. 5 hx lessons recorded (`--id recon-601`). |
+
+## How to continue (next person)
+
+1. Apply the feature entry once (protected file): `node .claude/approvals/recon-601/apply.cjs`, then
+   `node .claude/bin/hx.cjs feature start recon-601` and `node .claude/bin/hx.cjs verify recon-601 --attest "<observed numbers>"`.
+2. Run the e2e suite where Playwright Chromium is installed (`npx playwright install chromium`), with the dev API
+   stopped (the e2e config starts its own on :3001): `npm run test:e2e`. Spec touched: `e2e/rent.spec.ts`.
+3. Nothing is pushed: commits are local on `update/agentos-receipts` (D2). Push only when the user says so.
+4. Not built because there is no backend for them (D5): LetMC Diary/Inbox/Leads/Sales/Maintenance, calls/SMS logs,
+   AML/R2R, CRM, notes, manual Take a Payment, tenant contact details, rent-chasing workflow fields.
+

@@ -1,7 +1,9 @@
 import { Alert, Button, Group, Modal, NativeSelect, Stack, TextInput } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { useState } from 'react';
+import { useConfirmAction } from '../../components';
 import { errorMessage } from '../../lib/api';
+import { formatDate } from '../../lib/format';
 import { useAddSplit, type SplitInput } from './api';
 import type { ModalProps } from './BenefitAwardModal';
 import { parsePounds } from './money';
@@ -15,6 +17,7 @@ export function PayerSplitModal({ tid, opened, onClose }: ModalProps) {
 }
 
 function SplitForm({ tid, onDone }: { tid: string; onDone: () => void }) {
+  const confirm = useConfirmAction();
   const add = useAddSplit(tid);
   const [payer, setPayer] = useState<SplitInput['payer']>('other_third_party');
   const [basis, setBasis] = useState<'percent' | 'fixed'>('percent');
@@ -36,17 +39,20 @@ function SplitForm({ tid, onDone }: { tid: string; onDone: () => void }) {
     }
     if (!from) return setProblem('Choose the date the split starts');
     setProblem(null);
-    add.mutate(input, {
-      onSuccess: () => {
-        notifications.show({ color: 'teal', title: 'Payer split added', message: 'The rent account has been updated.' });
-        onDone();
-      },
-    });
+    confirm.ask({ title: 'Add this payer split?', message: `A new split from ${formatDate(from)}. It changes who owes each rent period from that date.`, confirmLabel: 'Add split' }, () =>
+      add.mutate(input, {
+        onSuccess: () => {
+          notifications.show({ color: 'teal', title: 'Payer split added', message: 'The rent account has been updated.' });
+          onDone();
+        },
+      }),
+    );
   };
 
   const message = problem ?? (add.isError ? errorMessage(add.error) : null);
   return (
     <form noValidate onSubmit={submit}>
+      {confirm.dialog}
       <Stack gap="md">
         <NativeSelect
           label="Payer"

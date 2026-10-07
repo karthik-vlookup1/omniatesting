@@ -47,39 +47,17 @@ the hooks/functions exported by `data/<domain>`.
 | `features/<feature>/` | Pages and feature-only components |
 | `app/` | Router (lazy routes), AppShell layout, navigation, auth guards, not-found / forbidden |
 
-## 4. Real vs mock data
+## 4. Real data only
 
-Only these endpoints exist in the backend today (`server/src/api/auth/routes.ts`):
+Every screen now calls the real backend (`server/src/api/**/routes.ts`); the full route list with role
+guards is in `plans/recon-601.md` ("API map"). The one exception is the dev-only sample-data mode
+`npm run dev:preview` (`web/src/dev/preview*`), which is loaded only in that Vite mode, is stripped
+from every build, and is never used by the running app.
 
-| Method | Path | Notes |
-|---|---|---|
-| POST | `/api/auth/login` | body `{ email, password }` → `{ user }`; sets HttpOnly `omnia_sid` cookie. 20 attempts / 15 min / IP |
-| POST | `/api/auth/logout` | 204; clears the cookie |
-| GET | `/api/auth/me` | `{ user }` or 401 |
-| POST | `/api/auth/password` | body `{ currentPassword, newPassword }` → 204; other sessions end |
-| GET | `/api/users` | admin only → `{ users: UserSummary[] }` |
-| POST | `/api/users` | admin only, body `{ email, fullName, role, password }` → 201 `{ user }` |
-| PATCH | `/api/users/:id` | admin only, body any of `{ fullName, role, isActive, password }` → `{ user }` |
-| GET | `/api/health` | `{ status: 'ok' }` / 503 |
-
-`user` is `{ id, email, fullName, role }`, role ∈ `admin | accounts | staff | readonly`.
-`UserSummary` adds `isActive, lastLoginAt, lockedUntil, createdAt` (ISO strings).
-
-Errors are `{ error: { code, message, details? } }`. Codes: `bad_request` 400 (details =
-`[{ path, message }]`), `unauthenticated` 401, `invalid_credentials` 401, `forbidden` 403,
-`not_found` 404, `conflict` 409, `account_locked` 423, `too_many_requests` 429 (`Retry-After`),
-`internal` 500.
-
-**Everything else (imports, transactions, review, receipts, tenancies, exports, Xero, dashboard)
-has no endpoint yet.** Those domains' `data/<domain>/api.ts` return typed, synthetic mock data
-shaped after the database tables and views (`import_batches`, `bank_transactions`,
-`match_suggestions`, `receipts`, `allocations`, `v_bank_statement_enriched`, `v_vico_export`, ...).
-Rules for mocks:
-
-- one module per domain; swapping mock → real changes only that module;
-- no invented URLs: mock modules are plain async functions, not fake HTTP routes;
-- screens backed by mocks show a visible **Preview data** marker;
-- mocks never compute money rules; fixtures carry the values the server would return.
+`user` is `{ id, email, fullName, role }`, role ∈ `admin | accounts | staff | readonly`; what each
+role may do is `web/src/data/auth/permissions.ts` (capabilities `write`, `finance`, `settings`,
+`manageUsers`, `viewFullNi`). Errors are `{ error: { code, message, details? } }`; show `message`,
+branch on `code`.
 
 ## 5. Security
 
@@ -99,3 +77,18 @@ Rules for mocks:
 - TanStack Query: `staleTime` 30 s, no refetch on window focus for lists, no retry on 4xx.
 - Search inputs are debounced; list filters live in the URL so views are shareable and cached per key.
 - Large tables render only what is needed (pagination / windowing decided per feature).
+
+## 7. LetMC-style frame (recon-601)
+
+Staff come from LetMC / agentOS, so the UI follows its structure. **Read `plans/recon-601.md` first**:
+decisions, layout, module map, tenant-record mapping, how to run and screenshot, and the progress log.
+
+- Frame: `app/layout/AppLayout.tsx` — navy top bar with module menus (`TopModules`), dark search strip
+  with global tenancy search (`GlobalSearch`) and open-record tabs (`RecordTabs`, state in
+  `lib/recordTabs.ts` + `lib/RecordTabsProvider.tsx`), left "Sections" menu grouped by module
+  (`AppNavbar`). Modules and items: `app/navigation.ts` (`MODULES`).
+- Tenant record: `features/tenancy-record/` at `/tenancies/:tid?view=&tab=` — record menu, count strip,
+  overview cards, Tenant Details tabs, Actions menu with LetMC-style dialogs (`ActionModal`).
+- Theme: navy primary + orange "ember" accent (`theme/theme.ts`), frame colours as CSS variables
+  (`theme/global.css`).
+- Every save asks first: `ConfirmDialog`, or `useConfirmAction` for validate-then-save forms.

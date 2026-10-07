@@ -69,6 +69,8 @@ test('admin sets the rent and a landlord-direct HB award and sees the split and 
   await dialog.getByLabel('Paid to').selectOption('landlord_direct');
   await dialog.getByLabel('Effective from').fill(D);
   await dialog.getByRole('button', { name: 'Add award' }).click();
+  // recon-601: every save asks for confirmation first.
+  await page.getByRole('dialog', { name: 'Add this benefit award?' }).getByRole('button', { name: 'Add award' }).click();
   await expect(dialog).toBeHidden();
 
   const periods = table(page, 'Rent periods').getByRole('row');

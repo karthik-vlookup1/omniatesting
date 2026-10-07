@@ -59,6 +59,10 @@ Server guards: `requireRole()` = admin only; `requireRole('accounts')` = admin +
 
 ## 4. App shell and navigation
 
+> **Superseded by recon-601 (2026-10-07):** the shell is now LetMC-style (top-bar modules Dashboard ·
+> Lettings · Accounts · Office, search strip with open-record tabs, tenant record at `/tenancies/:tid`).
+> See `plans/recon-601.md` and `docs/FRONTEND.md` §7. The route list below still holds.
+
 Layout (exists in `web/src/app/Shell.tsx`): Mantine `AppShell`, header 56px with title **Omnia Recon**,
 the user's full name (`data-testid="current-user"`), a role `Badge`, and **Sign out**. Left navbar
 220px, collapsible on mobile (burger `aria-label="Toggle navigation"`).
