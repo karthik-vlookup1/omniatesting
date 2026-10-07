@@ -63,7 +63,7 @@ export function RecentImportsTable({ reviewHref }: { reviewHref?: (batchId: stri
       header: 'Period',
       cell: (b) =>
         b.periodFrom ? (
-          <Text span fz="sm" className="tabular">
+          <Text span fz="sm" className="tabular" style={{ whiteSpace: 'nowrap' }}>
             {formatDate(b.periodFrom)} – {formatDate(b.periodTo)}
           </Text>
         ) : (

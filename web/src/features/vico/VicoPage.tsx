@@ -1,6 +1,7 @@
-import { Alert, Button, Group, Modal, Paper, Stack, Table, Text, TextInput, Title } from '@mantine/core';
+import { Alert, Button, Card, Group, Modal, Paper, Stack, Table, Text, TextInput, Title } from '@mantine/core';
 import { IconDownload, IconFileExport } from '@tabler/icons-react';
 import { useState } from 'react';
+import { EmptyState, ErrorState, LoadingState, PageHeader } from '../../components';
 import { can, useCurrentUser } from '../../data/auth';
 import { errorMessage } from '../../lib/api';
 import {
@@ -22,8 +23,8 @@ export function VicoPage() {
   const user = useCurrentUser();
   if (!can(user, 'finance')) {
     return (
-      <Stack>
-        <Title order={2}>Vico export</Title>
+      <Stack gap="lg">
+        <PageHeader title="Vico export" />
         <Alert color="yellow">Only admin and accounts users can export to Vico.</Alert>
       </Stack>
     );
@@ -47,9 +48,13 @@ function VicoExportView({ isAdmin }: { isAdmin: boolean }) {
     });
 
   return (
-    <Stack>
-      <Title order={2}>Vico export</Title>
+    <Stack gap="lg">
+      <PageHeader
+        title="Vico export"
+        description="Confirmed receipts go to Vico as one file. Each receipt is exported once; earlier files can be downloaded again."
+      />
 
+      {settings.isError && <ErrorState error={settings.error} title="Vico settings unavailable" onRetry={() => void settings.refetch()} />}
       {settings.data && <BankDetails settings={settings.data} canEdit={isAdmin} />}
 
       {create.isSuccess && (
@@ -63,92 +68,109 @@ function VicoExportView({ isAdmin }: { isAdmin: boolean }) {
         </Alert>
       )}
 
-      <Group justify="space-between">
-        <Text data-testid="vico-pending-summary">
-          {total} {total === 1 ? 'receipt' : 'receipts'} waiting for Vico · {money(pending.data?.totalAmount ?? '0')}
-        </Text>
-        <Button
-          leftSection={<IconFileExport size={16} />}
-          disabled={total === 0 || !configured}
-          onClick={() => setConfirming(true)}
-        >
-          Download Vico file
-        </Button>
-      </Group>
+      <Card>
+        <Stack gap="sm">
+          <Title order={2} fz="md">
+            Waiting for Vico
+          </Title>
+          <Group justify="space-between">
+            <Text data-testid="vico-pending-summary">
+              {total} {total === 1 ? 'receipt' : 'receipts'} waiting for Vico · {money(pending.data?.totalAmount ?? '0')}
+            </Text>
+            <Button
+              leftSection={<IconFileExport size={16} />}
+              disabled={total === 0 || !configured}
+              onClick={() => setConfirming(true)}
+            >
+              Download Vico file
+            </Button>
+          </Group>
 
-      <Table striped aria-label="Receipts waiting for Vico">
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th>Received</Table.Th>
-            <Table.Th>TID</Table.Th>
-            <Table.Th>Tenant</Table.Th>
-            <Table.Th>Bank</Table.Th>
-            <Table.Th>MG/RG</Table.Th>
-            <Table.Th ta="right">Amount</Table.Th>
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>
-          {pending.data?.rows.map((r) => (
-            <Table.Tr key={r.receiptId}>
-              <Table.Td>{ukDate(r.receivedOn)}</Table.Td>
-              <Table.Td>{r.tid}</Table.Td>
-              <Table.Td>{r.tenantName ?? '—'}</Table.Td>
-              <Table.Td>{r.bankCode ?? '—'}</Table.Td>
-              <Table.Td>{r.managementType}</Table.Td>
-              <Table.Td ta="right" style={{ fontVariantNumeric: 'tabular-nums' }}>
-                {money(r.amount)}
-              </Table.Td>
-            </Table.Tr>
-          ))}
-        </Table.Tbody>
-      </Table>
-      {pending.isSuccess && total === 0 && <Text c="dimmed">Every confirmed receipt is already in Vico.</Text>}
+          <Table striped aria-label="Receipts waiting for Vico">
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th>Received</Table.Th>
+                <Table.Th>TID</Table.Th>
+                <Table.Th>Tenant</Table.Th>
+                <Table.Th>Bank</Table.Th>
+                <Table.Th>MG/RG</Table.Th>
+                <Table.Th ta="right">Amount</Table.Th>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>
+              {pending.data?.rows.map((r) => (
+                <Table.Tr key={r.receiptId}>
+                  <Table.Td>{ukDate(r.receivedOn)}</Table.Td>
+                  <Table.Td>{r.tid}</Table.Td>
+                  <Table.Td>{r.tenantName ?? '—'}</Table.Td>
+                  <Table.Td>{r.bankCode ?? '—'}</Table.Td>
+                  <Table.Td>{r.managementType}</Table.Td>
+                  <Table.Td ta="right" style={{ fontVariantNumeric: 'tabular-nums' }}>
+                    {money(r.amount)}
+                  </Table.Td>
+                </Table.Tr>
+              ))}
+            </Table.Tbody>
+          </Table>
+          {pending.isPending && <LoadingState variant="skeleton" rows={3} label="Loading receipts waiting for Vico…" />}
+          {pending.isError && <ErrorState error={pending.error} title="Could not load waiting receipts" onRetry={() => void pending.refetch()} />}
+          {pending.isSuccess && total === 0 && (
+            <EmptyState size="sm" title="Nothing waiting" description="Every confirmed receipt is already in Vico." />
+          )}
+        </Stack>
+      </Card>
 
-      <Title order={4} mt="md">
-        Earlier exports
-      </Title>
-      <Text size="xs" c="dimmed">
-        Downloading again rebuilds the file with today's bank details above.
-      </Text>
-      {redownload.isError && (
-        <Alert color="red" role="alert">
-          {errorMessage(redownload.error)}
-        </Alert>
-      )}
-      <Table striped aria-label="Earlier Vico exports">
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th>Exported</Table.Th>
-            <Table.Th>File</Table.Th>
-            <Table.Th ta="right">Receipts</Table.Th>
-            <Table.Th ta="right">Total</Table.Th>
-            <Table.Th />
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>
-          {exports.data?.map((e) => (
-            <Table.Tr key={e.exportId}>
-              <Table.Td>{new Date(e.createdAt).toLocaleString('en-GB')}</Table.Td>
-              <Table.Td>{e.fileName}</Table.Td>
-              <Table.Td ta="right">{e.rows}</Table.Td>
-              <Table.Td ta="right">{money(e.totalAmount)}</Table.Td>
-              <Table.Td>
-                <Button
-                  size="xs"
-                  variant="subtle"
-                  leftSection={<IconDownload size={14} />}
-                  aria-label={`Download ${e.fileName} again`}
-                  loading={redownload.isPending && redownload.variables === e.exportId}
-                  onClick={() => redownload.mutate(e.exportId)}
-                >
-                  Download
-                </Button>
-              </Table.Td>
-            </Table.Tr>
-          ))}
-        </Table.Tbody>
-      </Table>
-      {exports.isSuccess && exports.data.length === 0 && <Text c="dimmed">No exports yet.</Text>}
+      <Card>
+        <Stack gap="sm">
+          <Title order={2} fz="md">
+            Earlier exports
+          </Title>
+          <Text size="xs" c="dimmed">
+            Downloading again rebuilds the file with today's bank details above.
+          </Text>
+          {redownload.isError && (
+            <Alert color="red" role="alert">
+              {errorMessage(redownload.error)}
+            </Alert>
+          )}
+          <Table striped aria-label="Earlier Vico exports">
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th>Exported</Table.Th>
+                <Table.Th>File</Table.Th>
+                <Table.Th ta="right">Receipts</Table.Th>
+                <Table.Th ta="right">Total</Table.Th>
+                <Table.Th />
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>
+              {exports.data?.map((e) => (
+                <Table.Tr key={e.exportId}>
+                  <Table.Td>{new Date(e.createdAt).toLocaleString('en-GB')}</Table.Td>
+                  <Table.Td>{e.fileName}</Table.Td>
+                  <Table.Td ta="right">{e.rows}</Table.Td>
+                  <Table.Td ta="right">{money(e.totalAmount)}</Table.Td>
+                  <Table.Td>
+                    <Button
+                      size="xs"
+                      variant="subtle"
+                      leftSection={<IconDownload size={14} />}
+                      aria-label={`Download ${e.fileName} again`}
+                      loading={redownload.isPending && redownload.variables === e.exportId}
+                      onClick={() => redownload.mutate(e.exportId)}
+                    >
+                      Download
+                    </Button>
+                  </Table.Td>
+                </Table.Tr>
+              ))}
+            </Table.Tbody>
+          </Table>
+          {exports.isPending && <LoadingState variant="skeleton" rows={2} label="Loading earlier exports…" />}
+          {exports.isError && <ErrorState error={exports.error} title="Could not load earlier exports" onRetry={() => void exports.refetch()} />}
+          {exports.isSuccess && exports.data.length === 0 && <EmptyState size="sm" title="No exports yet" description="Files you download from Vico export are listed here." />}
+        </Stack>
+      </Card>
 
       <Modal opened={confirming} onClose={() => setConfirming(false)} title="Export to Vico">
         <Stack>
