@@ -82,6 +82,26 @@ describe('GET /tenants', () => {
   });
 });
 
+describe('NULL-tid api tenant rows (no_tid)', () => {
+  it('are not listed and never matched by TID, and reassign still works', async () => {
+    await pool.query(
+      `INSERT INTO agentos_tenants (tid, forename, surname, managed_by, residence, tenancy_descriptor, deposit_to, source, agentos_oid, sync_flags)
+       VALUES (NULL, 'No Tid', 'Person', 'x', 'x', 'x', 'x', 'api', 'aaaa-bbbb-cccc-dddd', '{no_tid}')`,
+    );
+    try {
+      const list = await get('/api/agentos/tenants', 'readonly');
+      expect(list.status).toBe(200);
+      expect(list.body.tenants.map((t: { tid: string | null }) => t.tid)).toEqual(['9201', '9202', '9203']);
+      const res = await reassign(3, 'staff', '9202');
+      expect(res.status).toBe(200);
+      expect(res.body.line.agentosTenantId).toBe(tenantIds['9202']);
+      expect((await reassign(3, 'staff', '9299')).status).toBe(400);
+    } finally {
+      await pool.query("DELETE FROM agentos_tenants WHERE agentos_oid = 'aaaa-bbbb-cccc-dddd'");
+    }
+  });
+});
+
 describe('POST /lines/:id/reassign', () => {
   it('a blank-TID line reassigned to 9201 matches and writes exactly one audit row', async () => {
     const before = await auditCount();

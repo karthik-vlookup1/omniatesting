@@ -168,6 +168,6 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 - Active feature: (none)
 - Passing features: 26
 - Blocked features: none
-- Verification runs this session: 2
-- Commit: 50fe482
+- Verification runs this session: 1
+- Commit: 5b32a8a
 - Next best step: (none — check feature_list.json)

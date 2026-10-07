@@ -22,15 +22,15 @@ export interface ReassignResult {
 }
 
 export async function listReassignTenants(pool: Pool): Promise<ReassignTenantDto[]> {
-  const { rows } = await pool.query<{ id: string; tid: string; forename: string; surname: string; deposit_to: string }>(
-    'SELECT id, tid, forename, surname, deposit_to FROM agentos_tenants ORDER BY tid, agentos_ref',
+  // Reassign targets a TID, so api rows without one (flagged no_tid) are not offered.
+  const { rows } = await pool.query<{ id: string; tid: string | null; forename: string; surname: string; deposit_to: string }>(
+    'SELECT id, tid, forename, surname, deposit_to FROM agentos_tenants WHERE tid IS NOT NULL ORDER BY tid, agentos_ref',
   );
-  return rows.map((r) => ({
-    id: r.id,
-    tid: r.tid,
-    name: paymentFrom(r.tid, r.forename, r.surname),
-    depositTo: r.deposit_to,
-  }));
+  return rows.flatMap((r) =>
+    r.tid === null
+      ? []
+      : [{ id: r.id, tid: r.tid, name: paymentFrom(r.tid, r.forename, r.surname), depositTo: r.deposit_to }],
+  );
 }
 
 export async function reassignLineTid(db: ActorDb, rawInput: { lineId: string; tid: string }): Promise<ReassignResult> {
@@ -56,16 +56,18 @@ export async function reassignLineTid(db: ActorDb, rawInput: { lineId: string; t
     }
 
     const { rows: tenants } = await c.query<{
-      id: string; tid: string; forename: string; surname: string; deposit_to: string; agentos_ref: string;
+      id: string; tid: string | null; forename: string; surname: string; deposit_to: string; agentos_ref: string | null;
     }>(
       `SELECT id, tid, forename, surname, deposit_to, agentos_ref FROM agentos_tenants
-        WHERE tid = $1 ORDER BY agentos_ref`,
+        WHERE tid IS NOT NULL AND tid = $1 ORDER BY agentos_ref`,
       [input.tid],
     );
     if (tenants.length === 0) throw new AppError('bad_request', `No agentOS tenant has TID ${input.tid}`);
-    const candidates: MatchCandidate[] = tenants.map((r) => ({
-      id: r.id, tid: r.tid, forename: r.forename, surname: r.surname, depositTo: r.deposit_to, agentosRef: r.agentos_ref,
-    }));
+    const candidates: MatchCandidate[] = tenants.flatMap((r) =>
+      r.tid === null
+        ? []
+        : [{ id: r.id, tid: r.tid, forename: r.forename, surname: r.surname, depositTo: r.deposit_to, agentosRef: r.agentos_ref ?? '' }],
+    );
     const d = decideMatch({ tid: input.tid, payerName: cur.payer_name, depositTo: cur.deposit_to }, candidates);
 
     const { rows: out } = await c.query<{
