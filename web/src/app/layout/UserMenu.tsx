@@ -42,14 +42,25 @@ export function UserMenu() {
   return (
     <>
       <Group gap="sm" wrap="nowrap">
-        <Badge visibleFrom="sm" variant="light" color={user.role === 'readonly' ? 'gray' : 'blue'}>
+        {/* Sits on the navy top bar (AppLayout), so it uses the top-bar colours. */}
+        <Badge
+          visibleFrom="sm"
+          variant="outline"
+          color={user.role === 'readonly' ? 'gray.4' : 'ember.4'}
+          styles={{ root: { color: 'var(--app-topbar-fg)' } }}
+        >
           {ROLE_LABEL[user.role]}
         </Badge>
         <Menu position="bottom-end" width={280} shadow="md" withinPortal>
           <Menu.Target>
-            <UnstyledButton aria-label={`Account menu for ${user.fullName}`} px={6} py={4} style={{ borderRadius: 6 }}>
+            <UnstyledButton
+              aria-label={`Account menu for ${user.fullName}`}
+              px={6}
+              py={4}
+              style={{ borderRadius: 6, color: 'var(--app-topbar-fg)' }}
+            >
               <Group gap="xs" wrap="nowrap">
-                <Avatar size={30} radius="xl" color="blue" aria-hidden>
+                <Avatar size={30} radius="xl" color="ember.7" variant="filled" aria-hidden>
                   {initials(user.fullName)}
                 </Avatar>
                 <Text fz="sm" fw={600} truncate maw={180} visibleFrom="xs" data-testid="current-user">

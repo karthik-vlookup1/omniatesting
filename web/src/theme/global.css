@@ -16,8 +16,31 @@
   --app-border-subtle: var(--mantine-color-dark-5);
 }
 
+/* LetMC-style frame (recon-601). The top bar, search strip and record menu are dark in both
+   colour schemes, like LetMC, so their colours do not follow the light/dark switch. */
+:root {
+  --app-topbar-bg: #15213b;
+  --app-topbar-fg: #e7ecf5;
+  --app-topbar-muted: #a9b6cc;
+  --app-topbar-hover: rgba(255, 255, 255, 0.08);
+  --app-strip-bg: #1d2a47;
+  --app-strip-field: #273656;
+  --app-strip-border: #33456b;
+  --app-accent: var(--mantine-color-ember-6);
+  --app-accent-strong: var(--mantine-color-ember-8);
+  --app-record-nav-bg: #1b2742;
+  --app-record-nav-fg: #d5ddea;
+  --app-record-nav-active: #24365b;
+}
+
 body {
   background: var(--app-surface);
+}
+
+/* Money and counts in record cards line up and read as figures. */
+.figure {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
 }
 
 /* Numbers line up in every column. */
