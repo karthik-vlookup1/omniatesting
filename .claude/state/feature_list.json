@@ -1576,29 +1576,57 @@
           "kind": "cmd",
           "cmd": "npm run test:unit -- agentos",
           "exitCode": 0,
-          "testedAt": "2026-10-07T14:09:24.298Z",
-          "commit": "6e3ed29"
+          "commit": "6e3ed29",
+          "testedAt": "2026-10-07T14:09:24.298Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:web -- agentos",
           "exitCode": 0,
-          "testedAt": "2026-10-07T14:09:27.759Z",
-          "commit": "6e3ed29"
+          "commit": "6e3ed29",
+          "testedAt": "2026-10-07T14:09:27.759Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:int -- agentos",
           "exitCode": 0,
-          "testedAt": "2026-10-07T14:09:41.904Z",
-          "commit": "6e3ed29"
+          "commit": "6e3ed29",
+          "testedAt": "2026-10-07T14:09:41.904Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:e2e -- agentos.spec",
           "exitCode": 0,
-          "testedAt": "2026-10-07T14:10:03.216Z",
-          "commit": "6e3ed29"
+          "commit": "6e3ed29",
+          "testedAt": "2026-10-07T14:10:03.216Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:unit -- agentos",
+          "exitCode": 0,
+          "testedAt": "2026-10-07T14:13:51.616Z",
+          "commit": "889c343"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:web -- agentos",
+          "exitCode": 0,
+          "testedAt": "2026-10-07T14:13:55.250Z",
+          "commit": "889c343"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos",
+          "exitCode": 0,
+          "testedAt": "2026-10-07T14:14:10.735Z",
+          "commit": "889c343"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:e2e -- agentos.spec",
+          "exitCode": 0,
+          "testedAt": "2026-10-07T14:14:36.529Z",
+          "commit": "889c343"
         }
       ],
       "notes": "HARD",
