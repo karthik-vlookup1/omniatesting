@@ -140,10 +140,10 @@ describe('agentOS 5 Aug 2026 demo pipeline', () => {
       accountType: 'Rent',
     });
     expect(t.status).toBe(201);
-    const ex = await post('/api/agentos/journal/exports', 'staff');
+    const ex = await post('/api/agentos/journal/exports', 'accounts');
     expect(ex.status).toBe(201);
     expect(ex.body.export.transfersTotal).toBe(1);
     const tid = t.body.transfer?.id ?? t.body.id;
-    expect((await post(`/api/agentos/journal/transfers/${tid}/posted`, 'staff')).status).toBe(200);
+    expect((await post(`/api/agentos/journal/transfers/${tid}/posted`, 'accounts')).status).toBe(200);
   });
 });
