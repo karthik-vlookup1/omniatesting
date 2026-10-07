@@ -9,8 +9,8 @@
 
 ## Changed This Session
 
-- Commit: 6e3ed29
-- Files changed: docs/agentos/field-spec.md, e2e/agentos.spec.ts, scripts/agentos-sync.ts, server/src/domain/agentos/intake.ts, server/src/domain/agentos/match.ts, server/src/domain/agentos/sync.ts, server/src/domain/agentos/types.ts, server/src/services/agentos/api-client.ts, server/src/services/agentos/export.service.ts, server/src/services/agentos/intake.service.ts, server/src/services/agentos/match.service.ts, server/src/services/agentos/reassign.service.ts, server/src/services/agentos/sync.service.ts, server/test/fixtures/agentos/take-payment.golden.csv, server/test/int/agentos-export.test.ts, server/test/int/agentos-match.test.ts, server/test/int/agentos-pipeline.test.ts, server/test/int/agentos-reassign.test.ts, server/test/int/agentos-sync.test.ts, server/test/unit/agentos-intake.test.ts, server/test/unit/agentos-sync.test.ts, web/src/features/agentos/IntakeUploadCard.tsx, web/src/features/agentos/LinesTable.tsx, web/src/features/agentos/ReassignModal.tsx, web/src/features/agentos/agentos.test.tsx, web/src/features/agentos/api.ts, db/migrations/017_agentos_reference_matching.sql, scripts/agentos-accounts.ts, server/src/services/agentos/accounts.service.ts, server/test/int/agentos-reference.test.ts
+- Commit: bf3c9c0
+- Files changed: plans/letmc-parity.md, plans/recon-601.md, plans/recon-602.md, plans/recon-603.md
 
 ## Broken Or Unverified
 

@@ -1634,6 +1634,110 @@
         "recon-509"
       ],
       "contractHash": "f9f36b2f85f6829b"
+    },
+    {
+      "id": "recon-601",
+      "priority": 1101,
+      "area": "phase-6-letmc-parity",
+      "title": "Omnia ledger (append-only double-entry: ledger_transactions + ledger_postings, zero-sum, idempotency key, balance = sum of postings) + single Take a Payment API for one agentOS tenant (deposit-to = active bank account, type from extendable list seeded Card, amount, description, optional card auth code), posted to the ledger and pushed out via the existing Take a Payment CSV export",
+      "user_visible_behavior": "POST /api/agentos/payments takes one payment for an agentOS tenant and returns it with the tenant's Omnia ledger balance; repeating the same clientRequestId returns the same payment. GET /api/agentos/ledger/<tid> shows balance and postings. POST /api/agentos/payments/exports makes a Take a Payment CSV (same columns as recon-504) downloadable at /api/agentos/exports/<id>.csv; payments can then be marked posted.",
+      "scope": [
+        "db/migrations/018_*",
+        "server/src/domain/ledger/**",
+        "server/src/services/ledger/**",
+        "server/src/services/agentos/payment.service.ts",
+        "server/src/api/agentos/routes.ts",
+        "server/test/unit/ledger-*",
+        "server/test/int/agentos-payment*",
+        "server/test/fixtures/agentos/**",
+        "docs/agentos/**",
+        "plans/**"
+      ],
+      "verification": [
+        {
+          "level": "unit",
+          "cmd": "npm run test:unit -- ledger"
+        },
+        {
+          "level": "integration",
+          "cmd": "npm run test:int -- agentos"
+        }
+      ],
+      "status": "not_started",
+      "evidence": [],
+      "notes": "HARD",
+      "dependsOn": [
+        "recon-510"
+      ]
+    },
+    {
+      "id": "recon-602",
+      "priority": 1102,
+      "area": "phase-6-letmc-parity",
+      "title": "Multi-row Journal Transfer: 2-20 entries (agentOS tenant, account type, signed amount) netting to zero, posted to the Omnia ledger (existing transfers backfilled), idempotent by clientRequestId; recon-506 two-tenant body and CSV bytes unchanged",
+      "user_visible_behavior": "POST /api/agentos/journal/transfers accepts { clientRequestId, description, nominalCode, entries[] } with 2-20 rows that must add up to £0.00, and still accepts the old fromTid/toTid body. Each transfer moves the tenants' Omnia ledger balances (GET /api/agentos/ledger/<tid>). The Journal Transfer CSV gets one row per entry in entry order.",
+      "scope": [
+        "db/migrations/019_*",
+        "server/src/domain/agentos/journal.ts",
+        "server/src/services/agentos/journal.service.ts",
+        "server/src/services/ledger/**",
+        "server/src/api/agentos/routes.ts",
+        "server/test/unit/agentos-journal*",
+        "server/test/int/agentos-journal*",
+        "docs/agentos/**",
+        "plans/**"
+      ],
+      "verification": [
+        {
+          "level": "unit",
+          "cmd": "npm run test:unit -- agentos-journal"
+        },
+        {
+          "level": "integration",
+          "cmd": "npm run test:int -- agentos"
+        }
+      ],
+      "status": "not_started",
+      "evidence": [],
+      "notes": "HARD",
+      "dependsOn": [
+        "recon-601"
+      ]
+    },
+    {
+      "id": "recon-603",
+      "priority": 1103,
+      "area": "phase-6-letmc-parity",
+      "title": "agentOS accounting UI: Take a Payment section (tenant, Payment From, Omnia ledger balance, Will deposit to, Type, Amount, Description, optional card auth code; export + mark posted) and multi-row Journal Transfer grid (Person, Branch, Property, Account Type, Account Balance, Amount; running total must be £0.00)",
+      "user_visible_behavior": "On /agentos a writer can take a Card payment for a tenant and see the balance change, export and mark payments posted, and post a journal with several rows that must total £0.00. Readonly users see the lists but no forms.",
+      "scope": [
+        "web/src/features/agentos/**",
+        "e2e/agentos-payment.spec.ts",
+        "e2e/agentos-journal.spec.ts",
+        "server/test/fixtures/agentos-payment-seed.ts",
+        "plans/**"
+      ],
+      "verification": [
+        {
+          "level": "unit",
+          "cmd": "npm run test:web -- agentos"
+        },
+        {
+          "level": "e2e",
+          "cmd": "npm run test:e2e -- agentos-payment.spec"
+        },
+        {
+          "level": "e2e",
+          "cmd": "npm run test:e2e -- agentos-journal.spec"
+        }
+      ],
+      "status": "not_started",
+      "evidence": [],
+      "notes": "HARD (5+ files)",
+      "dependsOn": [
+        "recon-601",
+        "recon-602"
+      ]
     }
   ]
 }
