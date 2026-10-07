@@ -1604,29 +1604,29 @@
           "kind": "cmd",
           "cmd": "npm run test:unit -- agentos",
           "exitCode": 0,
-          "testedAt": "2026-10-07T14:13:51.616Z",
-          "commit": "889c343"
+          "commit": "889c343",
+          "testedAt": "2026-10-07T14:13:51.616Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:web -- agentos",
           "exitCode": 0,
-          "testedAt": "2026-10-07T14:13:55.250Z",
-          "commit": "889c343"
+          "commit": "889c343",
+          "testedAt": "2026-10-07T14:13:55.250Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:int -- agentos",
           "exitCode": 0,
-          "testedAt": "2026-10-07T14:14:10.735Z",
-          "commit": "889c343"
+          "commit": "889c343",
+          "testedAt": "2026-10-07T14:14:10.735Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:e2e -- agentos.spec",
           "exitCode": 0,
-          "testedAt": "2026-10-07T14:14:36.529Z",
-          "commit": "889c343"
+          "commit": "889c343",
+          "testedAt": "2026-10-07T14:14:36.529Z"
         }
       ],
       "notes": "HARD",
@@ -1663,12 +1663,28 @@
           "cmd": "npm run test:int -- agentos"
         }
       ],
-      "status": "not_started",
-      "evidence": [],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:unit -- ledger",
+          "exitCode": 0,
+          "testedAt": "2026-10-07T14:44:17.354Z",
+          "commit": "2a860ef"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos",
+          "exitCode": 0,
+          "testedAt": "2026-10-07T14:44:34.354Z",
+          "commit": "2a860ef"
+        }
+      ],
       "notes": "HARD",
       "dependsOn": [
         "recon-510"
-      ]
+      ],
+      "contractHash": "a1180b96bd14dacc"
     },
     {
       "id": "recon-602",

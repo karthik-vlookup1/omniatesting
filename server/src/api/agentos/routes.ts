@@ -12,6 +12,13 @@
  * /api/agentos/journal/exports POST (writers) - Journal Transfer CSV of all not-yet-exported transfers
  * /api/agentos/journal/exports/:id.csv GET the stored CSV (signed in)
  * /api/agentos/journal/transfers/:id/posted POST (writers) - mark an exported transfer as posted
+ * /api/agentos/payments/options GET deposit accounts and payment types (signed in)
+ * /api/agentos/payments      GET recent single payments (signed in)
+ *                            POST { clientRequestId, agentosTenantId, depositAccountCode, paymentType, amountPence, description?, cardAuthCode? }
+ *                            (accounts, admin) - take one payment, post it to the Omnia ledger; 201 new, 200 replay
+ * /api/agentos/payments/exports POST (accounts, admin) - Take a Payment CSV of all not-yet-exported payments (download via /exports/:id.csv)
+ * /api/agentos/payments/:id/posted POST (accounts, admin) - mark an exported payment as posted
+ * /api/agentos/ledger/:tid   GET Omnia ledger balance and recent postings for a TID (signed in)
  */
 import { Router } from 'express';
 import multer from 'multer';
@@ -26,9 +33,17 @@ import {
   listJournalTransfers,
   markTransferPosted,
 } from '../../services/agentos/journal.service.js';
+import {
+  createPayment,
+  createPaymentExport,
+  listPaymentOptions,
+  listPayments,
+  markPaymentPosted,
+} from '../../services/agentos/payment.service.js';
+import { getTenantLedger } from '../../services/ledger/ledger.service.js';
 import { listReassignTenants, reassignLineTid } from '../../services/agentos/reassign.service.js';
 import { getIntakeBatch, importIntakeCsv, listIntakeBatches } from '../../services/agentos/intake.service.js';
-import { requireAuth, requireWriter } from '../auth/middleware.js';
+import { requireAuth, requireRole, requireWriter } from '../auth/middleware.js';
 
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
 
@@ -50,6 +65,31 @@ const JOURNAL_RULES: Record<string, string> = {
   nominalCode: textRule(50),
   accountType: textRule(50),
 };
+
+const paymentBody = z.object({
+  clientRequestId: z.uuid(),
+  agentosTenantId: z.uuid(),
+  depositAccountCode: z.string().min(1).max(30),
+  paymentType: z.string().min(1).max(20),
+  amountPence: z.number().int().min(1).max(9999999999),
+  description: z.string().trim().max(500).default(''),
+  cardAuthCode: z
+    .string()
+    .trim()
+    .transform((v) => (v === '' ? undefined : v))
+    .pipe(z.string().regex(/^[A-Za-z0-9]{1,20}$/).optional())
+    .optional(),
+});
+const PAYMENT_RULES: Record<string, string> = {
+  clientRequestId: 'must be a uuid',
+  agentosTenantId: 'must be a uuid',
+  depositAccountCode: 'is required, max 30 characters',
+  paymentType: 'is required, max 20 characters',
+  amountPence: 'must be a whole number of pence from 1 to 9999999999',
+  description: 'max 500 characters',
+  cardAuthCode: 'must be 1-20 letters or digits',
+};
+const requireAccounts = requireRole('accounts');
 
 export function agentosRouter({ pool }: { pool: Pool }): Router {
   const router = Router();
@@ -178,6 +218,44 @@ export function agentosRouter({ pool }: { pool: Pool }): Router {
     if (!id.success) throw new AppError('not_found', 'No such journal transfer');
     const transfer = await markTransferPosted(req.db, { transferId: id.data, userId: req.user!.id });
     res.status(200).json({ transfer });
+  });
+
+  router.get('/payments/options', async (_req, res) => {
+    res.json(await listPaymentOptions(pool));
+  });
+
+  router.get('/payments', async (_req, res) => {
+    res.json({ payments: await listPayments(pool) });
+  });
+
+  router.post('/payments', requireAccounts, async (req, res) => {
+    const body = paymentBody.safeParse(req.body);
+    if (!body.success) {
+      const field = String(body.error.issues[0]?.path[0] ?? 'body');
+      throw new AppError('bad_request', `Invalid ${field}: ${PAYMENT_RULES[field] ?? 'is not valid'}`);
+    }
+    const { payment, balancePence, created } = await createPayment(req.db, { ...body.data, userId: req.user!.id });
+    req.log.info({ agentosPayment: { id: payment.id, tid: payment.tid, amountPence: payment.amountPence, created } }, 'agentos payment taken');
+    res.status(created ? 201 : 200).json({ payment, balancePence });
+  });
+
+  router.post('/payments/exports', requireAccounts, async (req, res) => {
+    const paymentExport = await createPaymentExport(req.db, { userId: req.user!.id });
+    req.log.info({ agentosPaymentExport: paymentExport }, 'agentos payment export created');
+    res.status(201).json({ export: paymentExport });
+  });
+
+  router.post('/payments/:id/posted', requireAccounts, async (req, res) => {
+    const id = z.uuid().safeParse(req.params.id);
+    if (!id.success) throw new AppError('not_found', 'No such payment');
+    const payment = await markPaymentPosted(req.db, { paymentId: id.data, userId: req.user!.id });
+    res.status(200).json({ payment });
+  });
+
+  router.get('/ledger/:tid', async (req, res) => {
+    const tid = req.params.tid ?? '';
+    if (!/^\d{4,5}$/.test(tid)) throw new AppError('not_found', 'No such ledger account');
+    res.json(await getTenantLedger(pool, tid));
   });
 
   return router;

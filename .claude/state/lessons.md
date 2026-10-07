@@ -164,3 +164,13 @@ dead end a future session might otherwise walk into again.
 
 - Source: manual (recon-510)
 - playwright.config.ts hard-codes PORT 3001 and defaults the e2e DB to 5432; stop the dev server and set E2E_DATABASE_URL=postgres://omnia:omnia_local_dev@localhost:5433/omnia_e2e
+
+## 2026-10-07: plpgsql CASE evaluates both branches in shared trigger functions
+
+- Source: manual (recon-601)
+- Referencing NEW.col for a column the table lacks fails even in the untaken CASE branch; use IF/ELSE. Also audit_row() reads NEW.id, so it can't attach to tables keyed by another column (e.g. agentos_payment_types.code)
+
+## 2026-10-07: Editing an applied migration needs a reset
+
+- Source: manual (recon-601)
+- Migrations are checksummed; after changing an applied draft run npm run db:migrate -- --reset on that test DB. Always export TEST_DATABASE_URL (5433) or int tests fall back to 5432

@@ -11,7 +11,7 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 - Repository root: {{PROJECT_ROOT}}
 - Standard startup: `hx start`
 - Standard verification: `hx verify <feature-id>`
-- Current highest-priority unfinished feature: (none)
+- Current highest-priority unfinished feature: recon-602
 - Current blocker: none
 
 ## Session Log
@@ -166,8 +166,8 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 
 - Date: 2026-10-07
 - Active feature: (none)
-- Passing features: 27
+- Passing features: 28
 - Blocked features: none
 - Verification runs this session: 1
-- Commit: bf3c9c0
-- Next best step: (none — check feature_list.json)
+- Commit: 2a860ef
+- Next best step: recon-602 — Multi-row Journal Transfer: 2-20 entries (agentOS tenant, account type, signed amount) netting to zero, posted to the Omnia ledger (existing transfers backfilled), idempotent by clientRequestId; recon-506 two-tenant body and CSV bytes unchanged
