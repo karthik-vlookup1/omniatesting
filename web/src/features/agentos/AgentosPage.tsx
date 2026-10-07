@@ -19,11 +19,15 @@ import { IntakeUploadCard } from './IntakeUploadCard';
 import { JournalSection } from './JournalSection';
 import { LinesTable } from './LinesTable';
 import { ReassignModal } from './ReassignModal';
+import { TakePaymentSection } from './TakePaymentSection';
 
 const STATUSES = Object.keys(STATUS_LABELS) as MatchStatus[];
 
 export function AgentosPage() {
-  const writer = can(useCurrentUser(), 'write');
+  const user = useCurrentUser();
+  const writer = can(user, 'write');
+  // Payments, journals, their exports and mark-posted are accounts/admin only on the server.
+  const accounts = can(user, 'finance');
   const [params, setParams] = useSearchParams();
   const batches = useIntakeBatches();
   const batchId = params.get('batch') ?? batches.data?.[0]?.id ?? null;
@@ -122,7 +126,9 @@ export function AgentosPage() {
         </>
       )}
       <Divider />
-      <JournalSection writer={writer} />
+      <TakePaymentSection writer={accounts} />
+      <Divider />
+      <JournalSection writer={accounts} />
       <ReassignModal line={reassigning} onClose={() => setReassigning(null)} />
     </Stack>
   );

@@ -1719,15 +1719,15 @@
           "kind": "cmd",
           "cmd": "npm run test:unit -- agentos-journal",
           "exitCode": 0,
-          "testedAt": "2026-10-07T15:03:04.808Z",
-          "commit": "7c9b6c1"
+          "commit": "7c9b6c1",
+          "testedAt": "2026-10-07T15:03:04.808Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:int -- agentos",
           "exitCode": 0,
-          "testedAt": "2026-10-07T15:03:22.743Z",
-          "commit": "7c9b6c1"
+          "commit": "7c9b6c1",
+          "testedAt": "2026-10-07T15:03:22.743Z"
         }
       ],
       "notes": "HARD",
@@ -1763,13 +1763,36 @@
           "cmd": "npm run test:e2e -- agentos-journal.spec"
         }
       ],
-      "status": "not_started",
-      "evidence": [],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:web -- agentos",
+          "exitCode": 0,
+          "testedAt": "2026-10-07T15:36:50.514Z",
+          "commit": "7162b3c"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:e2e -- agentos-payment.spec",
+          "exitCode": 0,
+          "testedAt": "2026-10-07T15:37:08.807Z",
+          "commit": "7162b3c"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:e2e -- agentos-journal.spec",
+          "exitCode": 0,
+          "testedAt": "2026-10-07T15:37:28.320Z",
+          "commit": "7162b3c"
+        }
+      ],
       "notes": "HARD (5+ files)",
       "dependsOn": [
         "recon-601",
         "recon-602"
-      ]
+      ],
+      "contractHash": "4f5d490df0f9507e"
     }
   ]
 }

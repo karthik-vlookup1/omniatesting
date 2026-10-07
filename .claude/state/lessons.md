@@ -179,3 +179,13 @@ dead end a future session might otherwise walk into again.
 
 - Source: manual (recon-602)
 - The Bash tool fails on ''' inside a heredoc; write such files with Write instead
+
+## 2026-10-07: Mantine Select is role combobox in Playwright; don't default selects in useEffect
+
+- Source: manual (recon-603)
+- Use getByRole('combobox') for Mantine Select. react-hooks/set-state-in-effect lint rejects setting a default inside useEffect - derive the default value instead
+
+## 2026-10-07: Run test:web alone, not alongside other heavy work
+
+- Source: manual (recon-603)
+- A full test:web run under load hit worker timeouts (4 failures, 1129s) but passed in 23s alone - load flakiness, not code

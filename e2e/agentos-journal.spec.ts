@@ -41,19 +41,33 @@ async function signIn(page: Page, email: string) {
 
 const row = (page: Page) => page.locator('[data-testid^="journal-"]').filter({ hasText: `J-${RUN}` });
 
-test('1: an admin creates, exports and posts a journal transfer', async ({ page }) => {
+test('1: an admin posts a 3-row journal only when the total is 0.00, then exports and posts it', async ({ page }) => {
   await signIn(page, ADMIN);
   await page.goto('/agentos');
-  await page.getByRole('combobox', { name: 'From tenant' }).click();
-  await page.getByRole('option', { name: /^9201 / }).click();
-  await page.getByRole('combobox', { name: 'To tenant' }).click();
-  await page.getByRole('option', { name: /^9202 / }).click();
-  await page.getByLabel('Amount (£)').fill('12.34');
-  await page.getByLabel('Description').fill(`J-${RUN}`);
+  const pick = async (n: number, tid: string) => {
+    await page.getByRole('combobox', { name: `Person ${n}` }).click();
+    await page.getByRole('option', { name: new RegExp(`^${tid} `) }).click();
+  };
+  await page.getByLabel('Description', { exact: true }).last().fill(`J-${RUN}`);
   await page.getByLabel('Nominal Code').fill('1100');
-  await page.getByLabel('Account Type').fill('Rent');
+  await page.getByRole('button', { name: 'Add row' }).click();
+  const rowsSpec: [number, string, string][] = [
+    [1, '9201', '-10.00'],
+    [2, '9202', '4.00'],
+    [3, '9203', '5.00'],
+  ];
+  for (const [n, tid, amount] of rowsSpec) {
+    await pick(n, tid);
+    await page.getByLabel(`Account Type ${n}`).fill('Rent');
+    await page.getByLabel(`Amount ${n}`).fill(amount);
+  }
+  await expect(page.getByTestId('journal-total')).toContainText('-£1.00');
+  await expect(page.getByRole('button', { name: 'Create transfer' })).toBeDisabled();
+  await page.getByLabel('Amount 3').fill('6.00');
+  await expect(page.getByTestId('journal-total')).toContainText('£0.00');
   await page.getByRole('button', { name: 'Create transfer' }).click();
   await expect(row(page)).toContainText('Not exported');
+  await expect(row(page)).toContainText('9203');
 
   await page.getByRole('button', { name: /^Export journal transfers/ }).click();
   await expect(page.getByText(/Exported \d+ transfer\(s\)/)).toBeVisible();
