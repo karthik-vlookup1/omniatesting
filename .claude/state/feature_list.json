@@ -1669,15 +1669,15 @@
           "kind": "cmd",
           "cmd": "npm run test:unit -- ledger",
           "exitCode": 0,
-          "testedAt": "2026-10-07T14:44:17.354Z",
-          "commit": "2a860ef"
+          "commit": "2a860ef",
+          "testedAt": "2026-10-07T14:44:17.354Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:int -- agentos",
           "exitCode": 0,
-          "testedAt": "2026-10-07T14:44:34.354Z",
-          "commit": "2a860ef"
+          "commit": "2a860ef",
+          "testedAt": "2026-10-07T14:44:34.354Z"
         }
       ],
       "notes": "HARD",
@@ -1713,12 +1713,28 @@
           "cmd": "npm run test:int -- agentos"
         }
       ],
-      "status": "not_started",
-      "evidence": [],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:unit -- agentos-journal",
+          "exitCode": 0,
+          "testedAt": "2026-10-07T15:03:04.808Z",
+          "commit": "7c9b6c1"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos",
+          "exitCode": 0,
+          "testedAt": "2026-10-07T15:03:22.743Z",
+          "commit": "7c9b6c1"
+        }
+      ],
       "notes": "HARD",
       "dependsOn": [
         "recon-601"
-      ]
+      ],
+      "contractHash": "a72fd456ac374315"
     },
     {
       "id": "recon-603",

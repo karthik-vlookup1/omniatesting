@@ -8,10 +8,12 @@
  * /api/agentos/tenants       GET agentOS tenants for the reassign picker (signed in)
  * /api/agentos/lines/:id/reassign POST { tid } (writers) - move a line to another TID and re-run the match rules (audited)
  * /api/agentos/journal/transfers GET recent journal transfers (signed in)
- *                            POST { fromTid, toTid, amountPence, description, nominalCode, accountType } (writers)
- * /api/agentos/journal/exports POST (writers) - Journal Transfer CSV of all not-yet-exported transfers
+ *                            POST { clientRequestId, description, nominalCode, entries[2-20]: { agentosTenantId, accountType, amountPence } }
+ *                            or the legacy { fromTid, toTid, amountPence, description, nominalCode, accountType } (accounts, admin);
+ *                            entries must add up to 0; 201 new, 200 replay of the same clientRequestId
+ * /api/agentos/journal/exports POST (accounts, admin) - Journal Transfer CSV of all not-yet-exported transfers
  * /api/agentos/journal/exports/:id.csv GET the stored CSV (signed in)
- * /api/agentos/journal/transfers/:id/posted POST (writers) - mark an exported transfer as posted
+ * /api/agentos/journal/transfers/:id/posted POST (accounts, admin) - mark an exported transfer as posted
  * /api/agentos/payments/options GET deposit accounts and payment types (signed in)
  * /api/agentos/payments      GET recent single payments (signed in)
  *                            POST { clientRequestId, agentosTenantId, depositAccountCode, paymentType, amountPence, description?, cardAuthCode? }
@@ -29,6 +31,7 @@ import { createAgentosExport, getAgentosExportCsv, markLinePosted } from '../../
 import {
   createJournalExport,
   createJournalTransfer,
+  createLegacyJournalTransfer,
   getJournalExportCsv,
   listJournalTransfers,
   markTransferPosted,
@@ -45,6 +48,7 @@ import { listReassignTenants, reassignLineTid } from '../../services/agentos/rea
 import { getIntakeBatch, importIntakeCsv, listIntakeBatches } from '../../services/agentos/intake.service.js';
 import { requireAuth, requireRole, requireWriter } from '../auth/middleware.js';
 
+const requireAccounts = requireRole('accounts');
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
 
 const TID_RULE = 'must be 4 digits';
@@ -57,6 +61,21 @@ const journalBody = z.object({
   nominalCode: z.string().trim().min(1).max(50),
   accountType: z.string().trim().min(1).max(50),
 });
+const multiJournalBody = z.object({
+  clientRequestId: z.uuid(),
+  description: z.string().trim().min(1).max(200),
+  nominalCode: z.string().trim().min(1).max(50),
+  entries: z
+    .array(
+      z.object({
+        agentosTenantId: z.uuid(),
+        accountType: z.string().trim().min(1).max(50),
+        amountPence: z.number().int().refine((n) => n !== 0, 'must not be 0'),
+      }),
+    )
+    .min(2)
+    .max(20),
+});
 const JOURNAL_RULES: Record<string, string> = {
   fromTid: TID_RULE,
   toTid: TID_RULE,
@@ -65,6 +84,27 @@ const JOURNAL_RULES: Record<string, string> = {
   nominalCode: textRule(50),
   accountType: textRule(50),
 };
+
+type JournalReq = Parameters<Parameters<Router['post']>[1]>[0];
+
+async function createMulti(req: JournalReq) {
+  const body = multiJournalBody.safeParse(req.body);
+  if (!body.success) {
+    const issue = body.error.issues[0];
+    const path = issue?.path.join('.') || 'body';
+    throw new AppError('bad_request', `Invalid ${path}: ${issue?.message ?? 'is not valid'}`);
+  }
+  return createJournalTransfer(req.db, { ...body.data, userId: req.user!.id });
+}
+
+async function createLegacy(req: JournalReq) {
+  const body = journalBody.safeParse(req.body);
+  if (!body.success) {
+    const field = String(body.error.issues[0]?.path[0] ?? 'body');
+    throw new AppError('bad_request', `Invalid ${field}: ${JOURNAL_RULES[field] ?? 'is not valid'}`);
+  }
+  return createLegacyJournalTransfer(req.db, { ...body.data, userId: req.user!.id });
+}
 
 const paymentBody = z.object({
   clientRequestId: z.uuid(),
@@ -89,7 +129,6 @@ const PAYMENT_RULES: Record<string, string> = {
   description: 'max 500 characters',
   cardAuthCode: 'must be 1-20 letters or digits',
 };
-const requireAccounts = requireRole('accounts');
 
 export function agentosRouter({ pool }: { pool: Pool }): Router {
   const router = Router();
@@ -179,21 +218,18 @@ export function agentosRouter({ pool }: { pool: Pool }): Router {
     res.json({ transfers: await listJournalTransfers(pool) });
   });
 
-  router.post('/journal/transfers', requireWriter, async (req, res) => {
-    const body = journalBody.safeParse(req.body);
-    if (!body.success) {
-      const field = String(body.error.issues[0]?.path[0] ?? 'body');
-      throw new AppError('bad_request', `Invalid ${field}: ${JOURNAL_RULES[field] ?? 'is not valid'}`);
-    }
-    const transfer = await createJournalTransfer(req.db, { ...body.data, userId: req.user!.id });
+  router.post('/journal/transfers', requireAccounts, async (req, res) => {
+    const isMulti = typeof req.body === 'object' && req.body !== null && 'entries' in req.body;
+    const result = isMulti ? await createMulti(req) : await createLegacy(req);
+    const { transfer, created } = result;
     req.log.info(
-      { agentosJournal: { id: transfer.id, fromTid: transfer.fromTid, toTid: transfer.toTid, amountPence: transfer.amountPence } },
+      { agentosJournal: { id: transfer.id, entries: transfer.entries.length, amountPence: transfer.amountPence, created } },
       'agentos journal transfer created',
     );
-    res.status(201).json({ transfer });
+    res.status(created ? 201 : 200).json({ transfer });
   });
 
-  router.post('/journal/exports', requireWriter, async (req, res) => {
+  router.post('/journal/exports', requireAccounts, async (req, res) => {
     const journalExport = await createJournalExport(req.db, { userId: req.user!.id });
     req.log.info({ agentosJournalExport: journalExport }, 'agentos journal transfer export created');
     res.status(201).json({ export: journalExport });
@@ -213,7 +249,7 @@ export function agentosRouter({ pool }: { pool: Pool }): Router {
     res.send(Buffer.from(found.csv, 'utf8'));
   });
 
-  router.post('/journal/transfers/:id/posted', requireWriter, async (req, res) => {
+  router.post('/journal/transfers/:id/posted', requireAccounts, async (req, res) => {
     const id = z.uuid().safeParse(req.params.id);
     if (!id.success) throw new AppError('not_found', 'No such journal transfer');
     const transfer = await markTransferPosted(req.db, { transferId: id.data, userId: req.user!.id });

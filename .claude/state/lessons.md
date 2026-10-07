@@ -174,3 +174,8 @@ dead end a future session might otherwise walk into again.
 
 - Source: manual (recon-601)
 - Migrations are checksummed; after changing an applied draft run npm run db:migrate -- --reset on that test DB. Always export TEST_DATABASE_URL (5433) or int tests fall back to 5432
+
+## 2026-10-07: Use the Write tool for files containing triple quotes
+
+- Source: manual (recon-602)
+- The Bash tool fails on ''' inside a heredoc; write such files with Write instead
