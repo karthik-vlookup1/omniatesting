@@ -116,8 +116,8 @@ Final gate: `npm run lint`, `npm run typecheck`, `npm run test:web` (baseline be
 |---|---|---|
 | 0. Plan, decisions, hx approval file | done | `.claude/approvals/recon-601/apply.cjs` (user runs it) |
 | 1. Theme + app frame (top bar modules, search strip, record tabs, module sub-menu) + login | done | theme/theme.ts (navy+ember), theme/global.css (frame vars), app/navigation.ts (MODULES), app/layout/{AppLayout,TopModules,GlobalSearch,RecordTabs,AppNavbar,UserMenu}.tsx, lib/recordTabs.tsx, data/tenancies/describe.ts. 175/175 tests pass. Checked at 1440×900. |
-| 2. Tenant record (overview, tenant details tabs, actions + modals) | todo | |
-| 3. Tenancies list | todo | |
+| 2. Tenant record (overview, tenant details tabs, actions + modals) | done | `features/tenancy-record/`: TenancyRecordPage (route `/tenancies/:tid?view=&tab=`), RecordNav, RecordCard, OverviewSection, DetailsSection, AccountSections(+For), TermsStatementSections, ActionModal, AdjustmentModal, JournalTransferModal, SetRentModal, recordModel (+ tenancyRecord.test.tsx, 7 tests). Browser-checked on T9001: search → record tab → Set rent with field errors → confirm → toast; server raised 80 weekly charges shown in balance/ledger. Follow-up: reused rent-terms modals (award/split/method) and AddPayerAccountModal have no confirm step yet. |
+| 3. Tenancies list | done | Row click keeps the quick-look drawer (tests rely on it) which now has **Open tenant record**; global search Enter opens `/tenancies?q=…&status=all`. NI reveal control `NiField` is exported from TenancyDrawer and reused by the record (full NI hidden until asked, admin/accounts only). Full suite 182/182 twice; the record test pre-loads the lazy route (cold compile > 3 s under load). |
 | 4. Dashboard / Home | todo | |
 | 5. Accounts pages restyle | todo | |
 | 6. Lettings pages restyle | todo | |

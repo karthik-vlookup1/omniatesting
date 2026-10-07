@@ -3,7 +3,7 @@ import { useDisclosure } from '@mantine/hooks';
 import { IconChecks } from '@tabler/icons-react';
 import { useEffect } from 'react';
 import { Link, Outlet, useLocation, useNavigation } from 'react-router-dom';
-import { RecordTabsProvider } from '../../lib/recordTabs';
+import { RecordTabsProvider } from '../../lib/RecordTabsProvider';
 import { isRecordPath } from '../navigation';
 import { AppNavbar } from './AppNavbar';
 import { GlobalSearch } from './GlobalSearch';
