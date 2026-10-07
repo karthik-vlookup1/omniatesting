@@ -4,13 +4,13 @@
 
 ## Verified Now
 
-- Passing features: recon-001, recon-002, recon-003, recon-004, recon-101, recon-102, recon-103, recon-104, recon-105, recon-201, recon-202, recon-203, recon-204, recon-301, recon-302, recon-303, recon-401, recon-501, recon-502, recon-503, recon-504, recon-505, recon-506, recon-507, recon-508
-- Verification runs this session: 1
+- Passing features: recon-001, recon-002, recon-003, recon-004, recon-101, recon-102, recon-103, recon-104, recon-105, recon-201, recon-202, recon-203, recon-204, recon-301, recon-302, recon-303, recon-401, recon-501, recon-502, recon-503, recon-504, recon-505, recon-506, recon-507, recon-508, recon-509
+- Verification runs this session: 2
 
 ## Changed This Session
 
-- Commit: 7c8bd86
-- Files changed: (none)
+- Commit: bcefc9c
+- Files changed: docs/agentos/field-spec.md, server/src/domain/agentos/types.ts, server/src/services/agentos/seed.ts, db/migrations/016_agentos_tenants_api_sync.sql, plans/recon-509.md, scripts/agentos-sync.ts, server/src/domain/agentos/sync.ts, server/src/services/agentos/api-client.ts, server/src/services/agentos/sync.service.ts, server/test/fixtures/agentos/api/deposits.json, server/test/fixtures/agentos/api/fixture-client.ts, server/test/fixtures/agentos/api/tenancies.json, server/test/fixtures/agentos/api/tenants.json, server/test/int/agentos-sync.test.ts, server/test/unit/agentos-sync.test.ts
 
 ## Broken Or Unverified
 
