@@ -14,6 +14,7 @@ export interface SyncOptions {
 }
 
 const T = 'agentos_tenants';
+// Core stores tenancies as 'T1234' while agentOS gives the bare '1234'; both forms match.
 // What an existing api row becomes on re-sync. Nulls and empty values never overwrite stored data.
 const EFFECTIVE: Record<string, string> = {
   tenancy_oid: `COALESCE(EXCLUDED.tenancy_oid, ${T}.tenancy_oid)`,
@@ -30,7 +31,7 @@ const EFFECTIVE: Record<string, string> = {
   is_head_tenant: 'EXCLUDED.is_head_tenant',
   is_archived: 'EXCLUDED.is_archived',
   sync_flags: `CASE WHEN EXCLUDED.forename = '' THEN ${T}.sync_flags ELSE EXCLUDED.sync_flags END`,
-  tenancy_id: `CASE WHEN EXCLUDED.forename = '' THEN ${T}.tenancy_id ELSE EXCLUDED.tenancy_id END`,
+  tenancy_id: `CASE WHEN EXCLUDED.forename = '' THEN ${T}.tenancy_id ELSE COALESCE(EXCLUDED.tenancy_id, ${T}.tenancy_id) END`,
 };
 const COLS = Object.keys(EFFECTIVE);
 const UPSERT = `
@@ -38,7 +39,7 @@ INSERT INTO ${T} (agentos_oid, tenancy_oid, property_oid, global_reference, titl
                   managed_by, residence, tenancy_descriptor, is_head_tenant, is_archived, sync_flags,
                   source, tenancy_id, last_synced_at)
 VALUES ($1,$2,$3,$4,$5,$6::text,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16::text[],
-        'api', (SELECT id FROM tenancies WHERE tid = $6::text), now())
+        'api', (SELECT id FROM tenancies WHERE tid IN ($6::text, 'T' || $6::text) ORDER BY tid LIMIT 1), now())
 ON CONFLICT (agentos_oid) DO UPDATE SET
   ${COLS.map((c) => `${c} = ${EFFECTIVE[c]}`).join(',\n  ')},
   last_synced_at = now(), updated_at = now()

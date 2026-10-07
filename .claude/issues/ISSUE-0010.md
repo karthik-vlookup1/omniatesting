@@ -2,7 +2,7 @@
 {
   "id": "ISSUE-0010",
   "title": "agentOS sync never links tenancies: looks up core tenancy by '1234' but core stores 'T1234'",
-  "status": "in_progress",
+  "status": "resolved-pending-review",
   "severity": "high",
   "skill": "issue-solve",
   "scope": [
@@ -18,10 +18,11 @@
   "source": "manual",
   "attempts": 1,
   "createdAt": "2026-10-07T16:11:13.792Z",
-  "updatedAt": "2026-10-07T16:41:08.924Z",
+  "updatedAt": "2026-10-07T16:43:22.771Z",
   "contractHash": "c4ea543d924d1e01"
 }
 -->
+
 
 
 

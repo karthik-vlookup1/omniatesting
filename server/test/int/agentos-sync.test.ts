@@ -155,4 +155,40 @@ describe('agentOS API sync', () => {
     expect((err as Error).message).toContain('referenced');
     expect(await count()).toBe(12);
   });
+  it('links api tenants to core tenancies stored as T9701, and a re-sync links previously unlinked rows', async () => {
+    await clean();
+    await pool.query('DELETE FROM tenancies WHERE tid = $1', ['T9701']);
+    await syncAgentosTenants(pool, fixtureClient(), base);
+    const unlinked = await pool.query("SELECT count(*) AS n FROM agentos_tenants WHERE tid = '9701' AND tenancy_id IS NULL");
+    expect(Number((unlinked.rows[0] as { n: string }).n)).toBe(3);
+
+    const br = await pool.query("INSERT INTO branches (code, name) VALUES ('ZZ-SYNC', 'Sync test') RETURNING id");
+    const pr = await pool.query(
+      "INSERT INTO properties (property_ref, branch_id, address_line1, postcode) VALUES ('ZZ-SYNC-1', $1, '1 Test St', 'AB1 2CD') RETURNING id",
+      [(br.rows[0] as { id: string }).id],
+    );
+    try {
+      const tn = await pool.query(
+        "INSERT INTO tenancies (tid, property_id, management_type, start_date) VALUES ('T9701', $1, 'RG', '2026-01-01') RETURNING id",
+        [(pr.rows[0] as { id: string }).id],
+      );
+      const r = await syncAgentosTenants(pool, fixtureClient(), base);
+      expect(r.updated).toBe(3);
+      const linked = await pool.query<{ tenancy_id: string }>("SELECT tenancy_id FROM agentos_tenants WHERE tid = '9701'");
+      expect(linked.rows.map((x) => x.tenancy_id)).toEqual(Array(3).fill((tn.rows[0] as { id: string }).id));
+      const again = await syncAgentosTenants(pool, fixtureClient(), base);
+      expect(again).toMatchObject({ updated: 0, unchanged: 10 });
+
+      // a fresh sync into an empty table links on insert
+      await clean();
+      await syncAgentosTenants(pool, fixtureClient(), base);
+      const fresh = await pool.query("SELECT count(*) AS n FROM agentos_tenants WHERE tid = '9701' AND tenancy_id IS NOT NULL");
+      expect(Number((fresh.rows[0] as { n: string }).n)).toBe(3);
+    } finally {
+      await clean();
+      await pool.query("DELETE FROM tenancies WHERE tid = 'T9701'");
+      await pool.query("DELETE FROM properties WHERE property_ref = 'ZZ-SYNC-1'");
+      await pool.query("DELETE FROM branches WHERE code = 'ZZ-SYNC'");
+    }
+  });
 });
