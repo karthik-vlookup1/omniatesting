@@ -1769,22 +1769,43 @@
           "kind": "cmd",
           "cmd": "npm run test:web -- agentos",
           "exitCode": 0,
-          "testedAt": "2026-10-07T15:36:50.514Z",
-          "commit": "7162b3c"
+          "commit": "7162b3c",
+          "testedAt": "2026-10-07T15:36:50.514Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:e2e -- agentos-payment.spec",
           "exitCode": 0,
-          "testedAt": "2026-10-07T15:37:08.807Z",
-          "commit": "7162b3c"
+          "commit": "7162b3c",
+          "testedAt": "2026-10-07T15:37:08.807Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:e2e -- agentos-journal.spec",
           "exitCode": 0,
-          "testedAt": "2026-10-07T15:37:28.320Z",
-          "commit": "7162b3c"
+          "commit": "7162b3c",
+          "testedAt": "2026-10-07T15:37:28.320Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:web -- agentos",
+          "exitCode": 0,
+          "testedAt": "2026-10-07T15:49:05.452Z",
+          "commit": "0a34724"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:e2e -- agentos-payment.spec",
+          "exitCode": 0,
+          "testedAt": "2026-10-07T15:49:21.385Z",
+          "commit": "0a34724"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:e2e -- agentos-journal.spec",
+          "exitCode": 0,
+          "testedAt": "2026-10-07T15:49:38.591Z",
+          "commit": "0a34724"
         }
       ],
       "notes": "HARD (5+ files)",
