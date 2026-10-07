@@ -131,7 +131,7 @@ describe('agentOS 5 Aug 2026 demo pipeline', () => {
   });
 
   it('moves money between tenants with a journal transfer', async () => {
-    const t = await post('/api/agentos/journal/transfers', 'staff').send({
+    const t = await post('/api/agentos/journal/transfers', 'accounts').send({
       fromTid: '9301',
       toTid: '9302',
       amountPence: 5000,
