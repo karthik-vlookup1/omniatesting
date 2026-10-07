@@ -21,6 +21,9 @@ const line = (over: Partial<IntakeLine>): IntakeLine => ({
   matchStatus: 'matched',
   agentosTenantId: 'ten-1',
   postingStatus: 'not_ready',
+  payerType: 'third_party',
+  reference: null,
+  receivingAccount: 'HSBC',
   ...over,
 });
 
@@ -37,7 +40,7 @@ describe('isExportable', () => {
     expect(isExportable(line({}))).toBe(true);
     expect(isExportable(line({ postingStatus: 'ready' }))).toBe(true);
     expect(isExportable(line({ matchStatus: 'unmatched' }))).toBe(false);
-    expect(isExportable(line({ matchStatus: 'deposit_mismatch' }))).toBe(false);
+    expect(isExportable(line({ matchStatus: 'ambiguous' }))).toBe(false);
     expect(isExportable(line({ agentosTenantId: null }))).toBe(false);
     expect(isExportable(line({ postingStatus: 'exported' }))).toBe(false);
     expect(isExportable(line({ postingStatus: 'posted' }))).toBe(false);
@@ -52,17 +55,23 @@ describe('LinesTable', () => {
   const lines = [
     line({}),
     line({ id: 'id-2', lineNo: 3, postingStatus: 'exported' }),
-    line({ id: 'id-3', lineNo: 4, matchStatus: 'deposit_mismatch', postingStatus: 'posted' }),
+    line({ id: 'id-3', lineNo: 4, matchStatus: 'ambiguous', payerType: null, postingStatus: 'posted' }),
+    line({ id: 'id-4', lineNo: 5, tid: null, reference: '•••••56C', payerType: 'tenant', receivingAccount: null }),
   ];
 
   it('shows actions to writers by posting status', async () => {
     const onReassign = vi.fn();
     render(<LinesTable lines={lines} writer onReassign={onReassign} />, { wrapper: Wrapper });
-    expect(screen.getAllByRole('button', { name: 'Reassign TID' })).toHaveLength(1);
+    expect(screen.getAllByRole('button', { name: 'Reassign TID' })).toHaveLength(2);
     expect(screen.getAllByRole('button', { name: 'Mark posted' })).toHaveLength(1);
-    await userEvent.click(screen.getByRole('button', { name: 'Reassign TID' }));
+    await userEvent.click(screen.getAllByRole('button', { name: 'Reassign TID' })[0]!);
     expect(onReassign).toHaveBeenCalledWith(lines[0]);
-    expect(screen.getByTestId('line-4')).toHaveTextContent('Deposit mismatch');
+    expect(screen.getByTestId('line-4')).toHaveTextContent('Ambiguous');
+    expect(screen.getByTestId('line-2')).toHaveTextContent('Council / third party');
+    expect(screen.getByTestId('line-5')).toHaveTextContent('Tenant paid');
+    expect(screen.getByTestId('line-5')).toHaveTextContent('•••••56C');
+    expect(screen.getByTestId('line-5')).toHaveTextContent('Unknown account');
+    expect(screen.getByTestId('line-2')).not.toHaveTextContent('Unknown account');
   });
 
   it('shows no actions to read-only users and an empty message for no lines', () => {

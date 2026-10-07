@@ -123,15 +123,17 @@ describe('POST /lines/:id/reassign', () => {
     expect(rows[0]!.changed_by).toBe(emails.staff);
   });
 
-  it('re-runs the rules for name, deposit and same-TID cases', async () => {
+  it('re-runs the rules: a TID always gives a third-party match, whatever the payer name', async () => {
     const a = await reassign(4, 'staff', '9202');
-    expect(a.body.line.matchStatus).toBe('name_mismatch');
+    expect(a.body.line.matchStatus).toBe('matched');
+    expect(a.body.line.payerType).toBe('third_party');
     expect(a.body.line.agentosTenantId).toBe(tenantIds['9202']);
     const b = await reassign(5, 'staff', '9203');
     expect(b.status).toBe(200);
-    expect(b.body.line.matchStatus).toBe('deposit_mismatch');
+    expect(b.body.line.matchStatus).toBe('matched');
     const c = await reassign(2, 'staff', '9203');
-    expect(c.body.line.matchStatus).toBe('name_mismatch');
+    expect(c.body.line.matchStatus).toBe('matched');
+    expect(c.body.line.agentosTenantId).toBe(tenantIds['9203']);
     const d = await reassign(2, 'staff', '9201');
     expect(d.body.line.matchStatus).toBe('matched');
   });
@@ -158,7 +160,7 @@ describe('POST /lines/:id/reassign', () => {
   it('the reassigned line feeds the export, then exported and posted lines are locked', async () => {
     const exp = await post('/api/agentos/exports', 'staff').send({ batchId });
     expect(exp.status).toBe(201);
-    expect(exp.body.export.rowsTotal).toBe(4);
+    expect(exp.body.export.rowsTotal).toBe(6);
     const before = await auditCount();
     expect((await reassign(2, 'staff', '9201')).status).toBe(409);
     expect(await auditCount()).toBe(before);

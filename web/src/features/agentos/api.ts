@@ -2,12 +2,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest, buildUrl } from '../../lib/api';
 
-export type MatchStatus = 'matched' | 'name_mismatch' | 'deposit_mismatch' | 'unmatched';
+export type MatchStatus = 'matched' | 'ambiguous' | 'unmatched';
 
 export interface MatchCounts {
   matched: number;
-  name_mismatch: number;
-  deposit_mismatch: number;
+  ambiguous: number;
   unmatched: number;
 }
 
@@ -36,6 +35,11 @@ export interface IntakeLine {
   matchStatus: MatchStatus;
   agentosTenantId: string | null;
   postingStatus: 'not_ready' | 'ready' | 'exported' | 'posted';
+  payerType: 'tenant' | 'third_party' | null;
+  /** Masked NI Number cell (last characters only), or null. */
+  reference: string | null;
+  /** Omnia bank account code the deposit text resolved to; null means "Unknown account". */
+  receivingAccount: string | null;
 }
 
 export interface IntakeImportResult {
@@ -47,13 +51,13 @@ export interface IntakeImportResult {
   periodTo: string;
   linesWithWarnings: number;
   matchCounts: MatchCounts;
+  unresolvedRefs: number;
 }
 
 export interface AgentosTenant {
   id: string;
   tid: string;
   name: string;
-  depositTo: string;
 }
 
 export interface ReassignResult {
@@ -71,8 +75,7 @@ export interface AgentosExport {
 
 export const STATUS_LABELS: Record<MatchStatus, string> = {
   matched: 'Matched',
-  name_mismatch: 'Name mismatch',
-  deposit_mismatch: 'Deposit mismatch',
+  ambiguous: 'Ambiguous',
   unmatched: 'Unmatched',
 };
 

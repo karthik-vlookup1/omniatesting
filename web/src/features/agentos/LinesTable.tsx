@@ -5,8 +5,7 @@ import { gbp, POSTING_LABELS, STATUS_LABELS, useMarkPosted, type IntakeLine, typ
 
 const COLOUR: Record<MatchStatus, string> = {
   matched: 'green',
-  name_mismatch: 'orange',
-  deposit_mismatch: 'orange',
+  ambiguous: 'orange',
   unmatched: 'red',
 };
 
@@ -46,14 +45,33 @@ export function LinesTable({ lines, writer, onReassign }: LinesTableProps) {
             <Table.Tr key={l.id} data-testid={`line-${l.lineNo}`}>
               <Table.Td>{l.lineNo}</Table.Td>
               <Table.Td>{l.receivedOn}</Table.Td>
-              <Table.Td>{l.tid ?? ''}</Table.Td>
+              <Table.Td>{l.tid ?? l.reference ?? ''}</Table.Td>
               <Table.Td>{l.payerName}</Table.Td>
               <Table.Td>{gbp(l.amountPence)}</Table.Td>
-              <Table.Td>{l.depositTo}</Table.Td>
+              <Table.Td>
+                <Group gap={4} wrap="nowrap">
+                  <Text size="sm">{l.depositTo}</Text>
+                  {l.receivingAccount === null && (
+                    <Badge color="gray" variant="outline">
+                      Unknown account
+                    </Badge>
+                  )}
+                </Group>
+              </Table.Td>
               <Table.Td>
                 <Badge color={COLOUR[l.matchStatus]} variant="light">
                   {STATUS_LABELS[l.matchStatus]}
                 </Badge>
+                {l.payerType === 'tenant' && (
+                  <Badge color="teal" variant="light" ml={4}>
+                    Tenant paid
+                  </Badge>
+                )}
+                {l.payerType === 'third_party' && (
+                  <Badge color="grape" variant="light" ml={4}>
+                    Council / third party
+                  </Badge>
+                )}
               </Table.Td>
               <Table.Td>{POSTING_LABELS[l.postingStatus]}</Table.Td>
               <Table.Td>

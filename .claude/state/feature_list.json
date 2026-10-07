@@ -1487,22 +1487,43 @@
           "kind": "cmd",
           "cmd": "npm run test:unit -- agentos-sync",
           "exitCode": 0,
-          "testedAt": "2026-10-07T13:26:42.891Z",
-          "commit": "9eb7d5e"
+          "commit": "9eb7d5e",
+          "testedAt": "2026-10-07T13:26:42.891Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:int -- agentos-sync",
           "exitCode": 0,
-          "testedAt": "2026-10-07T13:26:45.785Z",
-          "commit": "9eb7d5e"
+          "commit": "9eb7d5e",
+          "testedAt": "2026-10-07T13:26:45.785Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:int -- agentos",
           "exitCode": 0,
-          "testedAt": "2026-10-07T13:26:58.922Z",
-          "commit": "9eb7d5e"
+          "commit": "9eb7d5e",
+          "testedAt": "2026-10-07T13:26:58.922Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:unit -- agentos-sync",
+          "exitCode": 0,
+          "commit": "6e3ed29",
+          "testedAt": "2026-10-07T13:45:00.911Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos-sync",
+          "exitCode": 0,
+          "commit": "6e3ed29",
+          "testedAt": "2026-10-07T13:45:03.384Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos",
+          "exitCode": 0,
+          "commit": "6e3ed29",
+          "testedAt": "2026-10-07T13:45:15.869Z"
         }
       ],
       "notes": "HARD",
@@ -1510,6 +1531,81 @@
         "recon-508"
       ],
       "contractHash": "22d40797c4132c31"
+    },
+    {
+      "id": "recon-510",
+      "priority": 1010,
+      "area": "phase-5-agentos",
+      "title": "agentOS receipts: reference-driven matching (optional 'NI Number' intake column = NI or sort code+account => tenant payer via core tenants.ni_hash / payer_bank_accounts; TID only => council/third-party payer -> lead tenant; NI Number takes precedence; payer name and deposit-to never checked; statuses matched/ambiguous/unmatched), deposit-to resolved to core bank_accounts with addable aliases (unknown = flag only), sync no longer needs AGENTOS_DEPOSIT_TO",
+      "user_visible_behavior": "Receipts files may carry an extra 'NI Number' column (old 7-column files still work). A row with an NI number or sort code + account matches the tenant through Omnia core data and shows 'Tenant paid', with the identifier masked. A row with only a TID shows 'Council / third party'. Upload reports how many tenant references Omnia could not find. An unrecognised 'Will deposit to' shows 'Unknown account' but still exports with the raw bank text. `npm run agentos:accounts -- --add-alias <CODE> <text>` adds a deposit alias.",
+      "scope": [
+        "db/migrations/017_*",
+        "server/src/domain/agentos/{intake,match,sync,types}.ts",
+        "server/src/services/agentos/{intake,match,reassign,export,sync,accounts}.service.ts",
+        "server/src/services/agentos/api-client.ts",
+        "scripts/agentos-{sync,accounts}.ts",
+        "web/src/features/agentos/**",
+        "e2e/agentos.spec.ts",
+        "server/test/unit/agentos-*",
+        "server/test/int/agentos-*",
+        "server/test/fixtures/agentos/**",
+        "docs/agentos/**",
+        "plans/**"
+      ],
+      "verification": [
+        {
+          "level": "unit",
+          "cmd": "npm run test:unit -- agentos"
+        },
+        {
+          "level": "integration",
+          "cmd": "npm run test:int -- agentos"
+        },
+        {
+          "level": "unit",
+          "cmd": "npm run test:web -- agentos"
+        },
+        {
+          "level": "e2e",
+          "cmd": "npm run test:e2e -- agentos.spec"
+        }
+      ],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:unit -- agentos",
+          "exitCode": 0,
+          "testedAt": "2026-10-07T14:09:24.298Z",
+          "commit": "6e3ed29"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:web -- agentos",
+          "exitCode": 0,
+          "testedAt": "2026-10-07T14:09:27.759Z",
+          "commit": "6e3ed29"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos",
+          "exitCode": 0,
+          "testedAt": "2026-10-07T14:09:41.904Z",
+          "commit": "6e3ed29"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:e2e -- agentos.spec",
+          "exitCode": 0,
+          "testedAt": "2026-10-07T14:10:03.216Z",
+          "commit": "6e3ed29"
+        }
+      ],
+      "notes": "HARD",
+      "dependsOn": [
+        "recon-509"
+      ],
+      "contractHash": "f9f36b2f85f6829b"
     }
   ]
 }

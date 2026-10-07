@@ -166,8 +166,8 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 
 - Date: 2026-10-07
 - Active feature: (none)
-- Passing features: 26
+- Passing features: 27
 - Blocked features: none
 - Verification runs this session: 1
-- Commit: 9eb7d5e
+- Commit: 6e3ed29
 - Next best step: (none — check feature_list.json)

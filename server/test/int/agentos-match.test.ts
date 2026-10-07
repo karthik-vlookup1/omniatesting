@@ -10,7 +10,7 @@ import { createPool, type Pool } from '../../src/db/pool.js';
 import { createLogger } from '../../src/lib/logger.js';
 import { upsertUser, type Role } from '../../src/services/auth.service.js';
 import { seedAgentosTenants } from '../../src/services/agentos/seed.js';
-import { decideMatch, expectedTenantName, normaliseText, type MatchCandidate } from '../../src/domain/agentos/match.js';
+import { decideMatch, expectedTenantName, normaliseText, payerTypeFor, type MatchCandidate } from '../../src/domain/agentos/match.js';
 
 const PASSWORD = 'correct-horse-battery';
 const config = loadConfig();
@@ -59,48 +59,67 @@ afterAll(async () => {
   await pool?.end();
 });
 
-const cand = (id: string, tid: string, forename: string, surname: string, depositTo = 'Acct A'): MatchCandidate => ({
-  id, tid, forename, surname, depositTo, agentosRef: `ten-${id}`,
+const cand = (id: string, tid: string, forename: string, surname: string, tenancyOid: string | null = null, isHeadTenant = true): MatchCandidate => ({
+  id, tid, forename, surname, agentosRef: `ten-${id}`, tenancyOid, isHeadTenant,
 });
+const un = { status: 'unmatched', tenantId: null };
 
 describe('decideMatch (pure)', () => {
   it('normalises text and the expected tenant name', () => {
-    expect(normaliseText('  A \t B ')).toBe('a b');
+    expect(normaliseText('  A 	 B ')).toBe('a b');
     expect(expectedTenantName({ tid: '9202', forename: '9202 Mary  Jo', surname: "O'Testson" })).toBe("mary jo o'testson");
   });
 
-  it('covers all four statuses', () => {
+  it('rule 1: no kind or no TIDs is unmatched', () => {
     const c = [cand('1', '9001', '9001 Ann', 'Lee')];
-    expect(decideMatch({ tid: '9001', payerName: 'ann lee', depositTo: ' acct a ' }, c)).toEqual({ status: 'matched', tenantId: '1' });
-    expect(decideMatch({ tid: '9001', payerName: 'ann lee', depositTo: 'Acct B' }, c)).toEqual({ status: 'deposit_mismatch', tenantId: '1' });
-    expect(decideMatch({ tid: '9001', payerName: 'ann lea', depositTo: 'Acct A' }, c)).toEqual({ status: 'name_mismatch', tenantId: '1' });
-    expect(decideMatch({ tid: '9002', payerName: 'ann lee', depositTo: 'Acct A' }, c)).toEqual({ status: 'unmatched', tenantId: null });
-    expect(decideMatch({ tid: null, payerName: 'ann lee', depositTo: 'Acct A' }, c)).toEqual({ status: 'unmatched', tenantId: null });
+    expect(decideMatch({ kind: null, tids: ['9001'], preferredNames: [] }, c)).toEqual(un);
+    expect(decideMatch({ kind: 'tid', tids: [], preferredNames: [] }, c)).toEqual(un);
   });
 
-  it('name mismatch wins when both fail', () => {
-    const c = [cand('1', '9001', '9001 Ann', 'Lee')];
-    expect(decideMatch({ tid: '9001', payerName: 'zed', depositTo: 'Acct B' }, c).status).toBe('name_mismatch');
+  it('rule 2: more than one distinct TID is ambiguous', () => {
+    const c = [cand('1', '9001', '9001 Ann', 'Lee'), cand('2', '9002', '9002 Bob', 'Lee')];
+    expect(decideMatch({ kind: 'ni', tids: ['9001', '9002'], preferredNames: [] }, c)).toEqual({ status: 'ambiguous', tenantId: null });
+    expect(decideMatch({ kind: 'ni', tids: ['9001', '9001'], preferredNames: [] }, c).status).toBe('matched');
   });
 
-  it('handles joint tenants', () => {
-    const two = [cand('1', '9001', '9001 Ann', 'Lee'), cand('2', '9001', '9001 Bob', 'Lee')];
-    expect(decideMatch({ tid: '9001', payerName: 'Bob Lee', depositTo: 'Acct A' }, two)).toEqual({ status: 'matched', tenantId: '2' });
-    const both = [cand('1', '9001', '9001 Ann', 'Lee'), cand('2', '9001', '9001 Ann', 'Lee')];
-    expect(decideMatch({ tid: '9001', payerName: 'Ann Lee', depositTo: 'Acct A' }, both)).toEqual({ status: 'name_mismatch', tenantId: null });
-    expect(decideMatch({ tid: '9001', payerName: 'Zed Lee', depositTo: 'Acct A' }, two)).toEqual({ status: 'name_mismatch', tenantId: null });
+  it('rule 3: a TID with no agentOS tenant is unmatched', () => {
+    expect(decideMatch({ kind: 'tid', tids: ['9009'], preferredNames: [] }, [cand('1', '9001', '9001 Ann', 'Lee')])).toEqual(un);
+  });
+
+  it('rule 4: a reference picks the joint tenant core named', () => {
+    const two = [cand('1', '9001', '9001 Ann', 'Lee', 'o1'), cand('2', '9001', '9001 Bob', 'Lee', 'o1', false)];
+    expect(decideMatch({ kind: 'ni', tids: ['9001'], preferredNames: ['bob  LEE'] }, two)).toEqual({ status: 'matched', tenantId: '2' });
+    expect(decideMatch({ kind: 'account', tids: ['9001'], preferredNames: ['Zed Lee'] }, two)).toEqual({ status: 'matched', tenantId: '1' });
+    expect(decideMatch({ kind: 'tid', tids: ['9001'], preferredNames: ['Bob Lee'] }, two)).toEqual({ status: 'matched', tenantId: '1' });
+  });
+
+  it('rule 5: one candidate, or one tenancy, goes to the lead; otherwise ambiguous', () => {
+    expect(decideMatch({ kind: 'tid', tids: ['9001'], preferredNames: [] }, [cand('1', '9001', '9001 Ann', 'Lee')])).toEqual({ status: 'matched', tenantId: '1' });
+    const same = [cand('2', '9001', '9001 Bob', 'Lee', 'o1', false), cand('1', '9001', '9001 Ann', 'Lee', 'o1')];
+    expect(decideMatch({ kind: 'tid', tids: ['9001'], preferredNames: [] }, same)).toEqual({ status: 'matched', tenantId: '1' });
+    const diff = [cand('1', '9001', '9001 Ann', 'Lee', 'o1'), cand('2', '9001', '9001 Bob', 'Lee', 'o2')];
+    expect(decideMatch({ kind: 'tid', tids: ['9001'], preferredNames: [] }, diff)).toEqual({ status: 'ambiguous', tenantId: null });
+    const none = [cand('1', '9001', '9001 Ann', 'Lee'), cand('2', '9001', '9001 Bob', 'Lee')];
+    expect(decideMatch({ kind: 'tid', tids: ['9001'], preferredNames: [] }, none).status).toBe('ambiguous');
+  });
+
+  it('payer type follows the kind', () => {
+    expect(payerTypeFor('tid')).toBe('third_party');
+    expect(payerTypeFor('ni')).toBe('tenant');
+    expect(payerTypeFor('account')).toBe('tenant');
+    expect(payerTypeFor(null)).toBeNull();
   });
 });
 
 const EXPECTED: { lineNo: number; status: string; tid: string | null }[] = [
   { lineNo: 2, status: 'matched', tid: '9201' },
   { lineNo: 3, status: 'matched', tid: '9202' },
-  { lineNo: 4, status: 'name_mismatch', tid: '9201' },
-  { lineNo: 5, status: 'deposit_mismatch', tid: '9203' },
-  { lineNo: 6, status: 'name_mismatch', tid: '9203' },
+  { lineNo: 4, status: 'matched', tid: '9201' },
+  { lineNo: 5, status: 'matched', tid: '9203' },
+  { lineNo: 6, status: 'matched', tid: '9203' },
   { lineNo: 7, status: 'unmatched', tid: null },
   { lineNo: 8, status: 'unmatched', tid: null },
-  { lineNo: 9, status: 'name_mismatch', tid: '9201' },
+  { lineNo: 9, status: 'matched', tid: '9201' },
 ];
 const expectedRows = () => EXPECTED.map((e) => ({ lineNo: e.lineNo, status: e.status, tenant: e.tid ? tenantId[e.tid]! : null }));
 
@@ -110,7 +129,7 @@ describe('intake matching end to end', () => {
     expect(res.status).toBe(201);
     expect(res.body.batch.rowsTotal).toBe(8);
     expect(res.body.batch.amountTotalPence).toBe(25600);
-    expect(res.body.batch.matchCounts).toEqual({ matched: 2, name_mismatch: 3, deposit_mismatch: 1, unmatched: 2 });
+    expect(res.body.batch.matchCounts).toEqual({ matched: 6, ambiguous: 0, unmatched: 2 });
     batchId = res.body.batch.batchId;
   });
 
@@ -122,6 +141,9 @@ describe('intake matching end to end', () => {
     expect(rows.map((r) => ({ lineNo: r.line_no, status: r.match_status, tenant: r.agentos_tenant_id }))).toEqual(expectedRows());
     expect(rows.some((r) => r.match_status === 'pending')).toBe(false);
     expect(rows.every((r) => r.posting_status === 'not_ready')).toBe(true);
+    const { rows: pt } = await pool.query<{ payer_type: string | null; match_status: string }>(
+      'SELECT payer_type, match_status FROM agentos_intake_lines WHERE batch_id = $1', [batchId]);
+    expect(pt.every((r) => (r.match_status === 'matched' ? r.payer_type === 'third_party' : r.payer_type === null))).toBe(true);
   });
 
   it('GET returns matchStatus and agentosTenantId in line order', async () => {
@@ -142,7 +164,7 @@ describe('intake matching end to end', () => {
     ].join('\n');
     const res = await uploadBytes('staff', Buffer.from(csv));
     expect(res.status).toBe(201);
-    expect(res.body.batch.matchCounts).toEqual({ matched: 2, name_mismatch: 0, deposit_mismatch: 0, unmatched: 0 });
+    expect(res.body.batch.matchCounts).toEqual({ matched: 2, ambiguous: 0, unmatched: 0 });
     const { rows } = await pool.query<{ tid_raw: string; match_status: string; agentos_tenant_id: string }>(
       'SELECT tid_raw, match_status, agentos_tenant_id FROM agentos_intake_lines WHERE batch_id = $1 ORDER BY line_no',
       [res.body.batch.batchId],
@@ -157,7 +179,7 @@ describe('intake matching end to end', () => {
     await pool.query('DELETE FROM agentos_tenants');
     const res = await uploadBytes('staff', Buffer.concat([fixtureBytes('match-lines.csv'), Buffer.from('\n')]));
     expect(res.status).toBe(201);
-    expect(res.body.batch.matchCounts).toEqual({ matched: 0, name_mismatch: 0, deposit_mismatch: 0, unmatched: 8 });
+    expect(res.body.batch.matchCounts).toEqual({ matched: 0, ambiguous: 0, unmatched: 8 });
     const { rows } = await pool.query<{ match_status: string; agentos_tenant_id: string | null }>(
       'SELECT match_status, agentos_tenant_id FROM agentos_intake_lines WHERE batch_id = $1',
       [res.body.batch.batchId],

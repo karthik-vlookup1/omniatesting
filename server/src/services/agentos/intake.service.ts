@@ -19,6 +19,7 @@ export interface IntakeImportResult {
   periodTo: string;
   linesWithWarnings: number;
   matchCounts: MatchCounts;
+  unresolvedRefs: number;
 }
 
 export interface IntakeBatchDto {
@@ -46,9 +47,14 @@ export interface IntakeLineDto {
   matchStatus: string;
   agentosTenantId: string | null;
   postingStatus: string;
+  payerType: string | null;
+  reference: string | null;
+  receivingAccount: string | null;
 }
 
 const CHUNK = 500;
+/** Masked display of the stored reference: last characters only. */
+export const REFERENCE_SQL = "CASE ref_kind WHEN 'ni' THEN '•••••' || ref_last WHEN 'account' THEN '****' || ref_last END";
 
 export async function importIntakeCsv(
   db: ActorDb,
@@ -117,22 +123,26 @@ async function importInTx(
       const chunk = lines.slice(i, i + CHUNK);
       const params: unknown[] = [];
       const tuples = chunk.map((l, k) => {
-        const o = k * 10;
+        const o = k * 13;
         params.push(
           batchId, l.lineNo, l.receivedOn, l.tid, l.payerName,
           l.amountPence, l.paymentType, l.depositTo, l.description, l.warnings,
+          l.ref?.kind ?? null, l.ref?.key ?? null, l.ref?.last ?? null,
         );
-        return `($${o + 1},$${o + 2},$${o + 3},$${o + 4},$${o + 5},$${o + 6},$${o + 7},$${o + 8},$${o + 9},$${o + 10})`;
+        const ph = Array.from({ length: 10 }, (_, j) => `$${o + j + 1}`).join(',');
+        // The plaintext key is only ever a SQL parameter into secure_hash (same as core ingest).
+        return `(${ph},$${o + 11}::text,secure_hash($${o + 12}::text),$${o + 13}::text)`;
       });
       await c.query(
         `INSERT INTO agentos_intake_lines
-           (batch_id, line_no, received_on, tid_raw, payer_name, amount_pence, payment_type, deposit_to, description, warnings)
+           (batch_id, line_no, received_on, tid_raw, payer_name, amount_pence, payment_type, deposit_to, description, warnings,
+            ref_kind, ref_hash, ref_last)
          VALUES ${tuples.join(',')}`,
         params,
       );
     }
 
-    const matchCounts = await matchIntakeBatch(c, batchId);
+    const { counts: matchCounts, unresolvedRefs } = await matchIntakeBatch(c, batchId);
 
     return {
       batchId,
@@ -143,6 +153,7 @@ async function importInTx(
       periodTo,
       linesWithWarnings: lines.filter((l) => l.warnings.length > 0).length,
       matchCounts,
+      unresolvedRefs,
     };
   });
 }
@@ -193,9 +204,11 @@ export async function getIntakeBatch(
     id: string; line_no: number; received_on: string; tid_raw: string | null; payer_name: string;
     amount_pence: number; payment_type: string; deposit_to: string; description: string;
     warnings: string[]; match_status: string; agentos_tenant_id: string | null; posting_status: string;
+    payer_type: string | null; reference: string | null; receiving_account_code: string | null;
   }>(
     `SELECT id, line_no, to_char(received_on, 'YYYY-MM-DD') AS received_on, tid_raw, payer_name, amount_pence,
-            payment_type, deposit_to, description, warnings, match_status, agentos_tenant_id, posting_status
+            payment_type, deposit_to, description, warnings, match_status, agentos_tenant_id, posting_status,
+            payer_type, ${REFERENCE_SQL} AS reference, receiving_account_code
        FROM agentos_intake_lines WHERE batch_id = $1 ORDER BY line_no`,
     [id],
   );
@@ -215,6 +228,9 @@ export async function getIntakeBatch(
       matchStatus: l.match_status,
       agentosTenantId: l.agentos_tenant_id,
       postingStatus: l.posting_status,
+      payerType: l.payer_type,
+      reference: l.reference,
+      receivingAccount: l.receiving_account_code,
     })),
   };
 }

@@ -17,31 +17,140 @@
 
 ## Verification Standards
 
-- [unit] `npm run test:unit -- agentos`; [web] `npm run test:web -- agentos`
-- [integration] `npm run test:int -- agentos`; [e2e] `npm run test:e2e -- agentos.spec`; plus `npm run db:test`, lint, typecheck
-- Header: the existing 7 columns, or those 7 plus "NI Number". The NI Number cell is a valid UK NI -> ni, 14-16
-  digits -> account, blank -> none, anything else -> a 400 on field "NI Number" (value not echoed). The TID rule is
-  unchanged.
-- Rule: NI Number set -> payer tenant. Candidate TIDs = core matches (tenants.ni_hash or payer_bank_accounts ->
-  live tenancy) plus the TID column. No core match -> the TID column alone. A different core TID -> ambiguous.
-  TID only -> payer third_party, lead tenant. Nothing resolved -> unmatched. Payer name and deposit-to never change
-  the status.
-- Counts: match-lines {matched 6, ambiguous 0, unmatched 2}; export-lines {5,0,1}, export 5 rows, 117501, golden
-  bytes; demo {11,0,2}, export 12 rows, 487275; reassign suite exports 6. The upload returns unresolvedRefs (an
-  unknown NI with a blank TID -> 1).
-- GDPR (approved): NI and account values are stored only as secure_hash plus the last 3 or 4 characters. No
-  plaintext appears in agentos_intake_lines, audit_log, API responses, logs or CLI output (asserted by test).
-- Deposit text resolves case- and space-insensitively to an active bank_accounts code, or to an alias seeded in
-  017 (HSBC, Apollo HSBC, Lloyds, TW, Apollo TW, ISL, Army, Redstone). Unknown -> NULL plus an "Unknown account"
-  badge, export never blocked, and the export writes the raw bank text.
-- Sync runs with no AGENTOS_DEPOSIT_TO set, and API tenant rows have deposit_to NULL.
-- Synthetic data only. No network calls.
+- [unit] `npm run test:unit -- agentos`
+- [integration] `npm run test:int -- agentos`
+- [unit] `npm run test:web -- agentos`
+- [e2e] `npm run test:e2e -- agentos.spec`
 
 ## Exclusions
 
-package.json, package-lock.json, docker-compose.yml, .github/**, server/package.json, web/package.json,
-*/tsconfig*.json, web/vite.config.ts, eslint.config.*, vitest.config.*, playwright.config.*,
-server/src/db/migrate.ts, scripts/db-test.*, db/migrations/00[1-9]_*, db/migrations/01[0-6]_*, server/src/lib/crypto.ts,
-server/src/{domain,services,api}/{ingest,matching,receipt,allocation,bank-account}*/**, server/src/{services,api,jobs}/{vico,xero}/**,
-server/src/jobs/{letmc-import,veco-sync}/**, server/src/api/auth/**, server/src/services/agentos/{journal,seed}*,
-server/src/config/env.ts.
+- package.json
+- package-lock.json
+- docker-compose.yml
+- .github/**
+- server/package.json
+- server/tsconfig*.json
+- web/package.json
+- web/tsconfig*.json
+- web/vite.config.ts
+- README.md
+- docs/ARCHITECTURE.md
+- .env.example
+- eslint.config.*
+- vitest.config.*
+- playwright.config.*
+- server/src/db/migrate.ts
+- scripts/db-test.*
+- server/src/lib/crypto*
+- server/src/config/**
+- server/test/unit/crypto*
+- server/test/unit/config*
+- server/test/int/crypto*
+- server/src/api/auth/**
+- server/src/services/auth*
+- server/src/db/context*
+- server/src/api/app.ts
+- web/src/app/**
+- web/src/features/auth/**
+- server/test/**/auth*
+- e2e/auth*
+- server/src/{domain,services,api}/{branch,bank-account,landlord,property}*/**
+- web/src/features/{branches,bank-accounts,landlords,properties}/**
+- server/test/**/property*
+- e2e/property*
+- web/src/app/App.tsx
+- web/src/app/Shell.tsx
+- db/migrations/00[3-9]_*
+- db/migrations/0[1-9][0-9]_*
+- server/test/**
+- e2e/**
+- web/src/app/routes.tsx
+- web/src/app/navigation.ts
+- plans/**
+- server/src/{domain,services,api}/{tenant,tenancy}*/**
+- server/src/jobs/veco-sync/**
+- web/src/features/{tenants,tenancies}/**
+- server/test/**/tenan*
+- server/test/**/veco*
+- e2e/tenan*
+- server/src/{domain,services,api}/{rent,benefit,payer-split,payment-method}*/**
+- server/src/jobs/generate-charges*
+- web/src/features/rent-terms/**
+- server/test/**/rent*
+- e2e/rent*
+- server/src/{domain,services,api}/payer-account*/**
+- web/src/features/payer-accounts/**
+- server/test/**/payer-account*
+- server/src/jobs/letmc-import/**
+- server/src/api/imports/letmc*
+- web/src/features/letmc-import/**
+- fixtures/letmc/**
+- server/test/**/letmc*
+- server/src/{domain,services,api}/ingest/**
+- web/src/features/{upload,csv-profiles}/**
+- fixtures/banks/**
+- server/test/**/ingest*
+- server/src/{services,api}/matching/**
+- server/test/**/matching*
+- db/migrations/004_*
+- server/src/api/ingest/routes.ts
+- web/src/features/upload/**
+- server/test/int/ingest.test.ts
+- web/src/features/review/**
+- e2e/review*
+- server/src/{domain,services,api}/{receipt,allocation,remittance,adjustment}*/**
+- web/src/features/receipts/**
+- server/test/**/receipt*
+- server/src/{services,api}/export/statement*
+- web/src/features/export/**
+- server/test/**/export-statement*
+- server/src/{services,api,jobs}/vico/**
+- web/src/features/vico/**
+- server/test/**/vico*
+- server/src/{services,api,jobs}/xero/**
+- web/src/features/xero/**
+- server/test/**/xero*
+- server/src/{services,api}/reports/**
+- web/src/features/dashboard/**
+- e2e/dashboard*
+- db/migrations/012_*
+- server/src/{domain,services}/agentos/seed*
+- server/src/domain/agentos/types.ts
+- fixtures/agentos/**
+- server/test/**/agentos-seed*
+- docs/agentos/**
+- db/migrations/013_*
+- server/src/{domain,services,api}/agentos/intake*
+- server/src/api/agentos/routes.ts
+- server/test/**/agentos-intake*
+- server/test/fixtures/agentos/**
+- server/src/{domain,services}/agentos/match*
+- server/src/services/agentos/intake*
+- server/test/**/agentos-match*
+- server/test/int/agentos-intake.test.ts
+- db/migrations/014_*
+- server/src/{services,api}/agentos/export*
+- server/test/**/agentos-export*
+- web/src/features/agentos/**
+- server/src/{services,api}/agentos/reassign*
+- server/test/**/agentos-reassign*
+- e2e/agentos*
+- server/src/{services,api}/agentos/journal*
+- server/test/**/agentos-journal*
+- db/migrations/015_*
+- e2e/agentos-journal*
+- server/src/domain/agentos/intake.ts
+- server/src/domain/agentos/match.ts
+- server/src/services/agentos/reassign*
+- server/test/unit/agentos-intake*
+- server/test/int/agentos-match*
+- fixtures/agentos/demo-2026-08-05/**
+- server/scripts/seed-agentos-demo*
+- server/test/int/agentos-pipeline*
+- db/migrations/016_*
+- server/src/domain/agentos/{sync*,types.ts}
+- server/src/services/agentos/{api-client*,sync*,seed.ts}
+- scripts/agentos-sync.ts
+- server/test/unit/agentos-sync*
+- server/test/int/agentos-sync*
+- server/test/fixtures/agentos/api/**

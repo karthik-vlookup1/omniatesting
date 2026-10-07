@@ -154,3 +154,13 @@ dead end a future session might otherwise walk into again.
 
 - Source: manual (recon-509)
 - recon-509 api rows can have tid NULL (no_tid flag); reassign.service.ts:26 selects all rows. Needs a follow-up before the first real sync
+
+## 2026-10-07: Synthetic NI numbers must pass crypto NI_PATTERN
+
+- Source: manual (recon-510)
+- lib/crypto NI_PATTERN rejects first/second letters D,F,I,Q,U,V (e.g. QQ123456C fails); use e.g. ZY123456C in tests
+
+## 2026-10-07: e2e needs port 3001 free and E2E_DATABASE_URL on 5433
+
+- Source: manual (recon-510)
+- playwright.config.ts hard-codes PORT 3001 and defaults the e2e DB to 5432; stop the dev server and set E2E_DATABASE_URL=postgres://omnia:omnia_local_dev@localhost:5433/omnia_e2e

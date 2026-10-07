@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
   INTAKE_HEADERS,
+  INTAKE_HEADERS_V2,
   parseAmountPence,
   parseIntakeCsv,
   parseUkDate,
@@ -124,5 +125,53 @@ describe('parseAmountPence', () => {
     expect(parseAmountPence('£50.00')).toEqual({ ok: true, pence: 5000 });
     expect(parseAmountPence('12.5')).toEqual({ ok: true, pence: 1250 });
     expect(parseAmountPence('12.345').ok).toBe(false);
+  });
+});
+
+describe('NI Number column (8-column header)', () => {
+  const H8 = INTAKE_HEADERS_V2.join(',');
+  const row = (tid: string, ref: string) => `01/03/2026,${tid},Pat Payer,10.00,Cash,HSBC,x,${ref}`;
+  const parse = (...rows: string[]) => parseIntakeCsv([H8, ...rows].join('\n'), TODAY);
+
+  it('accepts both headers', () => {
+    const seven = parseIntakeCsv(`${HEADER}
+01/03/2026,9001,Pat,10.00,Cash,HSBC,x`, TODAY);
+    if (!seven.ok) throw new Error(JSON.stringify(seven));
+    expect(seven.lines[0]!.ref).toBeNull();
+    const eight = parse(row('', ''));
+    expect(eight.ok).toBe(true);
+  });
+
+  it('rejects a bad 8th header and lists both headers', () => {
+    const r = failed(parseIntakeCsv(`${HEADER},National Insurance
+01/03/2026,9001,Pat,10.00,Cash,HSBC,x,`, TODAY));
+    expect(r.code).toBe('bad_header');
+    expect(r.message).toContain(HEADER);
+    expect(r.message).toContain(H8);
+  });
+
+  it('classifies NI, account and blank cells', () => {
+    const r = parse(row('', 'zy 12 34 56 c'), row('', '12-34-56 12345678'), row('9001', ''), row('', '123456 1234567890'));
+    if (!r.ok) throw new Error(JSON.stringify(r));
+    expect(r.lines[0]!.ref).toEqual({ kind: 'ni', key: 'ZY123456C', last: '56C' });
+    expect(r.lines[1]!.ref).toEqual({ kind: 'account', key: '12345612345678', last: '5678' });
+    expect(r.lines[2]!.ref).toBeNull();
+    expect(r.lines[3]!.ref).toMatchObject({ kind: 'account', last: '7890' });
+  });
+
+  it('flags an invalid cell on NI Number without echoing it', () => {
+    const r = failed(parse(row('', 'DG123456A'), row('', '12345'), row('', '1234567890123')));
+    expect(r.code).toBe('bad_rows');
+    expect(r.rowErrors).toHaveLength(3);
+    for (const e of r.rowErrors) {
+      expect(e.field).toBe('NI Number');
+      expect(e.reason).toBe('must be a UK NI number, a sort code + account number, or blank');
+    }
+    expect(JSON.stringify(r)).not.toMatch(/DG123456|12345|1234567890123/);
+  });
+
+  it('requires the column count to match the header', () => {
+    const r = failed(parse('01/03/2026,9001,Pat,10.00,Cash,HSBC,x'));
+    expect(r.rowErrors[0]!.reason).toBe('expected 8 columns, got 7');
   });
 });

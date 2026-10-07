@@ -64,7 +64,7 @@ export async function createAgentosExport(db: ActorDb, input: { batchId: string;
       surname: string;
       deposit_to: string;
     }>(
-      `SELECT l.id, l.payment_type, l.amount_pence, l.description, t.tid, t.forename, t.surname, t.deposit_to
+      `SELECT l.id, l.payment_type, l.amount_pence, l.description, t.tid, t.forename, t.surname, l.deposit_to
          FROM agentos_intake_lines l JOIN agentos_tenants t ON t.id = l.agentos_tenant_id
         WHERE l.batch_id = $1 AND l.match_status = 'matched' AND l.posting_status IN ('not_ready','ready')
         ORDER BY l.line_no FOR UPDATE OF l`,

@@ -4,13 +4,13 @@
 
 ## Verified Now
 
-- Passing features: recon-001, recon-002, recon-003, recon-004, recon-101, recon-102, recon-103, recon-104, recon-105, recon-201, recon-202, recon-203, recon-204, recon-301, recon-302, recon-303, recon-401, recon-501, recon-502, recon-503, recon-504, recon-505, recon-506, recon-507, recon-508, recon-509
+- Passing features: recon-001, recon-002, recon-003, recon-004, recon-101, recon-102, recon-103, recon-104, recon-105, recon-201, recon-202, recon-203, recon-204, recon-301, recon-302, recon-303, recon-401, recon-501, recon-502, recon-503, recon-504, recon-505, recon-506, recon-507, recon-508, recon-509, recon-510
 - Verification runs this session: 1
 
 ## Changed This Session
 
-- Commit: 9eb7d5e
-- Files changed: plans/recon-510.md
+- Commit: 6e3ed29
+- Files changed: docs/agentos/field-spec.md, e2e/agentos.spec.ts, scripts/agentos-sync.ts, server/src/domain/agentos/intake.ts, server/src/domain/agentos/match.ts, server/src/domain/agentos/sync.ts, server/src/domain/agentos/types.ts, server/src/services/agentos/api-client.ts, server/src/services/agentos/export.service.ts, server/src/services/agentos/intake.service.ts, server/src/services/agentos/match.service.ts, server/src/services/agentos/reassign.service.ts, server/src/services/agentos/sync.service.ts, server/test/fixtures/agentos/take-payment.golden.csv, server/test/int/agentos-export.test.ts, server/test/int/agentos-match.test.ts, server/test/int/agentos-pipeline.test.ts, server/test/int/agentos-reassign.test.ts, server/test/int/agentos-sync.test.ts, server/test/unit/agentos-intake.test.ts, server/test/unit/agentos-sync.test.ts, web/src/features/agentos/IntakeUploadCard.tsx, web/src/features/agentos/LinesTable.tsx, web/src/features/agentos/ReassignModal.tsx, web/src/features/agentos/agentos.test.tsx, web/src/features/agentos/api.ts, db/migrations/017_agentos_reference_matching.sql, scripts/agentos-accounts.ts, server/src/services/agentos/accounts.service.ts, server/test/int/agentos-reference.test.ts
 
 ## Broken Or Unverified
 
