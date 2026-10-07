@@ -12,7 +12,7 @@ import {
   UpdateUserSchema,
 } from '../../services/auth.service.js';
 import { requireAuth, requireRole, SESSION_COOKIE, sessionCookieOptions } from './middleware.js';
-import { ipRateLimit } from './rate-limit.js';
+import { ipRateLimit, parseLoginRateLimitMax } from './rate-limit.js';
 
 const LoginBody = z.object({
   email: z.string().max(320),
@@ -36,7 +36,12 @@ export function authRouter({ pool, cookieSecure }: AuthRouterDeps): Router {
   const router = Router();
   const cookieOptions = sessionCookieOptions(cookieSecure);
 
-  router.post('/login', ipRateLimit({ max: 20, windowMs: 15 * 60 * 1000 }), async (req, res) => {
+  const loginLimit = ipRateLimit({
+    max: parseLoginRateLimitMax(process.env.LOGIN_RATE_LIMIT_MAX),
+    windowMs: 15 * 60 * 1000,
+  });
+
+  router.post('/login', loginLimit, async (req, res) => {
     const body = LoginBody.parse(req.body);
     const result = await login(pool, {
       email: body.email,

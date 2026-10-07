@@ -78,7 +78,7 @@ test('A: an accounts user splits a bank line into two receipts', async ({ page }
 
 test('B: reversing a receipt with a reason marks it Reversed', async ({ page }) => {
   await signIn(page, ADMIN);
-  await nav(page).getByRole('link', { name: 'Receipts' }).click();
+  await nav(page).getByRole('link', { name: 'Receipts', exact: true }).click();
   await page.getByRole('row', { name: 'Open receipt T9001' }).click();
   const drawer = page.getByRole('dialog');
   await drawer.getByLabel('Reason').fill('Paid to the wrong tenancy');
@@ -89,5 +89,5 @@ test('B: reversing a receipt with a reason marks it Reversed', async ({ page }) 
 test('C: a staff user is not offered Receipts', async ({ page }) => {
   await signIn(page, STAFF);
   await expect(nav(page).getByRole('link', { name: 'Upload statement' })).toBeVisible();
-  await expect(nav(page).getByRole('link', { name: 'Receipts' })).toHaveCount(0);
+  await expect(nav(page).getByRole('link', { name: 'Receipts', exact: true })).toHaveCount(0);
 });

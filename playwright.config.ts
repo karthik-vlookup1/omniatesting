@@ -13,6 +13,7 @@ const serverEnv = {
   ENCRYPTION_KEY: 'dGVzdC1vbmx5LWVuY3J5cHRpb24ta2V5LTMyYnl0ZXM=',
   SESSION_SECRET: 'test-only-session-key-not-for-production',
   AUTO_MATCH_THRESHOLD: '0.95',
+  LOGIN_RATE_LIMIT_MAX: '1000',
 };
 
 export default defineConfig({
