@@ -204,6 +204,6 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 - Active feature: (none)
 - Passing features: 30
 - Blocked features: none
-- Verification runs this session: 0
-- Commit: b3b6c05
+- Verification runs this session: 1
+- Commit: 41627ec
 - Next best step: (none — check feature_list.json)

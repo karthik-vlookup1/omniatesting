@@ -5,12 +5,12 @@
 ## Verified Now
 
 - Passing features: recon-001, recon-002, recon-003, recon-004, recon-101, recon-102, recon-103, recon-104, recon-105, recon-201, recon-202, recon-203, recon-204, recon-301, recon-302, recon-303, recon-401, recon-501, recon-502, recon-503, recon-504, recon-505, recon-506, recon-507, recon-508, recon-509, recon-510, recon-601, recon-602, recon-603
-- Verification runs this session: 0
+- Verification runs this session: 1
 
 ## Changed This Session
 
-- Commit: b3b6c05
-- Files changed: docs/FRONTEND.md, docs/FRONTEND_REFERENCE.md, e2e/dashboard.spec.ts, e2e/property.spec.ts, e2e/rent.spec.ts, e2e/tenancies.spec.ts, plans/recon-601-frontend.md, web/src/app/layout/AppLayout.tsx, web/src/app/layout/AppNavbar.tsx, web/src/app/layout/GlobalSearch.tsx, web/src/app/layout/RecordTabs.tsx, web/src/app/layout/TopModules.tsx, web/src/app/layout/UserMenu.tsx, web/src/app/navigation.ts, web/src/app/routes.tsx, web/src/components/index.ts, web/src/components/useConfirmAction.test.tsx, web/src/components/useConfirmAction.tsx, web/src/data/tenancies/describe.ts, web/src/data/tenancies/index.ts, web/src/features/agentos/AgentosPage.tsx, web/src/features/agentos/IntakeUploadCard.tsx, web/src/features/agentos/JournalSection.tsx, web/src/features/csv-profiles/CsvProfilesPage.tsx, web/src/features/export/StatementExportPage.tsx, web/src/features/imports/RecentImportsTable.tsx, web/src/features/payer-accounts/AddPayerAccountModal.tsx, web/src/features/rent-terms/BenefitAwardModal.tsx, web/src/features/rent-terms/PayerSplitModal.tsx, web/src/features/rent-terms/PaymentMethodModal.tsx, web/src/features/tenancies/TenancyDrawer.tsx, web/src/features/tenancy-record/AccountSections.tsx, web/src/features/tenancy-record/AccountSectionsFor.tsx, web/src/features/tenancy-record/ActionModal.tsx, web/src/features/tenancy-record/AdjustmentModal.tsx, web/src/features/tenancy-record/DetailsSection.tsx, web/src/features/tenancy-record/JournalTransferModal.tsx, web/src/features/tenancy-record/OverviewSection.tsx, web/src/features/tenancy-record/RecordCard.tsx, web/src/features/tenancy-record/RecordNav.tsx, web/src/features/tenancy-record/SetRentModal.tsx, web/src/features/tenancy-record/TenancyRecordPage.tsx, web/src/features/tenancy-record/TermsStatementSections.tsx, web/src/features/tenancy-record/recordModel.ts, web/src/features/tenancy-record/tenancyRecord.test.tsx, web/src/features/vico/VicoPage.tsx, web/src/features/xero/XeroPage.tsx, web/src/lib/RecordTabsProvider.tsx, web/src/lib/recordTabs.ts, web/src/theme/global.css, web/src/theme/theme.ts, web/src/theme/tones.ts, plans/merge-final-2026-10-09.md
+- Commit: 41627ec
+- Files changed: (none)
 
 ## Broken Or Unverified
 
