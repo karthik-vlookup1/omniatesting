@@ -75,8 +75,8 @@ test('B: an admin downloads a tenant statement as CSV and PDF; an unknown TID sh
   expect([201, 409]).toContain(rent.status());
 
   await nav(page).getByRole('link', { name: 'Dashboard' }).click();
-  await page.getByLabel('TID').fill('T9004');
-  await page.getByLabel('From').fill('2026-09-01');
+  await page.getByRole('main').getByLabel('TID', { exact: true }).fill('T9004');
+  await page.getByRole('main').getByLabel('From', { exact: true }).fill('2026-09-01');
 
   const csvDownload = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Download CSV' }).click();
@@ -92,7 +92,7 @@ test('B: an admin downloads a tenant statement as CSV and PDF; an unknown TID sh
   expect(pdf.suggestedFilename().endsWith('.pdf')).toBe(true);
   expect(readFileSync((await pdf.path())!).subarray(0, 5).toString('latin1')).toBe('%PDF-');
 
-  await page.getByLabel('TID').fill('T0000');
+  await page.getByRole('main').getByLabel('TID', { exact: true }).fill('T0000');
   await page.getByRole('button', { name: 'Show' }).click();
   await expect(page.getByRole('alert').filter({ hasText: 'Unknown TID T0000' })).toBeVisible();
 });

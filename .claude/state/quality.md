@@ -18,12 +18,12 @@ over time — distinct from the evaluator rubric, which grades one session's out
 
 | Domain | Grade | Verification | Agent Legibility | Test Stability | Key Gaps | Last Updated |
 | --- | --- | --- | --- | --- | --- | --- |
-| phase-0-foundation | B | 4/4 passing | n/a (no automated signal) | n/a (no automated signal) | - | 2026-10-06 |
-| phase-1-tenants | A | 5/5 passing | n/a (no automated signal) | n/a (no automated signal) | - | 2026-10-06 |
-| phase-2-matching | A | 4/4 passing | n/a (no automated signal) | n/a (no automated signal) | - | 2026-10-06 |
-| phase-3-outputs | A | 3/3 passing | n/a (no automated signal) | n/a (no automated signal) | - | 2026-10-06 |
-| phase-4-reporting | B | 1/1 passing | n/a (no automated signal) | n/a (no automated signal) | - | 2026-10-06 |
-| phase-5-agentos | B | 8/8 passing | n/a (no automated signal) | n/a (no automated signal) | - | 2026-10-06 |
+| phase-0-foundation | B | 4/4 passing | n/a (no automated signal) | n/a (no automated signal) | - | 2026-10-07 |
+| phase-1-tenants | A | 5/5 passing | n/a (no automated signal) | n/a (no automated signal) | - | 2026-10-07 |
+| phase-2-matching | A | 4/4 passing | n/a (no automated signal) | n/a (no automated signal) | - | 2026-10-07 |
+| phase-3-outputs | A | 3/3 passing | n/a (no automated signal) | n/a (no automated signal) | - | 2026-10-07 |
+| phase-4-reporting | B | 1/1 passing | n/a (no automated signal) | n/a (no automated signal) | - | 2026-10-07 |
+| phase-5-agentos | B | 9/9 passing | n/a (no automated signal) | n/a (no automated signal) | - | 2026-10-07 |
 
 ## Architectural Layers
 
@@ -134,6 +134,12 @@ over time — distinct from the evaluator rubric, which grades one session's out
 - Domains demoted: -
 
 ### 2026-10-06
+
+- Changes: regenerated Product Domains and Architectural Layers from feature status, evaluator verdicts, and rule violations (`hx quality update`).
+- Domains promoted: -
+- Domains demoted: -
+
+### 2026-10-07
 
 - Changes: regenerated Product Domains and Architectural Layers from feature status, evaluator verdicts, and rule violations (`hx quality update`).
 - Domains promoted: -

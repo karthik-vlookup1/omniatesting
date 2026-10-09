@@ -110,7 +110,6 @@ export interface SyncTenantRow {
   residence: string;
   tenancyDescriptor: string;
   isHeadTenant: boolean;
-  depositTo: string;
   isArchived: boolean;
   flags: SyncFlag[];
 }

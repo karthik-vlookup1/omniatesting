@@ -10,11 +10,11 @@ import type { AgentosClient } from './api-client.js';
 export interface SyncOptions {
   dryRun: boolean;
   replaceSeed: boolean;
-  depositTo: string | undefined;
   managedBy?: string;
 }
 
 const T = 'agentos_tenants';
+// Core stores tenancies as 'T1234' while agentOS gives the bare '1234'; both forms match.
 // What an existing api row becomes on re-sync. Nulls and empty values never overwrite stored data.
 const EFFECTIVE: Record<string, string> = {
   tenancy_oid: `COALESCE(EXCLUDED.tenancy_oid, ${T}.tenancy_oid)`,
@@ -31,15 +31,15 @@ const EFFECTIVE: Record<string, string> = {
   is_head_tenant: 'EXCLUDED.is_head_tenant',
   is_archived: 'EXCLUDED.is_archived',
   sync_flags: `CASE WHEN EXCLUDED.forename = '' THEN ${T}.sync_flags ELSE EXCLUDED.sync_flags END`,
-  tenancy_id: `CASE WHEN EXCLUDED.forename = '' THEN ${T}.tenancy_id ELSE EXCLUDED.tenancy_id END`,
+  tenancy_id: `CASE WHEN EXCLUDED.forename = '' THEN ${T}.tenancy_id ELSE COALESCE(EXCLUDED.tenancy_id, ${T}.tenancy_id) END`,
 };
 const COLS = Object.keys(EFFECTIVE);
 const UPSERT = `
 INSERT INTO ${T} (agentos_oid, tenancy_oid, property_oid, global_reference, title, tid, forename, surname, email, phone,
-                  managed_by, residence, tenancy_descriptor, is_head_tenant, deposit_to, is_archived, sync_flags,
+                  managed_by, residence, tenancy_descriptor, is_head_tenant, is_archived, sync_flags,
                   source, tenancy_id, last_synced_at)
-VALUES ($1,$2,$3,$4,$5,$6::text,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17::text[],
-        'api', (SELECT id FROM tenancies WHERE tid = $6::text), now())
+VALUES ($1,$2,$3,$4,$5,$6::text,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16::text[],
+        'api', (SELECT id FROM tenancies WHERE tid IN ($6::text, 'T' || $6::text) ORDER BY tid LIMIT 1), now())
 ON CONFLICT (agentos_oid) DO UPDATE SET
   ${COLS.map((c) => `${c} = ${EFFECTIVE[c]}`).join(',\n  ')},
   last_synced_at = now(), updated_at = now()
@@ -48,13 +48,11 @@ WHERE (${COLS.map((c) => `${T}.${c}`).join(', ')})
 RETURNING (xmax = 0) AS inserted`;
 
 export async function syncAgentosTenants(pool: Pool, api: AgentosClient, opts: SyncOptions): Promise<SyncReport> {
-  const depositTo = (opts.depositTo ?? '').trim();
-  if (!depositTo) throw new AgentosSyncError('AGENTOS_DEPOSIT_TO is required');
   const startedAt = new Date();
   const tenants = await api.listTenants();
   const tenancies = await api.listTenancies();
   const deposits = await api.listDeposits();
-  const rows = buildRows(tenants, tenancies, deposits, { managedBy: opts.managedBy ?? 'Investing Solutions', depositTo });
+  const rows = buildRows(tenants, tenancies, deposits, { managedBy: opts.managedBy ?? 'Investing Solutions' });
 
   const flags = Object.fromEntries(SYNC_FLAGS.map((f) => [f, 0])) as Record<SyncFlag, number>;
   for (const r of rows) for (const f of r.flags) flags[f]++;
@@ -84,7 +82,7 @@ export async function syncAgentosTenants(pool: Pool, api: AgentosClient, opts: S
     for (const r of rows) {
       const { rows: res } = await client.query<{ inserted: boolean }>(UPSERT, [
         r.agentosOid, r.tenancyOid, r.propertyOid, r.globalReference, r.title, r.tid, r.forename, r.surname, r.email,
-        r.phone, r.managedBy, r.residence, r.tenancyDescriptor, r.isHeadTenant, r.depositTo, r.isArchived, r.flags,
+        r.phone, r.managedBy, r.residence, r.tenancyDescriptor, r.isHeadTenant, r.isArchived, r.flags,
       ]);
       if (res[0]?.inserted) created++;
       else if (res[0]) updated++;

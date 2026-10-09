@@ -12,7 +12,6 @@ const cfg: AgentosApiConfig = {
   shortName: 'isl',
   branchId: '0004-6020-1894-c1a8',
   managedBy: 'Investing Solutions',
-  depositTo: undefined,
 };
 
 describe('parseTid', () => {
@@ -35,7 +34,7 @@ describe('parseTid', () => {
 });
 
 describe('buildRows', () => {
-  const rows = buildRows(fixtureTenants(), fixtureTenancies(), fixtureDeposits(), { managedBy: 'MB', depositTo: 'DT' });
+  const rows = buildRows(fixtureTenants(), fixtureTenancies(), fixtureDeposits(), { managedBy: 'MB' });
   const by = (n: number) => rows.find((r) => r.agentosOid === `aaaa-0000-0000-00${n}`)!;
 
   it('counts each flag', () => {
@@ -76,7 +75,6 @@ describe('buildRows', () => {
       title: 'Ms',
       phone: '07700900001',
       managedBy: 'MB',
-      depositTo: 'DT',
     });
     expect(by(12).phone).toBe('02079460002');
     expect(by(18)).toMatchObject({ tid: null, forename: '', surname: '', email: null });
@@ -178,13 +176,12 @@ describe('loadAgentosApiConfig', () => {
       expect((e as Error).message).not.toContain(KEY);
     }
   });
-  it('applies defaults and leaves depositTo unset', () => {
+  it('applies defaults and needs no deposit-to setting', () => {
     expect(loadAgentosApiConfig({ AGENTOS_API_KEY: KEY, AGENTOS_BASE_URL: 'https://a.test/' })).toMatchObject({
       baseUrl: 'https://a.test',
       shortName: 'isl',
       branchId: '0004-6020-1894-c1a8',
       managedBy: 'Investing Solutions',
-      depositTo: undefined,
     });
   });
 });

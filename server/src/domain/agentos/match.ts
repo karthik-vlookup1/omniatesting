@@ -1,9 +1,32 @@
-/** Pure matching of a formatted intake line to an agentOS tenant: exact TID, normalised name and deposit-to. Never fuzzy. */
-export type MatchStatus = 'matched' | 'name_mismatch' | 'deposit_mismatch' | 'unmatched';
-export interface MatchCandidate { id: string; tid: string; forename: string; surname: string; depositTo: string; agentosRef: string }
-export interface MatchLine { tid: string | null; payerName: string; depositTo: string }
+/**
+ * Pure matching of a formatted intake line to an agentOS tenant, driven by who paid:
+ * a TID means a council or third party paid; an NI / account reference means the tenant paid.
+ * Payer name and deposit-to are never compared. Never fuzzy.
+ */
+export type MatchStatus = 'matched' | 'ambiguous' | 'unmatched';
+export type LineKind = 'ni' | 'account' | 'tid';
+export type PayerType = 'tenant' | 'third_party';
+export interface MatchCandidate {
+  id: string;
+  tid: string;
+  forename: string;
+  surname: string;
+  agentosRef: string;
+  tenancyOid: string | null;
+  isHeadTenant: boolean;
+}
+export interface MatchInput {
+  kind: LineKind | null;
+  tids: string[];
+  preferredNames: string[];
+}
 export interface MatchDecision { status: MatchStatus; tenantId: string | null }
 export type MatchCounts = Record<MatchStatus, number>;
+
+export function payerTypeFor(kind: LineKind | null): PayerType | null {
+  if (kind === null) return null;
+  return kind === 'tid' ? 'third_party' : 'tenant';
+}
 
 export function normaliseText(s: string): string {
   return s.trim().toLowerCase().replace(/\s+/g, ' ');
@@ -15,17 +38,22 @@ export function expectedTenantName(t: Pick<MatchCandidate, 'tid' | 'forename' | 
   return normaliseText(`${rest} ${t.surname}`);
 }
 
-export function decideMatch(line: MatchLine, candidates: MatchCandidate[]): MatchDecision {
-  const same = line.tid === null ? [] : candidates.filter((c) => c.tid === line.tid);
-  if (same.length === 0) return { status: 'unmatched', tenantId: null };
-  const payer = normaliseText(line.payerName);
-  const hits = same.filter((c) => expectedTenantName(c) === payer);
-  if (hits.length !== 1) {
-    return { status: 'name_mismatch', tenantId: same.length === 1 ? same[0]!.id : null };
+export function decideMatch(input: MatchInput, candidates: MatchCandidate[]): MatchDecision {
+  const unmatched: MatchDecision = { status: 'unmatched', tenantId: null };
+  const tids = [...new Set(input.tids)];
+  if (input.kind === null || tids.length === 0) return unmatched;
+  if (tids.length > 1) return { status: 'ambiguous', tenantId: null };
+  const same = candidates.filter((c) => c.tid === tids[0]);
+  if (same.length === 0) return unmatched;
+  if (input.kind !== 'tid') {
+    const names = new Set(input.preferredNames.map(normaliseText));
+    const hits = same.filter((c) => names.has(expectedTenantName(c)));
+    if (hits.length === 1) return { status: 'matched', tenantId: hits[0]!.id };
   }
-  const hit = hits[0]!;
-  if (normaliseText(line.depositTo) !== normaliseText(hit.depositTo)) {
-    return { status: 'deposit_mismatch', tenantId: hit.id };
+  const oid = same[0]!.tenancyOid;
+  if (same.length === 1 || (oid !== null && same.every((c) => c.tenancyOid === oid))) {
+    const lead = same.find((c) => c.isHeadTenant) ?? same[0]!;
+    return { status: 'matched', tenantId: lead.id };
   }
-  return { status: 'matched', tenantId: hit.id };
+  return { status: 'ambiguous', tenantId: null };
 }

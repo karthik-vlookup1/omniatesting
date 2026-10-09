@@ -1,4 +1,5 @@
 import { spawnSync } from 'node:child_process';
+import pg from 'pg';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
 const PASSWORD = 'e2e-password-not-real';
@@ -35,7 +36,19 @@ const STATEMENT = [
 
 test.describe.configure({ mode: 'serial' });
 
-test.beforeAll(() => {
+/** Clears bank lines (and what hangs off them) left by earlier specs, so this spec owns its starting state. */
+async function resetBankLines(): Promise<void> {
+  const client = new pg.Client({ connectionString: env.DATABASE_URL });
+  await client.connect();
+  try {
+    await client.query('TRUNCATE bank_transactions CASCADE');
+  } finally {
+    await client.end();
+  }
+}
+
+test.beforeAll(async () => {
+  await resetBankLines();
   runTs('server/src/jobs/create-user.ts', ['--email', ADMIN, '--name', 'Rev Admin', '--role', 'admin']);
   runTs('server/src/jobs/create-user.ts', ['--email', STAFF, '--name', 'Rev Staff', '--role', 'staff']);
   runTs('server/src/jobs/create-user.ts', ['--email', READONLY, '--name', 'Rev Reader', '--role', 'readonly']);

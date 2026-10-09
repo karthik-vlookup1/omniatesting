@@ -83,9 +83,9 @@ describe('Take a Payment export', () => {
   it('upload gives the expected match counts and pins line ids', async () => {
     const res = await uploadBytes('staff', fixtureBytes('export-lines.csv'));
     expect(res.status).toBe(201);
-    expect(res.body.batch.matchCounts).toEqual({ matched: 3, name_mismatch: 1, deposit_mismatch: 1, unmatched: 1 });
+    expect(res.body.batch.matchCounts).toEqual({ matched: 5, ambiguous: 0, unmatched: 1 });
     batchId = res.body.batch.batchId;
-    for (const n of [2, 3, 7]) {
+    for (const n of [2, 3, 4, 5, 7]) {
       await pool.query('UPDATE agentos_intake_lines SET id = $1 WHERE batch_id = $2 AND line_no = $3', [lineId(n), batchId, n]);
     }
   });
@@ -98,11 +98,11 @@ describe('Take a Payment export', () => {
     expect((await post('/api/agentos/exports', 'staff').send({ batchId: randomUUID() })).status).toBe(404);
   });
 
-  it('staff export returns 3 rows and the golden bytes', async () => {
+  it('staff export returns 5 rows and the golden bytes', async () => {
     const res = await post('/api/agentos/exports', 'staff').send({ batchId });
     expect(res.status).toBe(201);
-    expect(res.body.export.rowsTotal).toBe(3);
-    expect(res.body.export.amountTotalPence).toBe(114501);
+    expect(res.body.export.rowsTotal).toBe(5);
+    expect(res.body.export.amountTotalPence).toBe(117501);
     exportId = res.body.export.id;
     const csv = await getCsv(`/api/agentos/exports/${exportId}.csv`);
     expect(csv.status).toBe(200);
@@ -123,7 +123,7 @@ describe('Take a Payment export', () => {
       [batchId],
     );
     for (const r of rows) {
-      if ([2, 3, 7].includes(r.line_no)) {
+      if ([2, 3, 4, 5, 7].includes(r.line_no)) {
         expect(r.posting_status).toBe('exported');
         expect(r.export_id).toBe(exportId);
       } else {
@@ -157,7 +157,7 @@ describe('Take a Payment export', () => {
     expect((await post(`/api/agentos/lines/${lineId(2)}/posted`, 'staff')).status).toBe(409);
 
     const { rows: nm } = await pool.query<{ id: string }>(
-      'SELECT id FROM agentos_intake_lines WHERE batch_id = $1 AND line_no = 4',
+      'SELECT id FROM agentos_intake_lines WHERE batch_id = $1 AND line_no = 6',
       [batchId],
     );
     expect((await post(`/api/agentos/lines/${nm[0]!.id}/posted`, 'staff')).status).toBe(409);
@@ -182,6 +182,6 @@ describe('Take a Payment export', () => {
     ]);
     expect(a.status).toBe(201);
     expect(b.status).toBe(201);
-    expect([a.body.export.rowsTotal, b.body.export.rowsTotal].sort()).toEqual([0, 3]);
+    expect([a.body.export.rowsTotal, b.body.export.rowsTotal].sort()).toEqual([0, 5]);
   });
 });

@@ -2,12 +2,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest, buildUrl } from '../../lib/api';
 
-export type MatchStatus = 'matched' | 'name_mismatch' | 'deposit_mismatch' | 'unmatched';
+export type MatchStatus = 'matched' | 'ambiguous' | 'unmatched';
 
 export interface MatchCounts {
   matched: number;
-  name_mismatch: number;
-  deposit_mismatch: number;
+  ambiguous: number;
   unmatched: number;
 }
 
@@ -36,6 +35,11 @@ export interface IntakeLine {
   matchStatus: MatchStatus;
   agentosTenantId: string | null;
   postingStatus: 'not_ready' | 'ready' | 'exported' | 'posted';
+  payerType: 'tenant' | 'third_party' | null;
+  /** Masked NI Number cell (last characters only), or null. */
+  reference: string | null;
+  /** Omnia bank account code the deposit text resolved to; null means "Unknown account". */
+  receivingAccount: string | null;
 }
 
 export interface IntakeImportResult {
@@ -47,13 +51,16 @@ export interface IntakeImportResult {
   periodTo: string;
   linesWithWarnings: number;
   matchCounts: MatchCounts;
+  unresolvedRefs: number;
 }
 
 export interface AgentosTenant {
   id: string;
   tid: string;
   name: string;
-  depositTo: string;
+  /** Not sent by the tenants endpoint today; shown in the journal grid when present. */
+  branch?: string;
+  property?: string;
 }
 
 export interface ReassignResult {
@@ -71,8 +78,7 @@ export interface AgentosExport {
 
 export const STATUS_LABELS: Record<MatchStatus, string> = {
   matched: 'Matched',
-  name_mismatch: 'Name mismatch',
-  deposit_mismatch: 'Deposit mismatch',
+  ambiguous: 'Ambiguous',
   unmatched: 'Unmatched',
 };
 
@@ -154,6 +160,8 @@ export function useMarkPosted() {
 }
 
 export interface JournalEntry {
+  lineNo: number;
+  accountType: string;
   side: 'from' | 'to';
   tid: string;
   person: string;
@@ -164,12 +172,12 @@ export interface JournalEntry {
 
 export interface JournalTransfer {
   id: string;
-  fromTid: string;
-  toTid: string;
+  fromTid: string | null;
+  toTid: string | null;
   amountPence: number;
   description: string;
   nominalCode: string;
-  accountType: string;
+  accountType: string | null;
   postingStatus: 'not_exported' | 'exported' | 'posted';
   exportId: string | null;
   postedAt: string | null;
@@ -184,13 +192,18 @@ export interface JournalExport {
   createdAt: string;
 }
 
-export interface NewJournalTransfer {
-  fromTid: string;
-  toTid: string;
+export interface NewJournalEntry {
+  agentosTenantId: string;
+  accountType: string;
+  /** Signed integer pence; the entries of one transfer sum to 0. */
   amountPence: number;
+}
+
+export interface NewJournalTransfer {
+  clientRequestId: string;
   description: string;
   nominalCode: string;
-  accountType: string;
+  entries: NewJournalEntry[];
 }
 
 export const JOURNAL_STATUS_LABELS: Record<JournalTransfer['postingStatus'], string> = {
@@ -235,6 +248,117 @@ export function useMarkJournalPosted() {
           method: 'POST',
         })
       ).transfer,
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['agentos'] }),
+  });
+}
+
+export interface PaymentOptions {
+  depositAccounts: { code: string; label: string }[];
+  paymentTypes: { code: string; label: string }[];
+}
+
+export interface AgentosPayment {
+  id: string;
+  clientRequestId: string;
+  tid: string;
+  paymentFrom: string;
+  depositAccountCode: string;
+  depositTo: string;
+  paymentType: string;
+  amountPence: number;
+  description: string;
+  cardAuthCode: string | null;
+  postingStatus: 'not_exported' | 'exported' | 'posted';
+  exportId: string | null;
+  postedAt: string | null;
+  createdAt: string;
+}
+
+export interface PaymentExport {
+  id: string;
+  rowsTotal: number;
+  amountTotalPence: number;
+  createdAt: string;
+}
+
+export interface NewPayment {
+  clientRequestId: string;
+  agentosTenantId: string;
+  depositAccountCode: string;
+  paymentType: string;
+  amountPence: number;
+  description: string;
+  cardAuthCode?: string;
+}
+
+export interface TenantLedger {
+  tid: string;
+  balancePence: number;
+  postings: { transactionId: string; kind: string; effectiveOn: string; description: string; accountType: string | null; amountPence: number }[];
+}
+
+/** Converts a pounds amount typed in a form to whole pence without floating-point drift; null when not a positive 2dp amount. */
+export function poundsToPence(value: number | string): number | null {
+  const text = typeof value === 'number' ? value.toFixed(2) : value.trim();
+  const m = /^(-?)(\d+)(?:\.(\d{1,2}))?$/.exec(text);
+  if (!m) return null;
+  const pence = Number(m[2]) * 100 + Number((m[3] ?? '').padEnd(2, '0') || '0');
+  return m[1] === '-' ? -pence : pence;
+}
+
+export const PAYMENT_STATUS_LABELS: Record<AgentosPayment['postingStatus'], string> = {
+  not_exported: 'Not exported',
+  exported: 'Exported',
+  posted: 'Posted',
+};
+
+export const paymentCsvUrl = (id: string): string => buildUrl(`/agentos/exports/${id}.csv`);
+
+export function usePaymentOptions() {
+  return useQuery({
+    queryKey: ['agentos', 'payment-options'],
+    queryFn: ({ signal }) => apiRequest<PaymentOptions>('/agentos/payments/options', { signal }),
+  });
+}
+
+export function usePayments() {
+  return useQuery({
+    queryKey: ['agentos', 'payments'],
+    queryFn: async ({ signal }) => (await apiRequest<{ payments: AgentosPayment[] }>('/agentos/payments', { signal })).payments,
+  });
+}
+
+export function useTenantLedger(tid: string | null) {
+  return useQuery({
+    queryKey: ['agentos', 'ledger', tid],
+    queryFn: ({ signal }) => apiRequest<TenantLedger>(`/agentos/ledger/${encodeURIComponent(tid ?? '')}`, { signal }),
+    enabled: Boolean(tid),
+  });
+}
+
+export function useCreatePayment() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: NewPayment) =>
+      apiRequest<{ payment: AgentosPayment; balancePence: number }>('/agentos/payments', { method: 'POST', body }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['agentos'] }),
+  });
+}
+
+export function useCreatePaymentExport() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async () => (await apiRequest<{ export: PaymentExport }>('/agentos/payments/exports', { method: 'POST' })).export,
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['agentos'] }),
+  });
+}
+
+export function useMarkPaymentPosted() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (paymentId: string) =>
+      (await apiRequest<{ payment: AgentosPayment }>(`/agentos/payments/${encodeURIComponent(paymentId)}/posted`, { method: 'POST' }))
+        .payment,
     onSuccess: () => qc.invalidateQueries({ queryKey: ['agentos'] }),
   });
 }

@@ -1,6 +1,15 @@
 import type { RequestHandler } from 'express';
 import { AppError } from '../../lib/errors.js';
 
+export const DEFAULT_LOGIN_RATE_LIMIT_MAX = 20;
+
+/** Parse LOGIN_RATE_LIMIT_MAX; absent or invalid falls back to the default of 20. */
+export function parseLoginRateLimitMax(raw: string | undefined): number {
+  if (raw === undefined || !/^\d+$/.test(raw.trim())) return DEFAULT_LOGIN_RATE_LIMIT_MAX;
+  const n = Number.parseInt(raw, 10);
+  return n > 0 ? n : DEFAULT_LOGIN_RATE_LIMIT_MAX;
+}
+
 /**
  * Fixed-window limiter keyed by client IP, for the sign-in endpoint. Per-account lockout in the
  * database is the main brute-force defence; this stops one client spraying many accounts.

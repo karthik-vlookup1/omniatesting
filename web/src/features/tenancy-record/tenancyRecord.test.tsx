@@ -87,7 +87,8 @@ function installRecordApi(user: AuthUser) {
       if (url.pathname === '/api/adjustments' && method === 'GET') return json(200, { tid: 'T1234', balances: [], adjustments: [] });
       if (url.pathname === '/api/adjustments' && method === 'POST') return json(201, { tid: 'T1234', balances: [], adjustments: [] });
       if (url.pathname === '/api/payer-accounts') return json(200, { payerAccounts: [] });
-      if (url.pathname === '/api/agentos/tenants') return json(200, { tenants: [{ id: 'a1', tid: '1234', name: 'Jordan Smith', depositTo: 'ISL Client Account' }] });
+      if (url.pathname === '/api/agentos/journal/transfers' && method === 'POST') return json(201, { transfer: { id: 'j1', entries: [] } });
+      if (url.pathname === '/api/agentos/tenants') return json(200, { tenants: [{ id: 'a1', tid: '1234', name: 'Jordan Smith' }, { id: 'a2', tid: '5678', name: 'Sam Lee' }] });
       return authFetch(input, init);
     }),
   );
@@ -141,7 +142,7 @@ describe('tenant record page', { timeout: 20_000 }, () => {
     expect(await screen.findByTestId('record-balance')).toHaveTextContent('£873.22');
     const chase = screen.getByRole('region', { name: 'Rent chase' });
     expect(await within(chase).findByText(/£426\.78 \(Tenant\) received on 03\/05\/2025/)).toBeInTheDocument();
-    expect(await within(screen.getByRole('region', { name: 'agentOS' })).findByText('ISL Client Account')).toBeInTheDocument();
+    expect(await within(screen.getByRole('region', { name: 'agentOS' })).findByText('1234 Jordan Smith')).toBeInTheDocument();
     expect(within(screen.getByRole('navigation', { name: 'Open records' })).getByRole('link', { name: /T1234 Jordan Smith/ })).toHaveAttribute('aria-current', 'page');
   });
 
@@ -185,5 +186,39 @@ describe('tenant record page', { timeout: 20_000 }, () => {
       body: { tid: 'T1234', payer: 'tenant', kind: 'refund', amountPence: 2550, reason: 'Overpayment returned' },
     });
     expect(await screen.findByText('Refund saved')).toBeInTheDocument();
+  });
+
+  it('posts a journal transfer as two entries netting to zero', async () => {
+    const { posts } = installRecordApi({ ...STAFF_USER, role: 'accounts' });
+    const user = userEvent.setup();
+    renderApp('/tenancies/T1234');
+    await screen.findByRole('heading', { name: 'T1234 Jordan Smith', level: 1 }, FIRST_RENDER);
+
+    await user.click(screen.getByRole('button', { name: 'Actions' }));
+    await user.click(await screen.findByRole('menuitem', { name: 'Journal transfer' }));
+    const dialog = await screen.findByRole('dialog', { name: /^Journal Transfer/ });
+    await user.type(within(dialog).getByRole('textbox', { name: /Description/ }), 'Move overpayment');
+    await user.type(within(dialog).getByRole('textbox', { name: /Nominal Code/ }), '1200');
+    await user.type(within(dialog).getByRole('textbox', { name: /Account Type/ }), 'Rent');
+    await user.click(within(dialog).getByRole('combobox', { name: /To tenant/ }));
+    await user.click(await screen.findByRole('option', { name: '5678 Sam Lee' }));
+    await user.type(within(dialog).getByRole('textbox', { name: /Amount/ }), '120.50');
+    await user.click(within(dialog).getByRole('button', { name: 'Journal Transfer' }));
+    const confirm = await screen.findByRole('dialog', { name: 'Create this journal transfer?' });
+    await user.click(within(confirm).getByRole('button', { name: 'Create transfer' }));
+
+    await waitFor(() => expect(posts).toHaveLength(1));
+    expect(posts[0]).toEqual({
+      path: '/api/agentos/journal/transfers',
+      body: {
+        clientRequestId: expect.any(String),
+        description: 'Move overpayment',
+        nominalCode: '1200',
+        entries: [
+          { agentosTenantId: 'a1', accountType: 'Rent', amountPence: -12050 },
+          { agentosTenantId: 'a2', accountType: 'Rent', amountPence: 12050 },
+        ],
+      },
+    });
   });
 });

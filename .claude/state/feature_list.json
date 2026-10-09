@@ -1,6 +1,6 @@
 {
   "project": "omnia-recon",
-  "last_updated": "2026-10-07",
+  "last_updated": "2026-10-09",
   "rules": {
     "single_active_feature": true,
     "passing_requires_evidence": true,
@@ -1445,22 +1445,85 @@
           "kind": "cmd",
           "cmd": "npm run test:unit -- agentos-sync",
           "exitCode": 0,
-          "testedAt": "2026-10-07T11:43:37.046Z",
-          "commit": "50fe482"
+          "commit": "50fe482",
+          "testedAt": "2026-10-07T11:43:37.046Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:int -- agentos-sync",
           "exitCode": 0,
-          "testedAt": "2026-10-07T11:43:39.582Z",
-          "commit": "50fe482"
+          "commit": "50fe482",
+          "testedAt": "2026-10-07T11:43:39.582Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:int -- agentos",
           "exitCode": 0,
-          "testedAt": "2026-10-07T11:43:51.969Z",
-          "commit": "50fe482"
+          "commit": "50fe482",
+          "testedAt": "2026-10-07T11:43:51.969Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:unit -- agentos-sync",
+          "exitCode": 0,
+          "commit": "f31a68b",
+          "testedAt": "2026-10-07T11:59:45.081Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos-sync",
+          "exitCode": 0,
+          "commit": "f31a68b",
+          "testedAt": "2026-10-07T11:59:47.408Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos",
+          "exitCode": 0,
+          "commit": "f31a68b",
+          "testedAt": "2026-10-07T12:00:00.017Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:unit -- agentos-sync",
+          "exitCode": 0,
+          "commit": "9eb7d5e",
+          "testedAt": "2026-10-07T13:26:42.891Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos-sync",
+          "exitCode": 0,
+          "commit": "9eb7d5e",
+          "testedAt": "2026-10-07T13:26:45.785Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos",
+          "exitCode": 0,
+          "commit": "9eb7d5e",
+          "testedAt": "2026-10-07T13:26:58.922Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:unit -- agentos-sync",
+          "exitCode": 0,
+          "commit": "6e3ed29",
+          "testedAt": "2026-10-07T13:45:00.911Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos-sync",
+          "exitCode": 0,
+          "commit": "6e3ed29",
+          "testedAt": "2026-10-07T13:45:03.384Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos",
+          "exitCode": 0,
+          "commit": "6e3ed29",
+          "testedAt": "2026-10-07T13:45:15.869Z"
         }
       ],
       "notes": "HARD",
@@ -1468,6 +1531,310 @@
         "recon-508"
       ],
       "contractHash": "22d40797c4132c31"
+    },
+    {
+      "id": "recon-510",
+      "priority": 1010,
+      "area": "phase-5-agentos",
+      "title": "agentOS receipts: reference-driven matching (optional 'NI Number' intake column = NI or sort code+account => tenant payer via core tenants.ni_hash / payer_bank_accounts; TID only => council/third-party payer -> lead tenant; NI Number takes precedence; payer name and deposit-to never checked; statuses matched/ambiguous/unmatched), deposit-to resolved to core bank_accounts with addable aliases (unknown = flag only), sync no longer needs AGENTOS_DEPOSIT_TO",
+      "user_visible_behavior": "Receipts files may carry an extra 'NI Number' column (old 7-column files still work). A row with an NI number or sort code + account matches the tenant through Omnia core data and shows 'Tenant paid', with the identifier masked. A row with only a TID shows 'Council / third party'. Upload reports how many tenant references Omnia could not find. An unrecognised 'Will deposit to' shows 'Unknown account' but still exports with the raw bank text. `npm run agentos:accounts -- --add-alias <CODE> <text>` adds a deposit alias.",
+      "scope": [
+        "db/migrations/017_*",
+        "server/src/domain/agentos/{intake,match,sync,types}.ts",
+        "server/src/services/agentos/{intake,match,reassign,export,sync,accounts}.service.ts",
+        "server/src/services/agentos/api-client.ts",
+        "scripts/agentos-{sync,accounts}.ts",
+        "web/src/features/agentos/**",
+        "e2e/agentos.spec.ts",
+        "server/test/unit/agentos-*",
+        "server/test/int/agentos-*",
+        "server/test/fixtures/agentos/**",
+        "docs/agentos/**",
+        "plans/**"
+      ],
+      "verification": [
+        {
+          "level": "unit",
+          "cmd": "npm run test:unit -- agentos"
+        },
+        {
+          "level": "integration",
+          "cmd": "npm run test:int -- agentos"
+        },
+        {
+          "level": "unit",
+          "cmd": "npm run test:web -- agentos"
+        },
+        {
+          "level": "e2e",
+          "cmd": "npm run test:e2e -- agentos.spec"
+        }
+      ],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:unit -- agentos",
+          "exitCode": 0,
+          "commit": "6e3ed29",
+          "testedAt": "2026-10-07T14:09:24.298Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:web -- agentos",
+          "exitCode": 0,
+          "commit": "6e3ed29",
+          "testedAt": "2026-10-07T14:09:27.759Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos",
+          "exitCode": 0,
+          "commit": "6e3ed29",
+          "testedAt": "2026-10-07T14:09:41.904Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:e2e -- agentos.spec",
+          "exitCode": 0,
+          "commit": "6e3ed29",
+          "testedAt": "2026-10-07T14:10:03.216Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:unit -- agentos",
+          "exitCode": 0,
+          "commit": "889c343",
+          "testedAt": "2026-10-07T14:13:51.616Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:web -- agentos",
+          "exitCode": 0,
+          "commit": "889c343",
+          "testedAt": "2026-10-07T14:13:55.250Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos",
+          "exitCode": 0,
+          "commit": "889c343",
+          "testedAt": "2026-10-07T14:14:10.735Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:e2e -- agentos.spec",
+          "exitCode": 0,
+          "commit": "889c343",
+          "testedAt": "2026-10-07T14:14:36.529Z"
+        }
+      ],
+      "notes": "HARD",
+      "dependsOn": [
+        "recon-509"
+      ],
+      "contractHash": "f9f36b2f85f6829b"
+    },
+    {
+      "id": "recon-601",
+      "priority": 1101,
+      "area": "phase-6-letmc-parity",
+      "title": "Omnia ledger (append-only double-entry: ledger_transactions + ledger_postings, zero-sum, idempotency key, balance = sum of postings) + single Take a Payment API for one agentOS tenant (deposit-to = active bank account, type from extendable list seeded Card, amount, description, optional card auth code), posted to the ledger and pushed out via the existing Take a Payment CSV export",
+      "user_visible_behavior": "POST /api/agentos/payments takes one payment for an agentOS tenant and returns it with the tenant's Omnia ledger balance; repeating the same clientRequestId returns the same payment. GET /api/agentos/ledger/<tid> shows balance and postings. POST /api/agentos/payments/exports makes a Take a Payment CSV (same columns as recon-504) downloadable at /api/agentos/exports/<id>.csv; payments can then be marked posted.",
+      "scope": [
+        "db/migrations/018_*",
+        "server/src/domain/ledger/**",
+        "server/src/services/ledger/**",
+        "server/src/services/agentos/payment.service.ts",
+        "server/src/api/agentos/routes.ts",
+        "server/test/unit/ledger-*",
+        "server/test/int/agentos-payment*",
+        "server/test/fixtures/agentos/**",
+        "docs/agentos/**",
+        "plans/**"
+      ],
+      "verification": [
+        {
+          "level": "unit",
+          "cmd": "npm run test:unit -- ledger"
+        },
+        {
+          "level": "integration",
+          "cmd": "npm run test:int -- agentos"
+        }
+      ],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:unit -- ledger",
+          "exitCode": 0,
+          "commit": "2a860ef",
+          "testedAt": "2026-10-07T14:44:17.354Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos",
+          "exitCode": 0,
+          "commit": "2a860ef",
+          "testedAt": "2026-10-07T14:44:34.354Z"
+        }
+      ],
+      "notes": "HARD",
+      "dependsOn": [
+        "recon-510"
+      ],
+      "contractHash": "a1180b96bd14dacc"
+    },
+    {
+      "id": "recon-602",
+      "priority": 1102,
+      "area": "phase-6-letmc-parity",
+      "title": "Multi-row Journal Transfer: 2-20 entries (agentOS tenant, account type, signed amount) netting to zero, posted to the Omnia ledger (existing transfers backfilled), idempotent by clientRequestId; recon-506 two-tenant body and CSV bytes unchanged",
+      "user_visible_behavior": "POST /api/agentos/journal/transfers accepts { clientRequestId, description, nominalCode, entries[] } with 2-20 rows that must add up to £0.00, and still accepts the old fromTid/toTid body. Each transfer moves the tenants' Omnia ledger balances (GET /api/agentos/ledger/<tid>). The Journal Transfer CSV gets one row per entry in entry order.",
+      "scope": [
+        "db/migrations/019_*",
+        "server/src/domain/agentos/journal.ts",
+        "server/src/services/agentos/journal.service.ts",
+        "server/src/services/ledger/**",
+        "server/src/api/agentos/routes.ts",
+        "server/test/unit/agentos-journal*",
+        "server/test/int/agentos-journal*",
+        "docs/agentos/**",
+        "plans/**"
+      ],
+      "verification": [
+        {
+          "level": "unit",
+          "cmd": "npm run test:unit -- agentos-journal"
+        },
+        {
+          "level": "integration",
+          "cmd": "npm run test:int -- agentos"
+        }
+      ],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:unit -- agentos-journal",
+          "exitCode": 0,
+          "commit": "7c9b6c1",
+          "testedAt": "2026-10-07T15:03:04.808Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos",
+          "exitCode": 0,
+          "commit": "7c9b6c1",
+          "testedAt": "2026-10-07T15:03:22.743Z"
+        }
+      ],
+      "notes": "HARD",
+      "dependsOn": [
+        "recon-601"
+      ],
+      "contractHash": "a72fd456ac374315"
+    },
+    {
+      "id": "recon-603",
+      "priority": 1103,
+      "area": "phase-6-letmc-parity",
+      "title": "agentOS accounting UI: Take a Payment section (tenant, Payment From, Omnia ledger balance, Will deposit to, Type, Amount, Description, optional card auth code; export + mark posted) and multi-row Journal Transfer grid (Person, Branch, Property, Account Type, Account Balance, Amount; running total must be £0.00)",
+      "user_visible_behavior": "On /agentos a writer can take a Card payment for a tenant and see the balance change, export and mark payments posted, and post a journal with several rows that must total £0.00. Readonly users see the lists but no forms.",
+      "scope": [
+        "web/src/features/agentos/**",
+        "e2e/agentos-payment.spec.ts",
+        "e2e/agentos-journal.spec.ts",
+        "server/test/fixtures/agentos-payment-seed.ts",
+        "plans/**"
+      ],
+      "verification": [
+        {
+          "level": "unit",
+          "cmd": "npm run test:web -- agentos"
+        },
+        {
+          "level": "e2e",
+          "cmd": "npm run test:e2e -- agentos-payment.spec"
+        },
+        {
+          "level": "e2e",
+          "cmd": "npm run test:e2e -- agentos-journal.spec"
+        }
+      ],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:web -- agentos",
+          "exitCode": 0,
+          "commit": "7162b3c",
+          "testedAt": "2026-10-07T15:36:50.514Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:e2e -- agentos-payment.spec",
+          "exitCode": 0,
+          "commit": "7162b3c",
+          "testedAt": "2026-10-07T15:37:08.807Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:e2e -- agentos-journal.spec",
+          "exitCode": 0,
+          "commit": "7162b3c",
+          "testedAt": "2026-10-07T15:37:28.320Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:web -- agentos",
+          "exitCode": 0,
+          "commit": "0a34724",
+          "testedAt": "2026-10-07T15:49:05.452Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:e2e -- agentos-payment.spec",
+          "exitCode": 0,
+          "commit": "0a34724",
+          "testedAt": "2026-10-07T15:49:21.385Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:e2e -- agentos-journal.spec",
+          "exitCode": 0,
+          "commit": "0a34724",
+          "testedAt": "2026-10-07T15:49:38.591Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:web -- agentos",
+          "exitCode": 0,
+          "testedAt": "2026-10-09T13:23:57.875Z",
+          "commit": "74ad80c"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:e2e -- agentos-payment.spec",
+          "exitCode": 0,
+          "testedAt": "2026-10-09T13:24:14.127Z",
+          "commit": "74ad80c"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:e2e -- agentos-journal.spec",
+          "exitCode": 0,
+          "testedAt": "2026-10-09T13:24:30.907Z",
+          "commit": "74ad80c"
+        }
+      ],
+      "notes": "HARD (5+ files)",
+      "dependsOn": [
+        "recon-601",
+        "recon-602"
+      ],
+      "contractHash": "4f5d490df0f9507e"
     }
   ]
 }

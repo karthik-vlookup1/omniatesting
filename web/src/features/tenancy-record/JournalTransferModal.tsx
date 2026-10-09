@@ -27,12 +27,14 @@ interface Values {
 /**
  * LetMC "Journal Transfer" (guide: journal transfer.png) on Recon's agentOS journal API
  * (POST /api/agentos/journal/transfers, writers). Moves an amount from this tenant's agentOS
- * account to another one; the server builds the zero-sum entries and the export file.
+ * account to another one: it sends two entries (-amount from this tenant, +amount to the other) that net to zero
+ * (recon-602 entries API); the server builds the export file.
  */
 export function JournalTransferModal({ tid, title, opened, onClose }: Props) {
   const tenants = useAgentosTenants();
   const create = useCreateJournalTransfer();
   const [pending, setPending] = useState<Values | null>(null);
+  const [requestId, setRequestId] = useState(() => globalThis.crypto.randomUUID());
   const fromTid = agentosTid(tid);
   const from = tenants.data?.find((t) => t.tid === fromTid) ?? null;
 
@@ -58,20 +60,24 @@ export function JournalTransferModal({ tid, title, opened, onClose }: Props) {
     form.reset();
     create.reset();
     setPending(null);
+    setRequestId(globalThis.crypto.randomUUID());
     onClose();
   };
 
   const confirm = () => {
-    if (!pending?.toTid) return;
+    const toTenant = tenants.data?.find((t) => t.tid === pending?.toTid) ?? null;
+    if (!pending || !from || !toTenant) return;
     const pence = parsePounds(pending.amount)!;
+    const accountType = pending.accountType.trim();
     create.mutate(
       {
-        fromTid,
-        toTid: pending.toTid,
-        amountPence: pence,
+        clientRequestId: requestId,
         description: pending.description.trim(),
         nominalCode: pending.nominalCode.trim(),
-        accountType: pending.accountType.trim(),
+        entries: [
+          { agentosTenantId: from.id, accountType, amountPence: -pence },
+          { agentosTenantId: toTenant.id, accountType, amountPence: pence },
+        ],
       },
       {
         onSuccess: () => {
@@ -80,6 +86,7 @@ export function JournalTransferModal({ tid, title, opened, onClose }: Props) {
             title: 'Journal transfer created',
             message: `${formatPence(pence)} from ${fromTid} to ${pending.toTid}. Export it from agentOS receipts.`,
           });
+          setRequestId(globalThis.crypto.randomUUID());
           close();
         },
         onError: () => setPending(null),
@@ -136,7 +143,6 @@ export function JournalTransferModal({ tid, title, opened, onClose }: Props) {
               <Table.Thead>
                 <Table.Tr>
                   <Table.Th>Person</Table.Th>
-                  <Table.Th>Deposit to</Table.Th>
                   <Table.Th>Account type</Table.Th>
                   <Table.Th ta="right">Amount</Table.Th>
                 </Table.Tr>
@@ -144,7 +150,6 @@ export function JournalTransferModal({ tid, title, opened, onClose }: Props) {
               <Table.Tbody>
                 <Table.Tr>
                   <Table.Td>{from ? `${from.tid} ${from.name}` : `${fromTid} ${title}`}</Table.Td>
-                  <Table.Td>{from?.depositTo ?? '—'}</Table.Td>
                   <Table.Td>{form.values.accountType || '—'}</Table.Td>
                   <Table.Td ta="right" c="red.8" className="tabular">
                     {formatPence(-amountPence)}
@@ -152,7 +157,6 @@ export function JournalTransferModal({ tid, title, opened, onClose }: Props) {
                 </Table.Tr>
                 <Table.Tr>
                   <Table.Td>{to ? `${to.tid} ${to.name}` : <Text span c="dimmed">Choose the tenant to credit</Text>}</Table.Td>
-                  <Table.Td>{to?.depositTo ?? '—'}</Table.Td>
                   <Table.Td>{form.values.accountType || '—'}</Table.Td>
                   <Table.Td ta="right" className="tabular">
                     {formatPence(amountPence)}
@@ -161,7 +165,7 @@ export function JournalTransferModal({ tid, title, opened, onClose }: Props) {
               </Table.Tbody>
               <Table.Tfoot>
                 <Table.Tr>
-                  <Table.Th colSpan={3}>Net (always zero)</Table.Th>
+                  <Table.Th colSpan={2}>Net (always zero)</Table.Th>
                   <Table.Th ta="right" className="tabular">
                     {formatPence(0)}
                   </Table.Th>

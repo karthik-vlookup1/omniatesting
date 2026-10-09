@@ -170,7 +170,6 @@ export function OverviewSection({ tenancy, rent, receipts, agentos }: Props) {
               <Fact label="agentOS tenant">
                 {agent.tid} {agent.name}
               </Fact>
-              <Fact label="Will deposit to">{agent.depositTo}</Fact>
             </Stack>
           ) : (
             <Text fz="sm" c="dimmed">

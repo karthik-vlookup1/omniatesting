@@ -155,6 +155,50 @@ dead end a future session might otherwise walk into again.
 - Source: manual (recon-509)
 - recon-509 api rows can have tid NULL (no_tid flag); reassign.service.ts:26 selects all rows. Needs a follow-up before the first real sync
 
+## 2026-10-07: Synthetic NI numbers must pass crypto NI_PATTERN
+
+- Source: manual (recon-510)
+- lib/crypto NI_PATTERN rejects first/second letters D,F,I,Q,U,V (e.g. QQ123456C fails); use e.g. ZY123456C in tests
+
+## 2026-10-07: e2e needs port 3001 free and E2E_DATABASE_URL on 5433
+
+- Source: manual (recon-510)
+- playwright.config.ts hard-codes PORT 3001 and defaults the e2e DB to 5432; stop the dev server and set E2E_DATABASE_URL=postgres://omnia:omnia_local_dev@localhost:5433/omnia_e2e
+
+## 2026-10-07: plpgsql CASE evaluates both branches in shared trigger functions
+
+- Source: manual (recon-601)
+- Referencing NEW.col for a column the table lacks fails even in the untaken CASE branch; use IF/ELSE. Also audit_row() reads NEW.id, so it can't attach to tables keyed by another column (e.g. agentos_payment_types.code)
+
+## 2026-10-07: Editing an applied migration needs a reset
+
+- Source: manual (recon-601)
+- Migrations are checksummed; after changing an applied draft run npm run db:migrate -- --reset on that test DB. Always export TEST_DATABASE_URL (5433) or int tests fall back to 5432
+
+## 2026-10-07: Use the Write tool for files containing triple quotes
+
+- Source: manual (recon-602)
+- The Bash tool fails on ''' inside a heredoc; write such files with Write instead
+
+## 2026-10-07: Mantine Select is role combobox in Playwright; don't default selects in useEffect
+
+- Source: manual (recon-603)
+- Use getByRole('combobox') for Mantine Select. react-hooks/set-state-in-effect lint rejects setting a default inside useEffect - derive the default value instead
+
+## 2026-10-07: Run test:web alone, not alongside other heavy work
+
+- Source: manual (recon-603)
+- A full test:web run under load hit worker timeouts (4 failures, 1129s) but passed in 23s alone - load flakiness, not code
+
+## 2026-10-09: Never pin the latest migration name in a test; copy only the migrations the test needs into a temp dir
+
+- Source: manual (ISSUE-0013)
+- agentos-journal-backfill.test.ts applied migrations 001-020 from the working directory instead of stopping at 019. Fixed by copying 019 alone into a temp dir; runMigrations only checks dir presence, not filenames.
+
+## 2026-10-09: hx issue verify must run with TEST_DATABASE_URL on localhost:5433 and OMNIA_DB_PORT=5433 set
+
+- Source: manual (ISSUE-0013)
+- First verify failed with 28P01 (auth) hitting Windows PostgreSQL on 5432. Shell env isolation: test tools inherit OS defaults; set both vars in the same shell before hx verify.
 ## 2026-10-07: Mantine Textarea autosize crashes in jsdom
 
 - Source: manual (recon-601)

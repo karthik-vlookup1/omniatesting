@@ -18,7 +18,7 @@ function ReassignForm({ line, onClose }: { line: IntakeLine; onClose: () => void
   const reassign = useReassignLine();
   const [tid, setTid] = useState<string | null>(null);
   const options = Array.from(
-    new Map((tenants.data ?? []).map((t) => [t.tid, { value: t.tid, label: `${t.name} · ${t.depositTo}` }])).values(),
+    new Map((tenants.data ?? []).map((t) => [t.tid, { value: t.tid, label: t.name }])).values(),
   );
 
   const submit = () => {

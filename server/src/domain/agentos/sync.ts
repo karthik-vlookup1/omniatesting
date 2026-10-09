@@ -79,7 +79,6 @@ export function residence(t: ApiTenancy | undefined): string {
 
 export interface BuildOptions {
   managedBy: string;
-  depositTo: string;
 }
 
 export function buildRows(
@@ -148,7 +147,6 @@ export function buildRows(
       residence: residence(tenancy),
       tenancyDescriptor: tenancyDescriptor(tenancy),
       isHeadTenant: isHead,
-      depositTo: opts.depositTo,
       isArchived: t.IsArchived === true,
       flags: SYNC_FLAGS.filter((f) => flags.has(f)),
     };

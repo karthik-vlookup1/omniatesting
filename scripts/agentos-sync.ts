@@ -1,6 +1,6 @@
 /**
  * Read-only agentOS v4 -> agentos_tenants sync. Run: npm run agentos:sync -- [--dry-run] [--replace-seed]
- * Needs DATABASE_URL, HASH_KEY, ENCRYPTION_KEY, SESSION_SECRET plus AGENTOS_API_KEY, AGENTOS_BASE_URL, AGENTOS_DEPOSIT_TO.
+ * Needs DATABASE_URL, HASH_KEY, ENCRYPTION_KEY, SESSION_SECRET plus AGENTOS_API_KEY and AGENTOS_BASE_URL.
  * Prints counts and flag counts only: never names, emails or OIDs (GDPR).
  */
 import { loadConfig } from '../server/src/config/env.js';
@@ -30,7 +30,6 @@ async function main(): Promise<void> {
     const r = await syncAgentosTenants(pool, createAgentosClient(api), {
       dryRun,
       replaceSeed,
-      depositTo: process.env['AGENTOS_DEPOSIT_TO'],
       managedBy: api.managedBy,
     });
     if (r.dryRun) out('DRY RUN (rolled back)');

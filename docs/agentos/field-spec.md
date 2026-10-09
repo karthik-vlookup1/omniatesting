@@ -156,11 +156,21 @@ All-or-nothing upsert on TID, idempotent. Tenancy ID links by `tenancies.tid` wi
 
 Post a CSV to `POST /api/agentos/intake` (writer role). Returns `201` on success, `400` if any row is malformed (listing bad line numbers), or `409` if the same file was already uploaded (idempotent by file hash). Retrieve with `GET /api/agentos/intake` (list all) or `GET /api/agentos/intake/:id` (one record).
 
-CSV header (exact order): `Date,TID,Payer Name,Amount,Type,Will deposit to,Description`. Dates are `dd/mm/yyyy`. Amounts are 2 decimal places, stored as pence, and must be above 0. One invalid row rejects the entire file. Unknown `Type` values are accepted with an `unverified_type` warning. Stored in `agentos_intake` table (migration 013).
+Two headers are accepted: `Date,TID,Payer Name,Amount,Type,Will deposit to,Description`, or those seven followed by `NI Number`. Any other header is rejected, and the message lists both. Every row must have as many columns as the header. Dates are `dd/mm/yyyy`. Amounts are 2 decimal places, stored as pence, and must be above 0. One invalid row rejects the entire file. Unknown `Type` values are accepted with an `unverified_type` warning. Stored in `agentos_intake_lines` (migrations 013 and 017).
+
+**NI Number cell (optional column).** Blank means no reference. A valid UK NI number (spaces and case ignored) is kind `ni`. A sort code plus account number, 14-16 digits once spaces and hyphens are removed, is kind `account`. Anything else is a row error on field `NI Number` ("must be a UK NI number, a sort code + account number, or blank"; the value is never echoed). The TID rule is unchanged: 4 digits (optional `T`) or blank.
+
+**GDPR handling (approved).** The reference is hashed in the database with `secure_hash` and only the hash plus the last 3 (NI) or 4 (account) characters are stored. The plaintext is never written to a table, `audit_log`, log line, API response or CLI output. The review page shows it masked (`•••••56C`, `****5678`).
 
 ## 6. Matching lines to tenancies
 
-Matching runs automatically during the upload transaction. Every intake line is assigned one of four statuses: `matched`, `name_mismatch`, `deposit_mismatch`, or `unmatched`. Matching requires an exact TID. Names are normalised: trimmed, lowercased, whitespace collapsed to single spaces, and the leading TID prefix stripped from the tenant's forename. Precedence (first match wins): blank or unknown TID → unmatched; name mismatch → name_mismatch; deposit mismatch → deposit_mismatch; otherwise → matched. For joint tenants, a name match on any tenant counts. No fuzzy or suggestion matching is performed. The upload response includes `matchCounts` with totals for each status.
+Matching runs automatically during the upload transaction. Who paid decides how a line matches: a TID means a council or third party paid (payer `third_party`, the lead tenant of the TID gets the receipt); an NI Number cell means the tenant paid (payer `tenant`). Payer name and "Will deposit to" are never compared with the tenant. Every line gets one of `matched`, `ambiguous` or `unmatched` (`pending` only before matching).
+
+Rule, in order: (1) no kind, or no candidate TID: unmatched; (2) more than one distinct candidate TID: ambiguous; (3) no agentOS tenant has the TID: unmatched; (4) for an NI/account reference, exactly one candidate whose name equals the tenant core names for that reference: matched to them; (5) one candidate, or all candidates in one tenancy: matched to the lead (head tenant, else first); otherwise ambiguous.
+
+Precedence when both a TID and an NI Number are given: the NI Number decides the payer (tenant). The candidate TIDs are the TIDs the reference resolves to in Omnia core (NI via `tenants.ni_hash`, account via `payer_bank_accounts.account_hash`, tenancy live on the received date) plus the TID column. If core resolves nothing, the TID column is used and the payer stays tenant. If core resolves a different TID, the line is ambiguous. A reference core cannot resolve (and no TID) is unmatched and counted in `unresolvedRefs` in the upload response; it can still be reassigned by TID. The response also has `matchCounts` with `matched`, `ambiguous`, `unmatched`.
+
+**Deposit accounts.** "Will deposit to" is resolved case- and space-insensitively to an active Omnia `bank_accounts` code, or to an alias seeded in migration 017 (hsbc, apollo hsbc, lloyds, tw, apollo tw, isl, army, redstone). An unknown text gives no account: the line shows an "Unknown account" badge, is never blocked from export, and the export writes the raw bank text. List accounts and add aliases with `npm run agentos:accounts -- --list` or `-- --add-alias <CODE> <text>`.
 
 ## 7. Exporting to agentOS (Take a Payment)
 
@@ -172,7 +182,7 @@ A web interface at `/agentos` lets staff upload, filter, fix, and export intake 
 
 **Staff workflow:**
 1. **Upload** a formatted CSV via the file input.
-2. **Filter** the batch's lines by status: Matched, Name mismatch, Deposit mismatch, or Unmatched.
+2. **Filter** the batch's lines by status: Matched, Ambiguous, or Unmatched. Badges show who paid ("Tenant paid" or "Council / third party") and "Unknown account" when the deposit text does not resolve.
 3. **Fix non-matched lines** with Reassign TID (audited by staff email; rules re-run; blocked once exported or posted).
 4. **Export matched lines** via the Export button, download the CSV.
 5. **Enter each row** in agentOS Actions > Accounting > Take a Payment, then Mark posted here.
@@ -208,9 +218,9 @@ A web interface at `/agentos` lets staff upload, filter, fix, and export intake 
 ## 10. Try it yourself (5 Aug 2026 demo)
 All data in `fixtures/agentos/demo-2026-08-05/` is synthetic (fake names, ZZ postcodes, example.test emails).
 1. Seed the tenants: `npx tsx server/scripts/seed-agentos-demo.ts` (needs DATABASE_URL, HASH_KEY, ENCRYPTION_KEY, SESSION_SECRET).
-2. Upload `bank-formatted.csv` at /agentos; expect 13 rows with 8 matched, 2 name mismatch, 1 deposit mismatch, 2 unmatched.
+2. Upload `bank-formatted.csv` at /agentos; expect 13 rows with 11 matched, 0 ambiguous, 2 unmatched (all matched lines are third party, as the file has no NI Number column).
 3. Fix row 12 (Ivy Fixturely) by reassigning it to TID 9309 (the reassign box takes 4 digits, no T).
-4. Export Take a Payment: 9 rows. Mark rows posted once entered in agentOS.
+4. Export Take a Payment: 12 rows. Mark rows posted once entered in agentOS.
 5. Optional: create a Journal Transfer (9301 to 9302, 50.00, nominal DEMO, Rent), export it and mark it posted.
 6. Upload `bank-with-outgoing.csv` to see the whole file rejected because of its outgoing payment.
 Note: EMail and Mobile Phone in tenants.csv are not stored yet (no columns in agentos_tenants).
@@ -220,7 +230,7 @@ The same flow runs as `server/test/int/agentos-pipeline.test.ts`.
 ## 11. API sync (recon-509)
 Read-only GET sync from the agentOS v4 API into `agentos_tenants` (`source='api'`). Field map: `docs/agentos/api-v4-schema.json`.
 - Run: `npm run agentos:sync -- --dry-run` (rolls back, prints counts), then without `--dry-run`. `--replace-seed` deletes the seed rows first (refused if intake lines or journal entries reference them; without the flag the sync refuses while seed rows exist).
-- Env: `AGENTOS_API_KEY`, `AGENTOS_BASE_URL` (https), `AGENTOS_DEPOSIT_TO` (required, no default; must equal the bank file "Will deposit to" text). Optional: `AGENTOS_SHORT_NAME` (isl), `AGENTOS_BRANCH_ID`, `AGENTOS_MANAGED_BY`.
+- Env: `AGENTOS_API_KEY`, `AGENTOS_BASE_URL` (https), (no deposit-to setting: api tenant rows have `deposit_to` NULL). Optional: `AGENTOS_SHORT_NAME` (isl), `AGENTOS_BRANCH_ID`, `AGENTOS_MANAGED_BY`.
 - Sources: maintenance tenants (identity, TID from Forename), reporting tenancies (address, status, dates), deposits (lead tenant). Throttled to one call per 1.3 s; 429/5xx wait 60 s, 3 attempts.
 - TID rule `/^T?(\d{4,5})(\s+|$)/`. Rows may lack a TID and joint tenants may share one (migration 016 drops TID UNIQUE for api rows; seed rows stay unique).
 - `sync_flags`: no_tid, tid_only_forename, tid_5_digit, tid_shared_across_tenancies, no_reporting_tenancy, no_deposit_record, lead_inferred, gdpr_withheld.

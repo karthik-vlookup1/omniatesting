@@ -154,10 +154,10 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 
 - Date: 2026-10-07
 - Active feature: (none)
-- Passing features: 25
+- Passing features: 26
 - Blocked features: none
 - Verification runs this session: 0
-- Commit: b888ff5
+- Commit: 9eb7d5e
 - Next best step: (none — check feature_list.json)
 
 ### Session 013
@@ -166,10 +166,10 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 
 - Date: 2026-10-07
 - Active feature: (none)
-- Passing features: 26
+- Passing features: 30
 - Blocked features: none
-- Verification runs this session: 2
-- Commit: 50fe482
+- Verification runs this session: 1
+- Commit: 0a34724
 - Next best step: (none — check feature_list.json)
 
 ### Session 014
@@ -194,4 +194,16 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 - Blocked features: none
 - Verification runs this session: 0
 - Commit: 149a364
+- Next best step: (none — check feature_list.json)
+
+### Session 014
+
+<!-- hx-session: 624be3ed-0ea7-4db6-8516-b3ad97326a22 -->
+
+- Date: 2026-10-09
+- Active feature: (none)
+- Passing features: 30
+- Blocked features: none
+- Verification runs this session: 1
+- Commit: 41627ec
 - Next best step: (none — check feature_list.json)

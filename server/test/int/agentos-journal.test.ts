@@ -75,8 +75,8 @@ afterAll(async () => {
 });
 
 describe('journal transfers', () => {
-  it('staff creates a transfer with two zero-sum entries and a trimmed account type', async () => {
-    const res = await post('/api/agentos/journal/transfers', 'staff').send(valid);
+  it('accounts creates a transfer with two zero-sum entries and a trimmed account type', async () => {
+    const res = await post('/api/agentos/journal/transfers', 'accounts').send(valid);
     expect(res.status).toBe(201);
     const t = res.body.transfer;
     transferId = t.id;
@@ -116,16 +116,16 @@ describe('journal transfers', () => {
 
   it('rejects bad input without leaving rows', async () => {
     const before = await count('SELECT count(*) AS n FROM agentos_journal_transfers');
-    const same = await post('/api/agentos/journal/transfers', 'staff').send({ ...valid, toTid: '9201' });
+    const same = await post('/api/agentos/journal/transfers', 'accounts').send({ ...valid, toTid: '9201' });
     expect(same.status).toBe(400);
-    const unknown = await post('/api/agentos/journal/transfers', 'staff').send({ ...valid, toTid: '9299' });
+    const unknown = await post('/api/agentos/journal/transfers', 'accounts').send({ ...valid, toTid: '9299' });
     expect(unknown.status).toBe(400);
     expect(unknown.body.error?.message ?? unknown.body.message ?? JSON.stringify(unknown.body)).toContain('No agentOS tenant has TID 9299');
     for (const amountPence of [0, -5, 1.5]) {
-      expect((await post('/api/agentos/journal/transfers', 'staff').send({ ...valid, amountPence })).status).toBe(400);
+      expect((await post('/api/agentos/journal/transfers', 'accounts').send({ ...valid, amountPence })).status).toBe(400);
     }
-    expect((await post('/api/agentos/journal/transfers', 'staff').send({ ...valid, description: '   ' })).status).toBe(400);
-    expect((await post('/api/agentos/journal/transfers', 'staff').send({ ...valid, nominalCode: 'x'.repeat(51) })).status).toBe(400);
+    expect((await post('/api/agentos/journal/transfers', 'accounts').send({ ...valid, description: '   ' })).status).toBe(400);
+    expect((await post('/api/agentos/journal/transfers', 'accounts').send({ ...valid, nominalCode: 'x'.repeat(51) })).status).toBe(400);
     expect(await count('SELECT count(*) AS n FROM agentos_journal_transfers')).toBe(before);
   });
 
@@ -147,11 +147,11 @@ describe('journal export and posting', () => {
   let exportId = '';
 
   it('marking a not-exported transfer posted is a 409', async () => {
-    expect((await post(`/api/agentos/journal/transfers/${transferId}/posted`, 'staff')).status).toBe(409);
+    expect((await post(`/api/agentos/journal/transfers/${transferId}/posted`, 'accounts')).status).toBe(409);
   });
 
   it('export returns the exact CSV bytes', async () => {
-    const res = await post('/api/agentos/journal/exports', 'staff');
+    const res = await post('/api/agentos/journal/exports', 'accounts');
     expect(res.status).toBe(201);
     expect(res.body.export.transfersTotal).toBe(1);
     expect(res.body.export.amountTotalPence).toBe(12345);
@@ -175,7 +175,7 @@ describe('journal export and posting', () => {
   });
 
   it('a second export is header-only', async () => {
-    const res = await post('/api/agentos/journal/exports', 'staff');
+    const res = await post('/api/agentos/journal/exports', 'accounts');
     expect(res.status).toBe(201);
     expect(res.body.export.transfersTotal).toBe(0);
     const csv = await getCsv(`/api/agentos/journal/exports/${res.body.export.id}.csv`);
@@ -185,7 +185,7 @@ describe('journal export and posting', () => {
   });
 
   it('mark posted works once, then 409, and unknown ids are 404', async () => {
-    const ok = await post(`/api/agentos/journal/transfers/${transferId}/posted`, 'staff');
+    const ok = await post(`/api/agentos/journal/transfers/${transferId}/posted`, 'accounts');
     expect(ok.status).toBe(200);
     expect(ok.body.transfer.postingStatus).toBe('posted');
     const { rows } = await pool.query<{ posted_at: Date | null; posted_by: string | null }>(
@@ -194,14 +194,14 @@ describe('journal export and posting', () => {
     );
     expect(rows[0]!.posted_at).not.toBeNull();
     expect(rows[0]!.posted_by).not.toBeNull();
-    expect((await post(`/api/agentos/journal/transfers/${transferId}/posted`, 'staff')).status).toBe(409);
-    expect((await post(`/api/agentos/journal/transfers/${randomUUID()}/posted`, 'staff')).status).toBe(404);
-    expect((await post('/api/agentos/journal/transfers/nope/posted', 'staff')).status).toBe(404);
+    expect((await post(`/api/agentos/journal/transfers/${transferId}/posted`, 'accounts')).status).toBe(409);
+    expect((await post(`/api/agentos/journal/transfers/${randomUUID()}/posted`, 'accounts')).status).toBe(404);
+    expect((await post('/api/agentos/journal/transfers/nope/posted', 'accounts')).status).toBe(404);
   });
 
   it('two concurrent exports split a new transfer exactly once', async () => {
-    expect((await post('/api/agentos/journal/transfers', 'staff').send(valid)).status).toBe(201);
-    const [a, b] = await Promise.all([post('/api/agentos/journal/exports', 'staff'), post('/api/agentos/journal/exports', 'staff')]);
+    expect((await post('/api/agentos/journal/transfers', 'accounts').send(valid)).status).toBe(201);
+    const [a, b] = await Promise.all([post('/api/agentos/journal/exports', 'accounts'), post('/api/agentos/journal/exports', 'accounts')]);
     expect(a.status).toBe(201);
     expect(b.status).toBe(201);
     expect([a.body.export.transfersTotal, b.body.export.transfersTotal].sort()).toEqual([0, 1]);
@@ -214,5 +214,143 @@ describe('journal export and posting', () => {
     expect(await n('agentos_journal_entries', 'INSERT')).toBeGreaterThanOrEqual(2);
     expect(await n('agentos_journal_exports', 'INSERT')).toBeGreaterThanOrEqual(1);
     expect(await n('agentos_journal_transfers', 'UPDATE')).toBeGreaterThanOrEqual(1);
+  });
+});
+
+describe('multi-row journal transfers on the Omnia ledger', () => {
+  const T = '/api/agentos/journal/transfers';
+  const ids: Record<string, string> = {};
+  const row = (tid: string, accountType: string, amountPence: number) => ({ agentosTenantId: ids[tid]!, accountType, amountPence });
+  const body = (entries: ReturnType<typeof row>[], extra: Record<string, unknown> = {}) => ({
+    clientRequestId: randomUUID(),
+    description: 'Split',
+    nominalCode: '1100',
+    entries,
+    ...extra,
+  });
+  const ledgerTx = (id: string) =>
+    count(`SELECT count(*) AS n FROM ledger_transactions WHERE kind = 'journal_transfer' AND source_id = '${id}'`);
+
+  beforeAll(async () => {
+    const { rows } = await pool.query<{ id: string; tid: string }>("SELECT id, tid FROM agentos_tenants WHERE tid IN ('9201','9202','9203')");
+    for (const r of rows) ids[r.tid] = r.id;
+    const noTid = await pool.query<{ id: string }>(
+      `INSERT INTO agentos_tenants (source, agentos_oid, forename, surname, managed_by, residence, tenancy_descriptor)
+       VALUES ('api', 'aaaa-bbbb-cccc-dddd', 'No', 'Tid', 'Test Lettings', 'Nowhere', 'None') RETURNING id`,
+    );
+    ids['none'] = noTid.rows[0]!.id;
+  });
+
+  it('a 3-entry transfer posts 3 ledger postings summing to 0 and moves balances', async () => {
+    const res = await post(T, 'accounts').send(body([row('9201', 'Rent', -10000), row('9202', 'Rent', 6000), row('9203', 'Rent', 4000)]));
+    expect(res.status).toBe(201);
+    const t = res.body.transfer;
+    expect(t.fromTid).toBeNull();
+    expect(t.toTid).toBeNull();
+    expect(t.amountPence).toBe(10000);
+    expect(t.entries.map((e: { lineNo: number }) => e.lineNo)).toEqual([1, 2, 3]);
+    const p = await pool.query<{ amount_pence: string }>(
+      `SELECT p.amount_pence FROM ledger_postings p JOIN ledger_transactions x ON x.id = p.transaction_id WHERE x.source_id = $1`,
+      [t.id],
+    );
+    expect(p.rows).toHaveLength(3);
+    expect(p.rows.reduce((s, r) => s + Number(r.amount_pence), 0)).toBe(0);
+    const bal = await get('/api/agentos/ledger/9202', 'readonly');
+    expect(bal.status).toBe(200);
+    expect(bal.body.balancePence).toBeGreaterThanOrEqual(6000);
+  });
+
+  it('two account types on one TID are allowed', async () => {
+    const res = await post(T, 'accounts').send(body([row('9201', 'Rent', -50), row('9201', 'Deposit', 50)]));
+    expect(res.status).toBe(201);
+    expect(res.body.transfer.accountType).toBeNull();
+  });
+
+  it('every transfer has exactly one ledger transaction', async () => {
+    const { rows } = await pool.query<{ id: string }>('SELECT id FROM agentos_journal_transfers');
+    expect(rows.length).toBeGreaterThan(0);
+    for (const r of rows) expect(await ledgerTx(r.id)).toBe(1);
+  });
+
+  it('rejects unbalanced, duplicate, no-TID, unknown tenant and 21 entries with no rows', async () => {
+    const before = await count('SELECT count(*) AS n FROM agentos_journal_transfers');
+    const txBefore = await count('SELECT count(*) AS n FROM ledger_transactions');
+    const unbalanced = await post(T, 'accounts').send(body([row('9201', 'Rent', -100), row('9202', 'Rent', 99)]));
+    expect(unbalanced.status).toBe(400);
+    expect(JSON.stringify(unbalanced.body)).toContain('Entries must add up to');
+    const dup = await post(T, 'accounts').send(body([row('9201', 'Rent', -100), row('9201', ' rent', 100)]));
+    expect(dup.status).toBe(400);
+    expect(JSON.stringify(dup.body)).toContain('Entry 2');
+    const noTid = await post(T, 'accounts').send(body([row('9201', 'Rent', -100), row('none', 'Rent', 100)]));
+    expect(noTid.status).toBe(400);
+    expect(JSON.stringify(noTid.body)).toContain('Entry 2: tenant has no TID');
+    const ghost = await post(T, 'accounts').send(
+      body([row('9201', 'Rent', -100), { ...row('9202', 'Rent', 100), agentosTenantId: randomUUID() }]),
+    );
+    expect(ghost.status).toBe(400);
+    expect(JSON.stringify(ghost.body)).toContain('Entry 2: no such agentOS tenant');
+    const many = Array.from({ length: 21 }, (_, i) => row(i % 2 ? '9202' : '9201', `T${i}`, i % 2 ? 1 : -1));
+    expect((await post(T, 'accounts').send(body(many))).status).toBe(400);
+    const zero = await post(T, 'accounts').send(body([row('9201', 'Rent', 0), row('9202', 'Rent', 0)]));
+    expect(zero.status).toBe(400);
+    expect(JSON.stringify(zero.body)).toContain('entries.0.amountPence');
+    expect(await count('SELECT count(*) AS n FROM agentos_journal_transfers')).toBe(before);
+    expect(await count('SELECT count(*) AS n FROM ledger_transactions')).toBe(txBefore);
+  });
+
+  it('a replay gives 200 with one ledger tx; a changed body gives 409', async () => {
+    const b = body([row('9201', 'Rent', -300), row('9202', 'Rent', 100), row('9203', 'Rent', 200)]);
+    const first = await post(T, 'accounts').send(b);
+    expect(first.status).toBe(201);
+    const again = await post(T, 'accounts').send(b);
+    expect(again.status).toBe(200);
+    expect(again.body.transfer.id).toBe(first.body.transfer.id);
+    expect(await ledgerTx(first.body.transfer.id)).toBe(1);
+    const changed = await post(T, 'accounts').send({
+      ...b,
+      entries: [row('9201', 'Rent', -301), row('9202', 'Rent', 101), row('9203', 'Rent', 200)],
+    });
+    expect(changed.status).toBe(409);
+  });
+
+  it('a legacy transfer posts to the ledger and a 3-entry export writes 3 rows in line order', async () => {
+    const exp0 = await post('/api/agentos/journal/exports', 'accounts');
+    expect(exp0.status).toBe(201);
+    const legacy = await post(T, 'accounts').send(valid);
+    expect(legacy.status).toBe(201);
+    expect(await ledgerTx(legacy.body.transfer.id)).toBe(1);
+    const three = await post(T, 'accounts').send(body([row('9203', 'Deposit', -900), row('9201', 'Rent', 500), row('9202', 'Fees', 400)]));
+    expect(three.status).toBe(201);
+    const exp = await post('/api/agentos/journal/exports', 'accounts');
+    expect(exp.status).toBe(201);
+    expect(exp.body.export.transfersTotal).toBe(2);
+    const csv = ((await getCsv(`/api/agentos/journal/exports/${exp.body.export.id}.csv`)).body as Buffer).toString('utf8');
+    const lines = csv.trim().split('\r\n').slice(1);
+    expect(lines).toHaveLength(5);
+    expect(lines.slice(2).map((l) => l.split(',').slice(-3)[0])).toEqual(['Deposit', 'Rent', 'Fees']);
+    expect(lines.slice(2).map((l) => l.split(',').pop())).toEqual(['-9.00', '5.00', '4.00']);
+  });
+
+  it('only accounts and admin may post; anonymous is 401', async () => {
+    const b = body([row('9201', 'Rent', -1), row('9202', 'Rent', 1)]);
+    expect((await post(T, 'staff').send(b)).status).toBe(403);
+    expect((await post(T, 'readonly').send(b)).status).toBe(403);
+    expect((await request(app()).post(T).set(CSRF_HEADER, CSRF_HEADER_VALUE).send(b)).status).toBe(401);
+    expect((await post(T, 'admin').send(b)).status).toBe(201);
+  });
+
+  it('staff cannot export or mark posted (403); accounts can export', async () => {
+    expect((await post('/api/agentos/journal/exports', 'staff')).status).toBe(403);
+    expect((await post(`/api/agentos/journal/transfers/${transferId}/posted`, 'staff')).status).toBe(403);
+    expect((await post('/api/agentos/journal/exports', 'accounts')).status).toBe(201);
+  });
+
+  it('two concurrent posts with one clientRequestId give one 201, one 200 and one ledger transaction', async () => {
+    const b = body([row('9201', 'Rent', -700), row('9202', 'Rent', 700)]);
+    const [x, y] = await Promise.all([post(T, 'accounts').send(b), post(T, 'accounts').send(b)]);
+    expect([x.status, y.status].sort()).toEqual([200, 201]);
+    expect(x.body.transfer.id).toBe(y.body.transfer.id);
+    expect(await ledgerTx(x.body.transfer.id)).toBe(1);
+    expect(await count(`SELECT count(*) AS n FROM agentos_journal_transfers WHERE client_request_id = '${b.clientRequestId}'`)).toBe(1);
   });
 });

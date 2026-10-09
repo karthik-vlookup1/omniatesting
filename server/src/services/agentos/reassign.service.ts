@@ -5,15 +5,14 @@
 import type { ActorDb } from '../../db/context.js';
 import type { Pool } from '../../db/pool.js';
 import { AppError } from '../../lib/errors.js';
-import { decideMatch, type MatchCandidate } from '../../domain/agentos/match.js';
+import { decideMatch, payerTypeFor, type LineKind, type MatchCandidate } from '../../domain/agentos/match.js';
 import { paymentFrom } from './export.service.js';
-import type { IntakeLineDto } from './intake.service.js';
+import { REFERENCE_SQL, type IntakeLineDto } from './intake.service.js';
 
 export interface ReassignTenantDto {
   id: string;
   tid: string;
   name: string;
-  depositTo: string;
 }
 
 export interface ReassignResult {
@@ -22,15 +21,15 @@ export interface ReassignResult {
 }
 
 export async function listReassignTenants(pool: Pool): Promise<ReassignTenantDto[]> {
-  const { rows } = await pool.query<{ id: string; tid: string; forename: string; surname: string; deposit_to: string }>(
-    'SELECT id, tid, forename, surname, deposit_to FROM agentos_tenants ORDER BY tid, agentos_ref',
+  // Reassign targets a TID, so api rows without one (flagged no_tid) are not offered.
+  const { rows } = await pool.query<{ id: string; tid: string | null; forename: string; surname: string }>(
+    'SELECT id, tid, forename, surname FROM agentos_tenants WHERE tid IS NOT NULL ORDER BY tid, agentos_ref',
   );
-  return rows.map((r) => ({
-    id: r.id,
-    tid: r.tid,
-    name: paymentFrom(r.tid, r.forename, r.surname),
-    depositTo: r.deposit_to,
-  }));
+  return rows.flatMap((r) =>
+    r.tid === null
+      ? []
+      : [{ id: r.id, tid: r.tid, name: paymentFrom(r.tid, r.forename, r.surname) }],
+  );
 }
 
 export async function reassignLineTid(db: ActorDb, rawInput: { lineId: string; tid: string }): Promise<ReassignResult> {
@@ -39,13 +38,12 @@ export async function reassignLineTid(db: ActorDb, rawInput: { lineId: string; t
     await c.query("SELECT pg_advisory_xact_lock(hashtext('agentos-export'))");
     const { rows } = await c.query<{
       tid_raw: string | null;
-      payer_name: string;
-      deposit_to: string;
+      ref_kind: 'ni' | 'account' | null;
       match_status: string;
       agentos_tenant_id: string | null;
       posting_status: string;
     }>(
-      `SELECT tid_raw, payer_name, deposit_to, match_status, agentos_tenant_id, posting_status
+      `SELECT tid_raw, ref_kind, match_status, agentos_tenant_id, posting_status
          FROM agentos_intake_lines WHERE id = $1 FOR UPDATE`,
       [input.lineId],
     );
@@ -56,29 +54,39 @@ export async function reassignLineTid(db: ActorDb, rawInput: { lineId: string; t
     }
 
     const { rows: tenants } = await c.query<{
-      id: string; tid: string; forename: string; surname: string; deposit_to: string; agentos_ref: string;
+      id: string; tid: string | null; forename: string; surname: string; agentos_ref: string | null;
+      tenancy_oid: string | null; is_head_tenant: boolean;
     }>(
-      `SELECT id, tid, forename, surname, deposit_to, agentos_ref FROM agentos_tenants
-        WHERE tid = $1 ORDER BY agentos_ref`,
+      `SELECT id, tid, forename, surname, agentos_ref, tenancy_oid, is_head_tenant FROM agentos_tenants
+        WHERE tid IS NOT NULL AND tid = $1 ORDER BY is_head_tenant DESC, agentos_ref NULLS LAST, id`,
       [input.tid],
     );
     if (tenants.length === 0) throw new AppError('bad_request', `No agentOS tenant has TID ${input.tid}`);
-    const candidates: MatchCandidate[] = tenants.map((r) => ({
-      id: r.id, tid: r.tid, forename: r.forename, surname: r.surname, depositTo: r.deposit_to, agentosRef: r.agentos_ref,
-    }));
-    const d = decideMatch({ tid: input.tid, payerName: cur.payer_name, depositTo: cur.deposit_to }, candidates);
+    const candidates: MatchCandidate[] = tenants.flatMap((r) =>
+      r.tid === null
+        ? []
+        : [{
+            id: r.id, tid: r.tid, forename: r.forename, surname: r.surname, agentosRef: r.agentos_ref ?? '',
+            tenancyOid: r.tenancy_oid, isHeadTenant: r.is_head_tenant,
+          }],
+    );
+    const kind: LineKind = cur.ref_kind ?? 'tid';
+    const d = decideMatch({ kind, tids: [input.tid], preferredNames: [] }, candidates);
+    const payerType = d.status === 'matched' ? payerTypeFor(kind) : null;
 
     const { rows: out } = await c.query<{
       id: string; line_no: number; received_on: string; tid_raw: string | null; payer_name: string;
       amount_pence: number; payment_type: string; deposit_to: string; description: string;
       warnings: string[]; match_status: string; agentos_tenant_id: string | null; posting_status: string;
+      payer_type: string | null; reference: string | null; receiving_account_code: string | null;
     }>(
       `UPDATE agentos_intake_lines
-          SET tid_raw = $2, match_status = $3, agentos_tenant_id = $4, updated_at = now()
+          SET tid_raw = $2, match_status = $3, agentos_tenant_id = $4, payer_type = $5, updated_at = now()
         WHERE id = $1
         RETURNING id, line_no, to_char(received_on, 'YYYY-MM-DD') AS received_on, tid_raw, payer_name, amount_pence,
-                  payment_type, deposit_to, description, warnings, match_status, agentos_tenant_id, posting_status`,
-      [input.lineId, input.tid, d.status, d.tenantId],
+                  payment_type, deposit_to, description, warnings, match_status, agentos_tenant_id, posting_status,
+                  payer_type, ${REFERENCE_SQL} AS reference, receiving_account_code`,
+      [input.lineId, input.tid, d.status, d.tenantId, payerType],
     );
     const l = out[0]!;
     return {
@@ -96,6 +104,9 @@ export async function reassignLineTid(db: ActorDb, rawInput: { lineId: string; t
         matchStatus: l.match_status,
         agentosTenantId: l.agentos_tenant_id,
         postingStatus: l.posting_status,
+        payerType: l.payer_type,
+        reference: l.reference,
+        receivingAccount: l.receiving_account_code,
       },
       previous: { tid: cur.tid_raw, matchStatus: cur.match_status, agentosTenantId: cur.agentos_tenant_id },
     };

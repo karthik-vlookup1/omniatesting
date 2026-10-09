@@ -67,8 +67,12 @@ export function IntakeUploadCard({ onBatch }: { onBatch: (batchId: string) => vo
         </Group>
         {result && c && (
           <Alert color="green" role="status">
-            Uploaded {result.rowsTotal} lines: matched {c.matched}, name mismatch {c.name_mismatch}, deposit mismatch{' '}
-            {c.deposit_mismatch}, unmatched {c.unmatched}
+            Uploaded {result.rowsTotal} lines: matched {c.matched}, ambiguous {c.ambiguous}, unmatched {c.unmatched}
+            {result.unresolvedRefs > 0 && (
+              <Text size="sm" mt={4}>
+                {result.unresolvedRefs} tenant references not found in Omnia
+              </Text>
+            )}
           </Alert>
         )}
         {error && (

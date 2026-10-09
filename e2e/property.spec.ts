@@ -71,7 +71,7 @@ test('admin adds a branch, a landlord and a property, finds it by postcode and e
   await dialog.getByRole('button', { name: 'Add property' }).click();
   await expect(dialog).toBeHidden();
 
-  await page.getByLabel('Search').fill('E2 7');
+  await page.getByRole('searchbox', { name: 'Search', exact: true }).fill('E2 7');
   const rows = table(page, 'Properties').getByRole('row');
   await expect(rows).toHaveCount(2); // header + 1
   await expect(rows.nth(1)).toContainText('P-E2E-1');

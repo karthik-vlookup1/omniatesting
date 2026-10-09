@@ -13,8 +13,7 @@ import { fixtureClient, fixtureTenants } from '../fixtures/agentos/api/fixture-c
 
 const config = loadConfig();
 let pool: Pool;
-const DEPOSIT_TO = 'TEST CLIENT ACCOUNT';
-const base = { dryRun: false, replaceSeed: false, depositTo: DEPOSIT_TO };
+const base = { dryRun: false, replaceSeed: false };
 const ANA = 'aaaa-0000-0000-0011';
 
 async function clean() {
@@ -37,14 +36,10 @@ afterAll(async () => {
 });
 
 describe('agentOS API sync', () => {
-  it('refuses to run without a deposit-to value, dry or real', async () => {
-    for (const dryRun of [true, false]) {
-      for (const depositTo of [undefined, '', '  ']) {
-        const err = await syncAgentosTenants(pool, fixtureClient(), { ...base, dryRun, depositTo }).catch((e: unknown) => e);
-        expect(err).toBeInstanceOf(AgentosSyncError);
-        expect((err as Error).message).toContain('AGENTOS_DEPOSIT_TO');
-      }
-    }
+  it('runs with no deposit-to setting at all', async () => {
+    delete process.env['AGENTOS_DEPOSIT_TO'];
+    const r = await syncAgentosTenants(pool, fixtureClient(), { ...base, dryRun: true });
+    expect(r.created).toBeGreaterThan(0);
     expect(await count()).toBe(0);
   });
 
@@ -65,11 +60,11 @@ describe('agentOS API sync', () => {
     const nt = await pool.query("SELECT sync_flags, tid FROM agentos_tenants WHERE 'no_tid' = ANY(sync_flags)");
     expect(nt.rows).toHaveLength(2);
     expect(nt.rows.every((x: { tid: string | null }) => x.tid === null)).toBe(true);
-    const ana = await pool.query<{ deposit_to: string; managed_by: string; source: string; phone: string }>(
+    const ana = await pool.query<{ deposit_to: string | null; managed_by: string; source: string; phone: string }>(
       'SELECT deposit_to, managed_by, source, phone FROM agentos_tenants WHERE agentos_oid = $1',
       [ANA],
     );
-    expect(ana.rows[0]).toEqual({ deposit_to: DEPOSIT_TO, managed_by: 'Investing Solutions', source: 'api', phone: '07700900001' });
+    expect(ana.rows[0]).toEqual({ deposit_to: null, managed_by: 'Investing Solutions', source: 'api', phone: '07700900001' });
     const runs = await pool.query('SELECT counts FROM agentos_sync_runs');
     expect(runs.rows).toHaveLength(1);
   });
@@ -98,21 +93,30 @@ describe('agentOS API sync', () => {
   });
 
   it('matcher picks the right joint tenant from DB candidates', async () => {
-    const { rows } = await pool.query<{ id: string; tid: string; forename: string; surname: string; deposit_to: string; agentos_ref: string | null }>(
-      "SELECT id, tid, forename, surname, deposit_to, agentos_ref FROM agentos_tenants WHERE tid = ANY('{9701}')",
+    const { rows } = await pool.query<{ id: string; tid: string; forename: string; surname: string; agentos_ref: string | null; tenancy_oid: string | null; is_head_tenant: boolean }>(
+      "SELECT id, tid, forename, surname, agentos_ref, tenancy_oid, is_head_tenant FROM agentos_tenants WHERE tid = ANY('{9701}') ORDER BY is_head_tenant DESC, agentos_ref NULLS LAST, id",
     );
     const candidates: MatchCandidate[] = rows.map((x) => ({
       id: x.id,
       tid: x.tid,
       forename: x.forename,
       surname: x.surname,
-      depositTo: x.deposit_to,
       agentosRef: x.agentos_ref ?? '',
+      tenancyOid: x.tenancy_oid,
+      isHeadTenant: x.is_head_tenant,
     }));
     expect(candidates).toHaveLength(3);
-    const d = decideMatch({ tid: '9701', payerName: 'Bo Testa', depositTo: DEPOSIT_TO }, candidates);
+    // 9701 is shared by two different tenancies, so a TID alone cannot pick a tenant.
+    expect(decideMatch({ kind: 'tid', tids: ['9701'], preferredNames: [] }, candidates).status).toBe('ambiguous');
+    // Within one tenancy a council payment goes to the lead; a tenant reference prefers the named tenant.
+    const oneTenancy = candidates.filter((c) => c.tenancyOid === candidates.find((x) => x.forename === '9701 Bo')!.tenancyOid);
+    expect(oneTenancy).toHaveLength(2);
+    const d = decideMatch({ kind: 'tid', tids: ['9701'], preferredNames: [] }, oneTenancy);
     expect(d.status).toBe('matched');
-    expect(candidates.find((c) => c.id === d.tenantId)?.forename).toBe('9701 Bo');
+    expect(d.tenantId).toBe(oneTenancy.find((c) => c.isHeadTenant)?.id ?? oneTenancy[0]!.id);
+    const byName = decideMatch({ kind: 'ni', tids: ['9701'], preferredNames: ['Bo Testa'] }, candidates);
+    expect(byName.status).toBe('matched');
+    expect(candidates.find((c) => c.id === byName.tenantId)?.forename).toBe('9701 Bo');
   });
 
   it('seed rows block the sync unless replaceSeed, which deletes the 12 seed rows', async () => {
@@ -150,5 +154,41 @@ describe('agentOS API sync', () => {
     expect(err).toBeInstanceOf(AgentosSyncError);
     expect((err as Error).message).toContain('referenced');
     expect(await count()).toBe(12);
+  });
+  it('links api tenants to core tenancies stored as T9701, and a re-sync links previously unlinked rows', async () => {
+    await clean();
+    await pool.query('DELETE FROM tenancies WHERE tid = $1', ['T9701']);
+    await syncAgentosTenants(pool, fixtureClient(), base);
+    const unlinked = await pool.query("SELECT count(*) AS n FROM agentos_tenants WHERE tid = '9701' AND tenancy_id IS NULL");
+    expect(Number((unlinked.rows[0] as { n: string }).n)).toBe(3);
+
+    const br = await pool.query("INSERT INTO branches (code, name) VALUES ('ZZ-SYNC', 'Sync test') RETURNING id");
+    const pr = await pool.query(
+      "INSERT INTO properties (property_ref, branch_id, address_line1, postcode) VALUES ('ZZ-SYNC-1', $1, '1 Test St', 'AB1 2CD') RETURNING id",
+      [(br.rows[0] as { id: string }).id],
+    );
+    try {
+      const tn = await pool.query(
+        "INSERT INTO tenancies (tid, property_id, management_type, start_date) VALUES ('T9701', $1, 'RG', '2026-01-01') RETURNING id",
+        [(pr.rows[0] as { id: string }).id],
+      );
+      const r = await syncAgentosTenants(pool, fixtureClient(), base);
+      expect(r.updated).toBe(3);
+      const linked = await pool.query<{ tenancy_id: string }>("SELECT tenancy_id FROM agentos_tenants WHERE tid = '9701'");
+      expect(linked.rows.map((x) => x.tenancy_id)).toEqual(Array(3).fill((tn.rows[0] as { id: string }).id));
+      const again = await syncAgentosTenants(pool, fixtureClient(), base);
+      expect(again).toMatchObject({ updated: 0, unchanged: 10 });
+
+      // a fresh sync into an empty table links on insert
+      await clean();
+      await syncAgentosTenants(pool, fixtureClient(), base);
+      const fresh = await pool.query("SELECT count(*) AS n FROM agentos_tenants WHERE tid = '9701' AND tenancy_id IS NOT NULL");
+      expect(Number((fresh.rows[0] as { n: string }).n)).toBe(3);
+    } finally {
+      await clean();
+      await pool.query("DELETE FROM tenancies WHERE tid = 'T9701'");
+      await pool.query("DELETE FROM properties WHERE property_ref = 'ZZ-SYNC-1'");
+      await pool.query("DELETE FROM branches WHERE code = 'ZZ-SYNC'");
+    }
   });
 });

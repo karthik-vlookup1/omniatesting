@@ -81,7 +81,7 @@ describe('agentOS 5 Aug 2026 demo pipeline', () => {
     expect(Number(rows[0]!.count)).toBe(0);
   });
 
-  it('uploads the bank file with 8/2/1/2 match counts', async () => {
+  it('uploads the bank file with 11/0/2 match counts', async () => {
     const res = await upload(fx('bank-formatted.csv'));
     expect(res.status).toBe(201);
     const b = res.body.batch;
@@ -89,7 +89,7 @@ describe('agentOS 5 Aug 2026 demo pipeline', () => {
     expect(b.amountTotalPence).toBe(496275);
     expect(b.periodFrom).toBe('2026-08-05');
     expect(b.periodTo).toBe('2026-08-05');
-    expect(b.matchCounts).toEqual({ matched: 8, name_mismatch: 2, deposit_mismatch: 1, unmatched: 2 });
+    expect(b.matchCounts).toEqual({ matched: 11, ambiguous: 0, unmatched: 2 });
     batchId = b.batchId;
     const { rows } = await pool.query<{ id: string; line_no: number }>('SELECT id, line_no FROM agentos_intake_lines WHERE batch_id = $1', [batchId]);
     for (const r of rows) ids.set(r.line_no, r.id);
@@ -108,17 +108,17 @@ describe('agentOS 5 Aug 2026 demo pipeline', () => {
     expect(res.body.previous.matchStatus).toBe('unmatched');
   });
 
-  it('exports 9 matched rows', async () => {
+  it('exports 12 matched rows', async () => {
     const res = await post('/api/agentos/exports', 'staff').send({ batchId });
     expect(res.status).toBe(201);
-    expect(res.body.export.rowsTotal).toBe(9);
-    expect(res.body.export.amountTotalPence).toBe(424775);
+    expect(res.body.export.rowsTotal).toBe(12);
+    expect(res.body.export.amountTotalPence).toBe(487275);
     exportId = res.body.export.id;
     const csv = await getCsv(`/api/agentos/exports/${exportId}.csv`);
     expect(csv.status).toBe(200);
     const text = (csv.body as Buffer).toString('utf8').replace(/^[\u{FEFF}]/u, '');
     const lines = text.split('\r\n').filter((l) => l !== '');
-    expect(lines).toHaveLength(10);
+    expect(lines).toHaveLength(13);
     expect(lines.some((l) => l.startsWith('9301,9301 Ava Demoford'))).toBe(true);
     expect(lines.some((l) => l.includes('9399') || l.includes('Someone Else'))).toBe(false);
   });
@@ -131,7 +131,7 @@ describe('agentOS 5 Aug 2026 demo pipeline', () => {
   });
 
   it('moves money between tenants with a journal transfer', async () => {
-    const t = await post('/api/agentos/journal/transfers', 'staff').send({
+    const t = await post('/api/agentos/journal/transfers', 'accounts').send({
       fromTid: '9301',
       toTid: '9302',
       amountPence: 5000,
@@ -140,10 +140,10 @@ describe('agentOS 5 Aug 2026 demo pipeline', () => {
       accountType: 'Rent',
     });
     expect(t.status).toBe(201);
-    const ex = await post('/api/agentos/journal/exports', 'staff');
+    const ex = await post('/api/agentos/journal/exports', 'accounts');
     expect(ex.status).toBe(201);
     expect(ex.body.export.transfersTotal).toBe(1);
     const tid = t.body.transfer?.id ?? t.body.id;
-    expect((await post(`/api/agentos/journal/transfers/${tid}/posted`, 'staff')).status).toBe(200);
+    expect((await post(`/api/agentos/journal/transfers/${tid}/posted`, 'accounts')).status).toBe(200);
   });
 });

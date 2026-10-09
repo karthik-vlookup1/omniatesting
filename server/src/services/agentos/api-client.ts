@@ -11,7 +11,6 @@ export interface AgentosApiConfig {
   shortName: string;
   branchId: string;
   managedBy: string;
-  depositTo: string | undefined;
 }
 
 export function loadAgentosApiConfig(env: NodeJS.ProcessEnv = process.env): AgentosApiConfig {
@@ -22,14 +21,12 @@ export function loadAgentosApiConfig(env: NodeJS.ProcessEnv = process.env): Agen
   if (!baseUrl) problems.push('AGENTOS_BASE_URL is not set');
   else if (!baseUrl.startsWith('https://')) problems.push('AGENTOS_BASE_URL must start with https://');
   if (problems.length > 0) throw new ConfigError(problems);
-  const depositTo = (env['AGENTOS_DEPOSIT_TO'] ?? '').trim();
   return {
     apiKey,
     baseUrl,
     shortName: (env['AGENTOS_SHORT_NAME'] ?? '').trim() || 'isl',
     branchId: (env['AGENTOS_BRANCH_ID'] ?? '').trim() || '0004-6020-1894-c1a8',
     managedBy: (env['AGENTOS_MANAGED_BY'] ?? '').trim() || 'Investing Solutions',
-    depositTo: depositTo || undefined,
   };
 }
 
