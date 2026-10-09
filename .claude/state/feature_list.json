@@ -1,6 +1,6 @@
 {
   "project": "omnia-recon",
-  "last_updated": "2026-10-07",
+  "last_updated": "2026-10-09",
   "rules": {
     "single_active_feature": true,
     "passing_requires_evidence": true,
@@ -1790,22 +1790,43 @@
           "kind": "cmd",
           "cmd": "npm run test:web -- agentos",
           "exitCode": 0,
-          "testedAt": "2026-10-07T15:49:05.452Z",
-          "commit": "0a34724"
+          "commit": "0a34724",
+          "testedAt": "2026-10-07T15:49:05.452Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:e2e -- agentos-payment.spec",
           "exitCode": 0,
-          "testedAt": "2026-10-07T15:49:21.385Z",
-          "commit": "0a34724"
+          "commit": "0a34724",
+          "testedAt": "2026-10-07T15:49:21.385Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:e2e -- agentos-journal.spec",
           "exitCode": 0,
-          "testedAt": "2026-10-07T15:49:38.591Z",
-          "commit": "0a34724"
+          "commit": "0a34724",
+          "testedAt": "2026-10-07T15:49:38.591Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:web -- agentos",
+          "exitCode": 0,
+          "testedAt": "2026-10-09T13:23:57.875Z",
+          "commit": "74ad80c"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:e2e -- agentos-payment.spec",
+          "exitCode": 0,
+          "testedAt": "2026-10-09T13:24:14.127Z",
+          "commit": "74ad80c"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:e2e -- agentos-journal.spec",
+          "exitCode": 0,
+          "testedAt": "2026-10-09T13:24:30.907Z",
+          "commit": "74ad80c"
         }
       ],
       "notes": "HARD (5+ files)",
