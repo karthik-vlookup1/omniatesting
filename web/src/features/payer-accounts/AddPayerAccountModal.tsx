@@ -1,6 +1,7 @@
 import { Alert, Button, Group, Modal, NativeSelect, Select, Stack, TextInput } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { useState } from 'react';
+import { useConfirmAction } from '../../components';
 import { errorMessage } from '../../lib/api';
 import { useLandlords } from '../landlords/api';
 import { useAddPayerAccount, type PayerAccountInput, type PayerKind } from './api';
@@ -27,6 +28,7 @@ const PAYER_OPTIONS: { value: PayerKind; label: string }[] = [
 ];
 
 function AddForm({ onDone }: { onDone: () => void }) {
+  const confirm = useConfirmAction();
   const add = useAddPayerAccount();
   const landlords = useLandlords('');
   const [linkTo, setLinkTo] = useState<'tenancy' | 'landlord'>('tenancy');
@@ -55,18 +57,20 @@ function AddForm({ onDone }: { onDone: () => void }) {
       holderName: holderName.trim() || null,
       payer,
     };
-    add.mutate(input, {
-      onSuccess: ({ payerAccount }) => {
-        notifications.show({ color: 'teal', title: 'Payer account saved', message: `${payerAccount.account ?? 'Account'} is now known.` });
-        if (payerAccount.sharedWith > 0) {
-          setShared(payerAccount.sharedWith);
-          setSortCode('');
-          setAccountNumber('');
-        } else {
-          onDone();
-        }
-      },
-    });
+    confirm.ask({ title: 'Save this payer account?', message: 'Payments from this account will be matched to the chosen tenancy or landlord automatically.', confirmLabel: 'Save payer account' }, () =>
+      add.mutate(input, {
+        onSuccess: ({ payerAccount }) => {
+          notifications.show({ color: 'teal', title: 'Payer account saved', message: `${payerAccount.account ?? 'Account'} is now known.` });
+          if (payerAccount.sharedWith > 0) {
+            setShared(payerAccount.sharedWith);
+            setSortCode('');
+            setAccountNumber('');
+          } else {
+            onDone();
+          }
+        },
+      }),
+    );
   };
 
   const message = problem ?? (add.isError ? errorMessage(add.error) : null);
@@ -86,6 +90,7 @@ function AddForm({ onDone }: { onDone: () => void }) {
 
   return (
     <form noValidate onSubmit={submit}>
+      {confirm.dialog}
       <Stack gap="md">
         <NativeSelect
           label="Link to"

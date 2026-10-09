@@ -82,6 +82,11 @@ export const routes: RouteObject[] = [
             lazy: async () => ({ Component: (await import('../features/tenancies/TenanciesPage')).TenanciesPage }),
           },
           {
+            // LetMC-style tenant record (recon-601, plans/recon-601.md).
+            path: 'tenancies/:tid',
+            lazy: async () => ({ Component: (await import('../features/tenancy-record/TenancyRecordPage')).TenancyRecordPage }),
+          },
+          {
             path: 'rent',
             lazy: async () => ({ Component: (await import('../features/rent-terms/RentLookupPage')).RentLookupPage }),
           },

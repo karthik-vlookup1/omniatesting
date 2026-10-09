@@ -10,7 +10,7 @@ export const TONE_COLOR: Record<Tone, string> = {
   danger: 'red',
   info: 'blue',
   neutral: 'slate',
-  brand: 'blue',
+  brand: 'navy',
 };
 
 /** Builds a typed status → badge mapping for one domain enum (e.g. txn_status). */

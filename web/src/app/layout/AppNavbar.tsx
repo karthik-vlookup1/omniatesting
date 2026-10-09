@@ -1,32 +1,40 @@
-import { NavLink, ScrollArea, Stack, Text } from '@mantine/core';
+import { Box, Group, NavLink, ScrollArea, Stack, Text } from '@mantine/core';
 import { Link, useLocation } from 'react-router-dom';
 import { can, useSession } from '../../data/auth';
-import { NAV_SECTIONS, type NavItem } from '../navigation';
+import { MODULES, isItemActive, moduleForPath } from '../navigation';
 
-function isActive(item: NavItem, pathname: string): boolean {
-  if (item.to === '/') return pathname === '/';
-  return item.matchPrefix ? pathname === item.to || pathname.startsWith(`${item.to}/`) : pathname === item.to;
-}
-
+/**
+ * Left "Sections" menu: every module's pages, grouped under the module name (LetMC's left panel
+ * lists the current area's pages; Recon keeps all groups visible so any page is one click away).
+ * The current module's heading carries the orange accent.
+ */
 export function AppNavbar() {
   const { data: user } = useSession();
   const { pathname } = useLocation();
+  const current = moduleForPath(pathname);
 
   return (
-    <ScrollArea type="never" style={{ flex: 1 }}>
-      <Stack gap="md" component="nav" aria-label="Sections">
-        {NAV_SECTIONS.map((section, i) => {
-          const items = section.items.filter((item) => !item.capability || can(user, item.capability));
+    <ScrollArea type="hover" style={{ flex: 1 }} scrollbarSize={6}>
+      <Stack gap="lg" component="nav" aria-label="Sections" py="xs">
+        {MODULES.map((m) => {
+          const items = m.items.filter((item) => !item.capability || can(user, item.capability));
           if (items.length === 0) return null;
+          const isCurrent = current?.key === m.key;
           return (
-            <Stack key={section.label ?? i} gap={2}>
-              {section.label && (
-                <Text fz="xs" fw={600} c="dimmed" tt="uppercase" px="sm" pb={4} style={{ letterSpacing: '0.05em' }}>
-                  {section.label}
+            <Stack key={m.key} gap={2}>
+              <Group gap={8} px="sm" pb={4} wrap="nowrap">
+                <Box
+                  w={3}
+                  h={14}
+                  style={{ borderRadius: 2, background: isCurrent ? 'var(--app-accent)' : 'var(--app-border)' }}
+                  aria-hidden
+                />
+                <Text fz="xs" fw={700} c={isCurrent ? undefined : 'dimmed'} tt="uppercase" style={{ letterSpacing: '0.06em' }}>
+                  {m.label}
                 </Text>
-              )}
+              </Group>
               {items.map((item) => {
-                const active = isActive(item, pathname);
+                const active = isItemActive(item, pathname);
                 return (
                   <NavLink
                     key={item.to}
@@ -36,7 +44,10 @@ export function AppNavbar() {
                     leftSection={<item.icon size={18} stroke={1.75} aria-hidden />}
                     active={active}
                     aria-current={active ? 'page' : undefined}
-                    styles={{ root: { borderRadius: 'var(--mantine-radius-sm)' }, label: { fontWeight: active ? 600 : 500 } }}
+                    styles={{
+                      root: { borderRadius: 'var(--mantine-radius-sm)', paddingBlock: 7 },
+                      label: { fontWeight: active ? 650 : 500 },
+                    }}
                   />
                 );
               })}

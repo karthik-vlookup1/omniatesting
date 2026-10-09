@@ -1,0 +1,178 @@
+[
+  {
+    "OID": "aaaa-0000-0000-0001",
+    "GlobalReference": "ten-t1",
+    "DisplayAddress": "1 Test Road, Testville, ZZ1 1ZZ",
+    "Address": {
+      "Address1": "1 Test Road",
+      "Address2": null,
+      "Address3": null,
+      "Address4": "Testville",
+      "Postcode": "ZZ1 1ZZ"
+    },
+    "TenancyPorpertyOID": "aaaa-0000-0000-0101",
+    "TermStartDate": "2025-09-01T00:00:00",
+    "TermEndDate": "2026-08-31T00:00:00",
+    "IsPeriodic": false,
+    "IsProposed": false,
+    "IsSigned": true,
+    "IsTenancyEnded": false,
+    "IsTenancyClosed": false,
+    "IsAbandoned": false,
+    "TenancyIsArchived": false
+  },
+  {
+    "OID": "aaaa-0000-0000-0002",
+    "GlobalReference": "ten-t2",
+    "DisplayAddress": null,
+    "Address": {
+      "Address1": "1 Test Road",
+      "Address2": null,
+      "Address3": null,
+      "Address4": "Testville",
+      "Postcode": "ZZ1 1ZZ"
+    },
+    "TenancyPorpertyOID": "aaaa-0000-0000-0102",
+    "TermStartDate": "2025-09-01T00:00:00",
+    "TermEndDate": null,
+    "IsPeriodic": true,
+    "IsProposed": false,
+    "IsSigned": true,
+    "IsTenancyEnded": false,
+    "IsTenancyClosed": false,
+    "IsAbandoned": false,
+    "TenancyIsArchived": false
+  },
+  {
+    "OID": "aaaa-0000-0000-0003",
+    "GlobalReference": "ten-t3",
+    "DisplayAddress": "3 Test Road, Testville, ZZ1 3ZZ",
+    "Address": {
+      "Address1": "1 Test Road",
+      "Address2": null,
+      "Address3": null,
+      "Address4": "Testville",
+      "Postcode": "ZZ1 1ZZ"
+    },
+    "TenancyPorpertyOID": "aaaa-0000-0000-0103",
+    "TermStartDate": "2025-09-01T00:00:00",
+    "TermEndDate": "2026-08-31T00:00:00",
+    "IsPeriodic": false,
+    "IsProposed": false,
+    "IsSigned": true,
+    "IsTenancyEnded": true,
+    "IsTenancyClosed": false,
+    "IsAbandoned": false,
+    "TenancyIsArchived": false
+  },
+  {
+    "OID": "aaaa-0000-0000-0004",
+    "GlobalReference": "ten-t4",
+    "DisplayAddress": "4 Test Road, Testville, ZZ1 4ZZ",
+    "Address": {
+      "Address1": "1 Test Road",
+      "Address2": null,
+      "Address3": null,
+      "Address4": "Testville",
+      "Postcode": "ZZ1 1ZZ"
+    },
+    "TenancyPorpertyOID": "aaaa-0000-0000-0104",
+    "TermStartDate": "2025-09-01T00:00:00",
+    "TermEndDate": "2026-08-31T00:00:00",
+    "IsPeriodic": false,
+    "IsProposed": false,
+    "IsSigned": true,
+    "IsTenancyEnded": false,
+    "IsTenancyClosed": true,
+    "IsAbandoned": false,
+    "TenancyIsArchived": false
+  },
+  {
+    "OID": "aaaa-0000-0000-0005",
+    "GlobalReference": "ten-t5",
+    "DisplayAddress": "5 Test Road, Testville, ZZ1 5ZZ",
+    "Address": {
+      "Address1": "1 Test Road",
+      "Address2": null,
+      "Address3": null,
+      "Address4": "Testville",
+      "Postcode": "ZZ1 1ZZ"
+    },
+    "TenancyPorpertyOID": "aaaa-0000-0000-0105",
+    "TermStartDate": "2025-09-01T00:00:00",
+    "TermEndDate": null,
+    "IsPeriodic": false,
+    "IsProposed": true,
+    "IsSigned": false,
+    "IsTenancyEnded": false,
+    "IsTenancyClosed": false,
+    "IsAbandoned": false,
+    "TenancyIsArchived": false
+  },
+  {
+    "OID": "aaaa-0000-0000-0006",
+    "GlobalReference": "ten-t6",
+    "DisplayAddress": "6 Test Road, Testville, ZZ1 6ZZ",
+    "Address": {
+      "Address1": "1 Test Road",
+      "Address2": null,
+      "Address3": null,
+      "Address4": "Testville",
+      "Postcode": "ZZ1 1ZZ"
+    },
+    "TenancyPorpertyOID": "aaaa-0000-0000-0106",
+    "TermStartDate": "2025-09-01T00:00:00",
+    "TermEndDate": "2026-08-31T00:00:00",
+    "IsPeriodic": false,
+    "IsProposed": false,
+    "IsSigned": true,
+    "IsTenancyEnded": false,
+    "IsTenancyClosed": false,
+    "IsAbandoned": true,
+    "TenancyIsArchived": false
+  },
+  {
+    "OID": "aaaa-0000-0000-0007",
+    "GlobalReference": "ten-t7",
+    "DisplayAddress": "7 Test Road, Testville, ZZ1 7ZZ",
+    "Address": {
+      "Address1": "1 Test Road",
+      "Address2": null,
+      "Address3": null,
+      "Address4": "Testville",
+      "Postcode": "ZZ1 1ZZ"
+    },
+    "TenancyPorpertyOID": "aaaa-0000-0000-0107",
+    "TermStartDate": "2025-09-01T00:00:00",
+    "TermEndDate": "2026-08-31T00:00:00",
+    "IsPeriodic": false,
+    "IsProposed": false,
+    "IsSigned": true,
+    "IsTenancyEnded": false,
+    "IsTenancyClosed": false,
+    "IsAbandoned": false,
+    "TenancyIsArchived": false
+  },
+  {
+    "OID": "aaaa-0000-0000-0008",
+    "GlobalReference": "ten-t8",
+    "DisplayAddress": "8 Test Road, Testville, ZZ1 8ZZ",
+    "Address": {
+      "Address1": "1 Test Road",
+      "Address2": null,
+      "Address3": null,
+      "Address4": "Testville",
+      "Postcode": "ZZ1 1ZZ"
+    },
+    "TenancyPorpertyOID": "aaaa-0000-0000-0108",
+    "TermStartDate": "2025-09-01T00:00:00",
+    "TermEndDate": "2026-08-31T00:00:00",
+    "IsPeriodic": false,
+    "IsProposed": false,
+    "IsSigned": true,
+    "IsTenancyEnded": false,
+    "IsTenancyClosed": false,
+    "IsAbandoned": false,
+    "TenancyIsArchived": false
+  }
+]

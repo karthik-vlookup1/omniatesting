@@ -24,6 +24,7 @@
     "build:web": "npm run build -w web",
     "db:migrate": "tsx server/src/db/migrate.ts",
     "db:test": "tsx scripts/db-test.ts",
+    "agentos:sync": "tsx scripts/agentos-sync.ts",
     "user:create": "tsx server/src/jobs/create-user.ts"
   },
   "devDependencies": {

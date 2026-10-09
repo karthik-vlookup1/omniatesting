@@ -1,0 +1,308 @@
+{
+  "$comment": "agentOS (LetMC) v4 API: response structure and mapping to the OMNIA_MAIN master DB. Built 2026-10-07 from the API's own swagger specs (live-api.letmc.com/swagger/docs/v4-contacts, v4-applications, v4-propertymanagement) plus the reporting, deposits and maintenance specs, and live structure-only calls (field names and fill counts, no values). USE recommended_sources BELOW: the contacts tenants endpoint returns 0 for this key, but the reporting/deposits/maintenance endpoints return all ~6.2k tenancies and tenants.",
+  "connection": {
+    "base_url": "https://live-api.letmc.com",
+    "short_name": "isl",
+    "auth": {
+      "observed": "X-API-KEY request header (a Bearer header is rejected with 403 'Missing either a \"X-API-KEY\" header token or \"api_key\" query parameter'). The api_key query parameter is also accepted.",
+      "spec_says": "securityDefinitions: apiKey in header named 'ApiKey', or HTTP basic. The X-API-KEY header is what was tested."
+    },
+    "branches": [
+      {
+        "oid": "0004-6020-1894-c1a8",
+        "name": "Investing Solutions",
+        "note": "Only branch returned (Count 1). Required as the branchID query parameter on tenants/applicants."
+      }
+    ],
+    "pagination": {
+      "style": "offset and count are PATH segments: /{offset}/{count}. Not query parameters.",
+      "max_count": {
+        "tenants": 10000,
+        "applicants_lettings": 1000,
+        "kb_general": 1000
+      },
+      "envelope": "{ Data: [...], Count: int, Links: [BaseHypermediaLink] }",
+      "next_page": "Links[] carries { Relationship, Href, Method }. The branches call returned Links: [] (single page).",
+      "count_semantics": "Count is the TOTAL number of records available, not the page size (agentOS API FAQ, via the agentOS support agent 2026-10-07). Loop offset from 0 to Count in pages of up to 1000, or follow the next-page Href in Links."
+    },
+    "rate_limit": {
+      "documented": "50 calls per minute, 429 when exceeded (agentOS KB)",
+      "observed_headers": "None. No rate-limit or Retry-After headers on the calls made so far, so the client must throttle itself."
+    },
+    "optional_query": "integrator (or 'integration' on applicants): name of the integrating app. Send 'omnia-recon'.",
+    "id_format": "OIDs look like '0004-6020-1894-c1a8' (4-4-4-4 hex groups)."
+  },
+  "recommended_sources": {
+    "$comment": "Live 2026-10-07, branch 0004-6020-1894-c1a8, first page of 1000. Fill counts are records with the field non-empty out of 1000. For nested arrays (TenancyDetails[], TenantOID[]) the number is the MOST entries seen in one record, not a record count.",
+    "tenancies": {
+      "path": "GET /v4/reporting/{shortName}/lettings/tenancies/{offset}/{count}",
+      "live": "200, Count=6232",
+      "model": "ReportingTenancyModel: OID, GlobalReference, Address{Address1-4, Postcode, FlatOrRoomNumber, AddressNumber}, DisplayAddress, TenancyPropertyGlobalReference, TenancyPorpertyOID (sic), TermStartDate, TermEndDate, TenancyAbandonedDate, IsAbandoned, IsAdvertised, IsTenancyClosed, IsTenancyEnded, IsPeriodic, IsProposed, IsUpForRenewal, IsRenewed, IsSigned, BranchID, PropertyOwnershipDetails[]{Name, OID, SharePercentage, ApplyFrom}, TenancyIsArchived, PropertyIsArchived, ManagementFee",
+      "fill": "OID, address line 1, postcode, property OID, all flags = 1000; TermStartDate 998; TermEndDate 801; FlatOrRoomNumber 891; ManagementFee 3; owners on a few records only",
+      "note": "No branchID needed. Best source for the tenancy list, property link and status."
+    },
+    "tenancy_rent": {
+      "path": "GET /v4/deposits/{shortName}/deposits/{branchID}/tenancies/{offset}/{count}",
+      "live": "200, Count=6191",
+      "model": "TenancyDepositModel: OID, TenancyAddress{...}, TenancyDetails[]{TenantOID, TenantName, TenantTitle, TenantFirstName, TenantLastName, TenantEmail, TenantMobile, TenantIsLeadTenant, TenantBondOutstanding, TenantBondPaid}, LandlordDetails[]{...}, TenancyStartDate, TenancyEndDate, TenancyLengthMonths, RentAmount, RentFrequency (int), DepositRequired, DepositAmountToProtect, DepositScheme (enum), DepositType (enum), NumberOfLandlords",
+      "fill": "RentAmount, RentFrequency, TenancyStartDate, deposit fields = 1000 of 1000; TenancyEndDate 808; tenant emails empty; up to 2 tenants per tenancy seen",
+      "note": "The only source with rent amount and frequency, and the lead-tenant flag. 41 fewer records than reporting tenancies (6191 vs 6232): presumably tenancies without a deposit record."
+    },
+    "tenants": {
+      "path": "GET /v4/maintenance/{shortName}/contacts/tenants/{branchID}/{offset}/{count}",
+      "live": "200, Count=6224",
+      "model": "TenantModel: PropertyID, TenancyOID, OID, GlobalReference, ETag, Title, Forename, Surname, EmailAddress, MobileNumber, Landline, IsArchived, AssignedAgentID",
+      "fill": "OID, TenancyOID, PropertyID, Forename, Surname = 1000; MobileNumber 39; EmailAddress 1; Title 3; Landline 0",
+      "note": "Use this, not /v4/contacts/.../tenants (which returns 0). Links each tenant to its tenancy and property. Contact details are almost all empty, probably GDPR withholding."
+    },
+    "tenancy_tenant_links": {
+      "path": "GET /v4/maintenance/{shortname}/{branchID}/tenancies/tenancyState/{offset}/{count}",
+      "live": "200, Count=6234",
+      "note": "Tenancy OID, PropertyOID, status flags and TenantOID[] (up to 2 per tenancy; some tenancies have none). A backup for joining tenants to tenancies."
+    },
+    "rent_collected": {
+      "path": "GET /v4/reporting/{shortName}/financials/reports/rentcollected/latest[?queryDate=]",
+      "live": "200, Count=15",
+      "model": "RentRollModel: BranchID, LandlordName, Property, AmountCollected, CollectionDate",
+      "note": "Rent receipts per landlord and property; useful as a check figure, not per tenant."
+    },
+    "date_of_birth": "GET /v4/concierge/{shortName}/contacts/tenants/{offset}/{count}?tenancyID= returns DateOfBirth, one tenancy per call. Not tested; about 6,200 calls at 50 per minute would take about 2 hours.",
+    "not_available_anywhere": [
+      "NI number",
+      "arrears or balances per tenant"
+    ]
+  },
+  "endpoints": {
+    "branches": {
+      "path": "GET /v4/contacts/{shortName}/company/branches/{offset}/{count}",
+      "status": "confirmed live (200)",
+      "record_fields": [
+        "OID",
+        "ETag",
+        "Name",
+        "CompanyName",
+        "Address1",
+        "Address2",
+        "Address3",
+        "Address4",
+        "Postcode",
+        "WebAddress",
+        "EMailAddress",
+        "LandPhone",
+        "FaxPhone",
+        "County",
+        "Links"
+      ]
+    },
+    "tenants": {
+      "path": "GET /v4/contacts/{shortName}/tenants/{offset}/{count}?branchID={branchOID}",
+      "status": "Live 2026-10-07: 200 with branchID, but Count=0 and no records (offset 0 and 1). Landlords on the same key and branch return 371, so the key and branch are valid and tenant data is being withheld. Without branchID the call returns 404 ('No HTTP resource was found').",
+      "response": "ContactsPersonModelResults",
+      "detail_path": "GET /v4/contacts/{shortName}/tenants/{tenantID}"
+    },
+    "applicants_lettings": {
+      "path": "GET /v4/contacts/{shortName}/applicants/lettings/{offset}/{count}?branchID={branchOID}",
+      "status": "Live 2026-10-07: 200 with branchID, Count=0.",
+      "response": "ContactsPersonModelResults"
+    },
+    "person_contacts": {
+      "path": "GET /v4/contacts/{shortName}/person/{personID}/personcontacts",
+      "response": "PersonContactsModel",
+      "use": "Linked contacts per tenant: guarantor, next of kin, employer, rent-demand address, and so on."
+    },
+    "landlords": {
+      "path": "GET /v4/contacts/{shortName}/landlords/{offset}/{count}?branchID={branchOID}",
+      "status": "Live 2026-10-07: 200, Count=371, all returned in one call of 1000. 404 without branchID.",
+      "response": "same person model, presumed"
+    },
+    "staff": {
+      "path": "GET /v4/applications/{shortName}/staff/{offset}/{count}",
+      "status": "Live 2026-10-07: 200, Count=5."
+    },
+    "applications_api": {
+      "note": "Sales/prospect oriented: buyers, prospects, sales instructions, staff, areas. No lettings tenancy or rent endpoints.",
+      "paths": [
+        "/v4/applications/{shortName}/prospects/{branchID}/{offset}/{count}",
+        "/v4/applications/{shortName}/prospects/prospect/{prospectID}",
+        "/v4/applications/{shortName}/staff/{offset}/{count}"
+      ]
+    },
+    "propertymanagement_api": {
+      "note": "Only company info, lead sources and property photos/portal media/floorplans. No tenancy, rent or property-detail endpoints in this spec."
+    }
+  },
+  "models": {
+    "ContactsPersonModel": {
+      "OID": "string",
+      "GlobalReference": "string",
+      "CrmGroup": "string",
+      "PersonType": "string",
+      "Email": "string",
+      "Title": "string",
+      "Forename": "string",
+      "Middlename": "string",
+      "Surname": "string",
+      "Salutation": "string",
+      "Mobile": "string",
+      "Phone": "string",
+      "Address1": "string",
+      "Address2": "string",
+      "Address3": "string",
+      "Address4": "string",
+      "Postcode": "string",
+      "Country": "string",
+      "PersonURL": "string",
+      "GDPRConsent": "boolean (when false, the KB says the personal fields come back null)",
+      "Links": "BaseHypermediaLink"
+    },
+    "BaseHypermediaLink": {
+      "Relationship": "string",
+      "Href": "string",
+      "Method": "string"
+    },
+    "PersonContactsModel": {
+      "OID": "string",
+      "PersonGlobalReference": "string",
+      "PersonTitle": "string",
+      "PersonForename": "string",
+      "PersonSurname": "string",
+      "GDPRConsent": "boolean",
+      "LinkedContacts": "[LinkedContactsModel]"
+    },
+    "LinkedContactsModel": {
+      "ContactType": "enum: None|PermanentAddress|PreTenancyAddress|Employer|Guarantor|NextOfKin|Referee|Accountant|PensionAdministrator|PreTenancyAgent|PreTenancyLandlord|PostTenancyAddress|PostTenancyAgent|PostTenancyLandlord|RentDemandAddress|Organisation|College|Representative|ThirdPartyAuthority|Trustee|Administrator|SalesManager|PXManager",
+      "ContactTitle": "string",
+      "ContactForename": "string",
+      "ContactMiddleName": "string",
+      "ContactSurname": "string",
+      "ContactAddress1": "string",
+      "ContactAddress2": "string",
+      "ContactAddress3": "string",
+      "ContactAddress4": "string",
+      "ContactPostcode": "string",
+      "ContactCountry": "enum of country names (UnitedKingdom, ...)",
+      "ContactMobile": "string",
+      "ContactIsMobilePrivate": "boolean",
+      "ContactLandline": "string",
+      "ContactIsLandlinePrivate": "boolean",
+      "ContactEmail": "string",
+      "ContactFax": "string",
+      "ContactNotes": "string"
+    }
+  },
+  "mapping_to_master_db": {
+    "$comment": "Source names refer to recommended_sources. Targets are db/migrations/001_baseline.sql.",
+    "tenancies": [
+      {
+        "db": "tenancies.tid",
+        "from": "tenants.Forename (leading digits)",
+        "transform": "Checked on all 6225 maintenance tenants (2026-10-07): 6130 '4 digits + space + name', 4 Forename is only 4 digits, 1 has 5 digits, 87 have no leading number, 3 empty; no Surname starts with a number. Extract /^T?(\\d{4,5})(\\s|$)/ and flag the 90 without a number for manual matching. Different tenants on the same tenancy should share a TID: not yet checked."
+      },
+      {
+        "db": "tenancies.start_date",
+        "from": "tenancies.TermStartDate (or tenancy_rent.TenancyStartDate)",
+        "transform": "ISO datetime to date. 2 of 1000 have no TermStartDate; fall back to TenancyStartDate, which is always filled. start_date is NOT NULL."
+      },
+      {
+        "db": "tenancies.end_date",
+        "from": "tenancies.TermEndDate",
+        "transform": "ISO datetime to date; null for periodic or open tenancies."
+      },
+      {
+        "db": "tenancies.status",
+        "from": "IsProposed / IsSigned / IsTenancyEnded / IsTenancyClosed / IsAbandoned / TenancyIsArchived",
+        "transform": "Map the flags to the tenancy_status enum (rule needs agreeing). An ended status needs end_date set (DB check)."
+      },
+      {
+        "db": "tenancies.property_id",
+        "from": "tenancies.TenancyPorpertyOID",
+        "transform": "Look up or create properties by agentOS property OID; address from Address{} / DisplayAddress. Unit from FlatOrRoomNumber."
+      },
+      {
+        "db": "tenancies.management_type",
+        "from": "NOT AVAILABLE",
+        "transform": "RG/MG/IRG is not in the API. ManagementFee is filled on only 3 of 1000. Keep the existing source."
+      },
+      {
+        "db": "(new column) tenancies.agentos_oid",
+        "from": "tenancies.OID",
+        "transform": "Stable external key for re-syncs; same OID as tenancy_rent.OID and tenants.TenancyOID."
+      }
+    ],
+    "tenants": [
+      {
+        "db": "tenants.first_name",
+        "from": "tenants.Forename",
+        "transform": "Strip the leading TID (/^T?\\d{4,5}(\\s+|$)/), trim. If nothing is left (4 records), leave first_name for manual fix; first_name is NOT NULL."
+      },
+      {
+        "db": "tenants.last_name",
+        "from": "tenants.Surname",
+        "transform": "trim. Filled on 1000 of 1000."
+      },
+      {
+        "db": "tenants.title",
+        "from": "tenants.Title",
+        "transform": "Filled on 3 of 1000; mostly null."
+      },
+      {
+        "db": "tenants.email",
+        "from": "tenants.EmailAddress",
+        "transform": "Filled on 1 of 1000. Do not overwrite existing values with null."
+      },
+      {
+        "db": "tenants.phone",
+        "from": "tenants.MobileNumber, then Landline",
+        "transform": "Filled on 39 of 1000. Strip spaces; +44 to 0."
+      },
+      {
+        "db": "tenants.tenant_ref (or new agentos_oid)",
+        "from": "tenants.OID",
+        "transform": "Stable external key. GlobalReference is also filled on every record; which one is the 'ten-<n>' ID seen in the UI is unconfirmed."
+      },
+      {
+        "db": "tenants.ni_encrypted / ni_hash / ni_last3",
+        "from": "NOT AVAILABLE",
+        "transform": "No endpoint exposes NI. Keep the LetMC import (recon-105) or manual entry."
+      }
+    ],
+    "tenancy_tenants": [
+      {
+        "db": "tenancy_tenants (tenancy_id, tenant_id)",
+        "from": "tenants.TenancyOID + tenants.OID",
+        "transform": "One row per tenant record."
+      },
+      {
+        "db": "tenancy_tenants.is_lead",
+        "from": "tenancy_rent.TenancyDetails[].TenantIsLeadTenant (match on TenantOID)",
+        "transform": "Fill rate per tenancy not yet measured. If no lead is flagged, pick the first tenant; the DB allows one active lead per tenancy."
+      }
+    ],
+    "rent_schedules": [
+      {
+        "db": "rent_schedules amount",
+        "from": "tenancy_rent.RentAmount",
+        "transform": "Decimal, filled on 1000 of 1000."
+      },
+      {
+        "db": "rent_schedules.frequency (enum weekly|fortnightly|four_weekly|monthly|quarterly)",
+        "from": "tenancy_rent.RentFrequency",
+        "transform": "Inferred from all 6192 deposit tenancies (2026-10-07): code 1 = 5754 tenancies, median rent 1500 (10th-90th 1000-1500) -> monthly. Code 4 = 438 tenancies, median 939 (738-1477): too high for weekly or fortnightly, too low for quarterly, so most likely four_weekly. No other codes seen. Reject any other code until mapped. Code 4 = four_weekly is an inference: confirm on one code-4 tenancy in the agentOS UI."
+      }
+    ],
+    "not_in_api": [
+      "NI number",
+      "arrears or balances per tenant",
+      "management type (RG/MG/IRG)",
+      "date of birth, except via the one-call-per-tenancy concierge endpoint"
+    ]
+  },
+  "gdpr": "Records with GDPRConsent=false return personal fields as null (agentOS KB). The sync must keep the OID, skip or flag those records, and never overwrite existing DB values with nulls.",
+  "open_questions": [
+    "RentFrequency code 4 is inferred as four_weekly from amounts; confirm on one code-4 tenancy in the agentOS UI.",
+    "Do all tenants on one tenancy share the same TID in their Forename?",
+    "Which tenancy flags map to which tenancy_status values?",
+    "Why does /v4/contacts/isl/tenants return 0 when maintenance tenants returns 6224? Not blocking, but worth asking agentOS.",
+    "Tenant email and phone are nearly all empty in the API. Is that GDPR withholding, or is the data really missing in agentOS?"
+  ]
+}

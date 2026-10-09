@@ -3,9 +3,9 @@ import {
   Alert,
   Badge,
   Button,
+  Card,
   Group,
   Modal,
-  Paper,
   SegmentedControl,
   Stack,
   Switch,
@@ -16,6 +16,7 @@ import {
 } from '@mantine/core';
 import { IconRefresh, IconSend } from '@tabler/icons-react';
 import { useState } from 'react';
+import { EmptyState, ErrorState, LoadingState, PageHeader } from '../../components';
 import { can, useCurrentUser } from '../../data/auth';
 import { errorMessage } from '../../lib/api';
 import { useBankAccounts } from '../../data/imports';
@@ -55,8 +56,8 @@ export function XeroPage() {
   const user = useCurrentUser();
   if (!can(user, 'finance')) {
     return (
-      <Stack>
-        <Title order={2}>Xero</Title>
+      <Stack gap="lg">
+        <PageHeader title="Xero" />
         <Alert color="yellow">Only admin and accounts users can post to Xero.</Alert>
       </Stack>
     );
@@ -67,11 +68,19 @@ export function XeroPage() {
 function XeroView({ isAdmin }: { isAdmin: boolean }) {
   const status = useXeroStatus();
   return (
-    <Stack>
-      <Title order={2}>Xero</Title>
+    <Stack gap="lg">
+      <PageHeader
+        title="Xero"
+        description="One draft invoice per bank account per bank date, one line per confirmed receipt, sent through the Omnia Xero bridge. Xero is the ledger."
+      />
+      {status.isError && <ErrorState error={status.error} title="Xero status unavailable" onRetry={() => void status.refetch()} />}
       {status.data && <StatusCard status={status.data} />}
-      <PendingInvoices />
-      <Outbox status={status.data} />
+      <Card>
+        <PendingInvoices />
+      </Card>
+      <Card>
+        <Outbox status={status.data} />
+      </Card>
       {isAdmin && <SettingsCard />}
     </Stack>
   );
@@ -80,7 +89,7 @@ function XeroView({ isAdmin }: { isAdmin: boolean }) {
 function StatusCard({ status }: { status: XeroStatus }) {
   const live = status.targetEnv === 'live';
   return (
-    <Paper withBorder p="sm">
+    <Card>
       <Group gap="sm">
         <Badge color={live ? 'red' : 'yellow'} size="lg" data-testid="xero-target">
           {live ? 'LIVE' : 'DEMO'}
@@ -102,7 +111,7 @@ function StatusCard({ status }: { status: XeroStatus }) {
           This server posts to a live Xero organisation. Every send asks you to confirm.
         </Text>
       )}
-    </Paper>
+    </Card>
   );
 }
 
@@ -114,7 +123,9 @@ function PendingInvoices() {
   return (
     <Stack gap="xs">
       <Group justify="space-between">
-        <Title order={4}>Ready to invoice</Title>
+        <Title order={2} fz="md">
+          Ready to invoice
+        </Title>
         <Button disabled={invoices.length === 0} loading={stage.isPending} onClick={() => stage.mutate()}>
           Prepare {invoices.length} {invoices.length === 1 ? 'invoice' : 'invoices'}
         </Button>
@@ -122,6 +133,8 @@ function PendingInvoices() {
       <Text size="sm" c="dimmed" data-testid="xero-pending-summary">
         {pending.data?.receipts ?? 0} confirmed receipts not yet in Xero · {money(pending.data?.total ?? '0')}
       </Text>
+      {pending.isPending && <LoadingState variant="skeleton" rows={2} label="Loading receipts for Xero…" />}
+      {pending.isError && <ErrorState error={pending.error} title="Could not load receipts for Xero" onRetry={() => void pending.refetch()} />}
       {stage.isError && (
         <Alert color="red" role="alert">
           {errorMessage(stage.error)}
@@ -217,7 +230,9 @@ function Outbox({ status }: { status: XeroStatus | undefined }) {
   return (
     <Stack gap="xs">
       <Group justify="space-between">
-        <Title order={4}>Invoices for Xero</Title>
+        <Title order={2} fz="md">
+          Invoices for Xero
+        </Title>
         <Button
           leftSection={<IconSend size={16} />}
           disabled={!status?.configured || ready === 0}
@@ -298,7 +313,9 @@ function Outbox({ status }: { status: XeroStatus | undefined }) {
           ))}
         </Table.Tbody>
       </Table>
-      {outbox.isSuccess && outbox.data.items.length === 0 && <Text c="dimmed">Nothing here.</Text>}
+      {outbox.isPending && <LoadingState variant="skeleton" rows={3} label="Loading invoices…" />}
+      {outbox.isError && <ErrorState error={outbox.error} title="Could not load invoices" onRetry={() => void outbox.refetch()} />}
+      {outbox.isSuccess && outbox.data.items.length === 0 && <EmptyState size="sm" title="Nothing here" description="Invoices appear here after Prepare, and move to Sent once Xero accepts them." />}
 
       <Modal opened={confirming} onClose={closeModal} title="Send to LIVE Xero">
         <Stack>
@@ -336,8 +353,8 @@ function SettingsForm({ initial, bankCodes }: { initial: XeroSettings; bankCodes
   const [extended, setExtended] = useState(initial.extendedFields);
 
   return (
-    <Paper withBorder p="sm">
-      <Title order={5} mb="xs">
+    <Card>
+      <Title order={2} fz="md" mb="xs">
         Xero settings
       </Title>
       <Text size="sm" c="dimmed" mb="xs">
@@ -398,6 +415,6 @@ function SettingsForm({ initial, bankCodes }: { initial: XeroSettings; bankCodes
           {errorMessage(save.error ?? refresh.error)}
         </Alert>
       )}
-    </Paper>
+    </Card>
   );
 }

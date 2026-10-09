@@ -145,5 +145,29 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 - Passing features: 25
 - Blocked features: none
 - Verification runs this session: 1
-- Commit: 7c8bd86
+- Commit: d60f04e
+- Next best step: (none — check feature_list.json)
+
+### Session 012
+
+<!-- hx-session: d1856660-8789-429a-a74b-2dac2f130f2e -->
+
+- Date: 2026-10-07
+- Active feature: (none)
+- Passing features: 25
+- Blocked features: none
+- Verification runs this session: 0
+- Commit: b888ff5
+- Next best step: (none — check feature_list.json)
+
+### Session 013
+
+<!-- hx-session: a069f285-1573-4302-b1b6-c1c121532be3 -->
+
+- Date: 2026-10-07
+- Active feature: (none)
+- Passing features: 26
+- Blocked features: none
+- Verification runs this session: 2
+- Commit: 50fe482
 - Next best step: (none — check feature_list.json)

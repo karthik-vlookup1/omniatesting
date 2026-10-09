@@ -1,7 +1,9 @@
 import { Alert, Button, Group, Modal, NativeSelect, Stack, Text, TextInput } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { useState } from 'react';
+import { useConfirmAction } from '../../components';
 import { errorMessage } from '../../lib/api';
+import { formatDate } from '../../lib/format';
 import { FREQUENCY_OPTIONS, useAddAward, type AwardInput, type Frequency } from './api';
 import { parsePounds } from './money';
 
@@ -20,6 +22,7 @@ export function BenefitAwardModal({ tid, opened, onClose }: ModalProps) {
 }
 
 function AwardForm({ tid, onDone }: { tid: string; onDone: () => void }) {
+  const confirm = useConfirmAction();
   const add = useAddAward(tid);
   const [benefit, setBenefit] = useState<AwardInput['benefit']>('HB');
   const [payingBody, setPayingBody] = useState('');
@@ -37,20 +40,23 @@ function AwardForm({ tid, onDone }: { tid: string; onDone: () => void }) {
     if (awardPence === null) return setProblem('Enter the award as pounds, e.g. 60 or 60.50');
     if (!from) return setProblem('Choose the date the award starts');
     setProblem(null);
-    add.mutate(
-      { benefit, payingBody: payingBody.trim(), claimReference: claimReference.trim() || null, awardPence, awardFrequency: frequency, paidTo, effectiveFrom: from },
-      {
-        onSuccess: () => {
-          notifications.show({ color: 'teal', title: 'Award added', message: `${benefit} award saved.` });
-          onDone();
+    confirm.ask({ title: 'Add this benefit award?', message: `${benefit} award of £${amount.trim()} from ${formatDate(from)}, paid by ${payingBody.trim()}.`, confirmLabel: 'Add award' }, () =>
+      add.mutate(
+        { benefit, payingBody: payingBody.trim(), claimReference: claimReference.trim() || null, awardPence, awardFrequency: frequency, paidTo, effectiveFrom: from },
+        {
+          onSuccess: () => {
+            notifications.show({ color: 'teal', title: 'Award added', message: `${benefit} award saved.` });
+            onDone();
+          },
         },
-      },
+      ),
     );
   };
 
   const message = problem ?? (add.isError ? errorMessage(add.error) : null);
   return (
     <form noValidate onSubmit={submit}>
+      {confirm.dialog}
       <Stack gap="md">
         <NativeSelect label="Benefit" value={benefit} onChange={(e) => setBenefit(e.currentTarget.value as AwardInput['benefit'])} data={['HB', 'UC', 'DHP']} />
         <TextInput label="Paying body" required value={payingBody} onChange={(e) => setPayingBody(e.currentTarget.value)} />

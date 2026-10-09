@@ -2,6 +2,7 @@ import {
   Alert,
   Badge,
   Button,
+  Card,
   Group,
   Modal,
   NumberInput,
@@ -12,10 +13,10 @@ import {
   Text,
   TextInput,
   Textarea,
-  Title,
 } from '@mantine/core';
 import { IconBuildingBank, IconPencil } from '@tabler/icons-react';
 import { useState } from 'react';
+import { ConfirmDialog, ErrorState, LoadingState, PageHeader } from '../../components';
 import { can, useCurrentUser } from '../../data/auth';
 import { errorMessage } from '../../lib/api';
 import {
@@ -51,27 +52,38 @@ export function CsvProfilesPage() {
   const banks = useBankAccounts();
   const install = useInstallDefaultBanks();
   const [editing, setEditing] = useState<BankAccount | null>(null);
+  const [installing, setInstalling] = useState(false);
   const canEdit = can(user, 'finance');
 
   return (
-    <Stack>
-      <Group justify="space-between">
-        <Title order={2}>Bank CSV profiles</Title>
-        {can(user, 'settings') && (
-          <Button
-            variant="default"
-            leftSection={<IconBuildingBank size={16} />}
-            onClick={() => install.mutate()}
-            loading={install.isPending}
-          >
-            Add default banks
-          </Button>
-        )}
-      </Group>
-      <Text c="dimmed" size="sm">
-        Columns are found by header name, never by position. When a bank renames a column, add the new name as another
-        alias — that saves a new profile version and no code changes are needed.
-      </Text>
+    <Stack gap="lg">
+      <PageHeader
+        title="Bank CSV profiles"
+        description="Columns are found by header name, never by position. When a bank renames a column, add the new name as another alias — that saves a new profile version and no code changes are needed."
+        actions={
+          can(user, 'settings') && (
+            <Button
+              variant="default"
+              leftSection={<IconBuildingBank size={16} />}
+              onClick={() => setInstalling(true)}
+              loading={install.isPending}
+            >
+              Add default banks
+            </Button>
+          )
+        }
+      />
+      <ConfirmDialog
+        opened={installing}
+        onClose={() => setInstalling(false)}
+        title="Add the default banks?"
+        message="Adds any of HSBC, Lloyds, Apollo (TransferWise), Redstone, Army, ISL and Other that are missing, each with a starting CSV profile. Existing banks are not changed."
+        confirmLabel="Add default banks"
+        loading={install.isPending}
+        onConfirm={() => install.mutate(undefined, { onSettled: () => setInstalling(false) })}
+      />
+      {banks.isPending && <LoadingState variant="skeleton" rows={5} label="Loading banks…" />}
+      {banks.isError && <ErrorState error={banks.error} title="Could not load banks" onRetry={() => void banks.refetch()} />}
       {install.data && (
         <Alert color="green" role="status">
           {install.data.created.length
@@ -79,58 +91,60 @@ export function CsvProfilesPage() {
             : 'All default banks already exist.'}
         </Alert>
       )}
-      <Table striped aria-label="Bank accounts">
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th>Bank</Table.Th>
-            <Table.Th>Profile</Table.Th>
-            <Table.Th>Amounts</Table.Th>
-            <Table.Th>Date format</Table.Th>
-            <Table.Th>Headers</Table.Th>
-            <Table.Th />
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>
-          {banks.data?.map((b) => (
-            <Table.Tr key={b.id}>
-              <Table.Td>
-                <Text fw={500}>{b.code}</Text>
-                <Text size="xs" c="dimmed">
-                  {b.accountName}
-                </Text>
-              </Table.Td>
-              <Table.Td>
-                {b.profile ? <Badge variant="light">v{b.profile.version}</Badge> : <Badge color="gray">none</Badge>}
-              </Table.Td>
-              <Table.Td>
-                {b.profile?.amountMode === 'signed' ? 'one signed column' : b.profile ? 'paid in / out' : '—'}
-              </Table.Td>
-              <Table.Td>{b.profile?.dateFormat ?? '—'}</Table.Td>
-              <Table.Td>
-                <Text size="xs">
-                  {b.profile
-                    ? Object.entries(b.profile.headerAliases)
-                        .map(([f, a]) => `${f}: ${a.join(' / ')}`)
-                        .join(' · ')
-                    : '—'}
-                </Text>
-              </Table.Td>
-              <Table.Td>
-                {canEdit && (
-                  <Button
-                    size="xs"
-                    variant="subtle"
-                    leftSection={<IconPencil size={14} />}
-                    onClick={() => setEditing(b)}
-                  >
-                    Edit
-                  </Button>
-                )}
-              </Table.Td>
+      <Card padding={0} style={{ overflow: 'hidden' }}>
+        <Table striped aria-label="Bank accounts">
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th>Bank</Table.Th>
+              <Table.Th>Profile</Table.Th>
+              <Table.Th>Amounts</Table.Th>
+              <Table.Th>Date format</Table.Th>
+              <Table.Th>Headers</Table.Th>
+              <Table.Th />
             </Table.Tr>
-          ))}
-        </Table.Tbody>
-      </Table>
+          </Table.Thead>
+          <Table.Tbody>
+            {banks.data?.map((b) => (
+              <Table.Tr key={b.id}>
+                <Table.Td style={{ whiteSpace: 'nowrap' }}>
+                  <Text fw={500}>{b.code}</Text>
+                  <Text size="xs" c="dimmed">
+                    {b.accountName}
+                  </Text>
+                </Table.Td>
+                <Table.Td>
+                  {b.profile ? <Badge variant="light">v{b.profile.version}</Badge> : <Badge color="gray">none</Badge>}
+                </Table.Td>
+                <Table.Td style={{ whiteSpace: 'nowrap' }}>
+                  {b.profile?.amountMode === 'signed' ? 'one signed column' : b.profile ? 'paid in / out' : '—'}
+                </Table.Td>
+                <Table.Td style={{ whiteSpace: 'nowrap' }}>{b.profile?.dateFormat ?? '—'}</Table.Td>
+                <Table.Td>
+                  <Text size="xs">
+                    {b.profile
+                      ? Object.entries(b.profile.headerAliases)
+                          .map(([f, a]) => `${f}: ${a.join(' / ')}`)
+                          .join(' · ')
+                      : '—'}
+                  </Text>
+                </Table.Td>
+                <Table.Td>
+                  {canEdit && (
+                    <Button
+                      size="xs"
+                      variant="subtle"
+                      leftSection={<IconPencil size={14} />}
+                      onClick={() => setEditing(b)}
+                    >
+                      Edit
+                    </Button>
+                  )}
+                </Table.Td>
+              </Table.Tr>
+            ))}
+          </Table.Tbody>
+        </Table>
+      </Card>
       {editing && <ProfileEditor bank={editing} onClose={() => setEditing(null)} />}
     </Stack>
   );

@@ -144,3 +144,13 @@ dead end a future session might otherwise walk into again.
 
 - Source: manual (recon-101)
 - Full test:web shows 5-11 random timeouts under load; users/tenancies files pass alone (16/16). Not in any verify ladder yet; investigate before relying on it
+
+## 2026-10-07: Int tests need TEST_DATABASE_URL on port 5433
+
+- Source: manual (recon-509)
+- vitest.config.ts defaults to 5432 (Windows PG service) and fails with 28P01; use postgres://omnia:omnia_local_dev@localhost:5433/omnia_test
+
+## 2026-10-07: reassign.service.ts types agentos_tenants.tid as string
+
+- Source: manual (recon-509)
+- recon-509 api rows can have tid NULL (no_tid flag); reassign.service.ts:26 selects all rows. Needs a follow-up before the first real sync

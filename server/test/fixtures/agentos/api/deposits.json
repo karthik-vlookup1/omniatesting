@@ -1,0 +1,69 @@
+[
+  {
+    "OID": "aaaa-0000-0000-0001",
+    "TenancyDetails": [
+      {
+        "TenantOID": "aaaa-0000-0000-0011",
+        "TenantIsLeadTenant": true
+      },
+      {
+        "TenantOID": "aaaa-0000-0000-0012",
+        "TenantIsLeadTenant": false
+      }
+    ]
+  },
+  {
+    "OID": "aaaa-0000-0000-0002",
+    "TenancyDetails": [
+      {
+        "TenantOID": "aaaa-0000-0000-0014",
+        "TenantIsLeadTenant": true
+      }
+    ]
+  },
+  {
+    "OID": "aaaa-0000-0000-0003",
+    "TenancyDetails": [
+      {
+        "TenantOID": "aaaa-0000-0000-0015",
+        "TenantIsLeadTenant": true
+      }
+    ]
+  },
+  {
+    "OID": "aaaa-0000-0000-0004",
+    "TenancyDetails": [
+      {
+        "TenantOID": "aaaa-0000-0000-0016",
+        "TenantIsLeadTenant": true
+      }
+    ]
+  },
+  {
+    "OID": "aaaa-0000-0000-0005",
+    "TenancyDetails": [
+      {
+        "TenantOID": "aaaa-0000-0000-0017",
+        "TenantIsLeadTenant": true
+      }
+    ]
+  },
+  {
+    "OID": "aaaa-0000-0000-0006",
+    "TenancyDetails": [
+      {
+        "TenantOID": "aaaa-0000-0000-0018",
+        "TenantIsLeadTenant": true
+      }
+    ]
+  },
+  {
+    "OID": "aaaa-0000-0000-0007",
+    "TenancyDetails": [
+      {
+        "TenantOID": "aaaa-0000-0000-0013",
+        "TenantIsLeadTenant": true
+      }
+    ]
+  }
+]

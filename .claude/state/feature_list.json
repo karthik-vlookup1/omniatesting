@@ -1,6 +1,6 @@
 {
   "project": "omnia-recon",
-  "last_updated": "2026-10-06",
+  "last_updated": "2026-10-07",
   "rules": {
     "single_active_feature": true,
     "passing_requires_evidence": true,
@@ -1356,8 +1356,8 @@
           "kind": "cmd",
           "cmd": "npm run test:int -- agentos-pipeline",
           "exitCode": 0,
-          "testedAt": "2026-10-06T15:54:45.079Z",
-          "commit": "7c8bd86"
+          "commit": "7c8bd86",
+          "testedAt": "2026-10-06T15:54:45.079Z"
         }
       ],
       "notes": "MEDIUM",
@@ -1365,6 +1365,109 @@
         "recon-507"
       ],
       "contractHash": "06b79759d89e9465"
+    },
+    {
+      "id": "recon-509",
+      "priority": 1009,
+      "area": "phase-5-agentos",
+      "title": "Read-only agentOS v4 sync: maintenance tenants + reporting tenancies + deposit lead flags -> agentos_tenants (source api, agentos_oid key, joint tenants share TID, no-TID rows flagged not dropped, GDPR no-null-overwrite), CLI agentos:sync with --dry-run",
+      "user_visible_behavior": "An operator runs `npm run agentos:sync -- --dry-run` to see counts and flags, then `npm run agentos:sync -- --replace-seed` once to swap the demo seed for live agentOS tenants that the receipts matcher uses.",
+      "scope": [
+        "db/migrations/016_*",
+        "server/src/domain/agentos/{sync*,types.ts}",
+        "server/src/services/agentos/{api-client*,sync*,seed.ts}",
+        "scripts/agentos-sync.ts",
+        "server/test/unit/agentos-sync*",
+        "server/test/int/agentos-sync*",
+        "server/test/fixtures/agentos/api/**",
+        "docs/agentos/**",
+        "plans/**"
+      ],
+      "verification": [
+        {
+          "level": "unit",
+          "cmd": "npm run test:unit -- agentos-sync"
+        },
+        {
+          "level": "integration",
+          "cmd": "npm run test:int -- agentos-sync"
+        },
+        {
+          "level": "integration",
+          "cmd": "npm run test:int -- agentos"
+        }
+      ],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:unit -- agentos-sync",
+          "exitCode": 0,
+          "commit": "b888ff5",
+          "testedAt": "2026-10-07T11:37:03.404Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos-sync",
+          "exitCode": 0,
+          "commit": "b888ff5",
+          "testedAt": "2026-10-07T11:37:05.932Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos",
+          "exitCode": 0,
+          "commit": "b888ff5",
+          "testedAt": "2026-10-07T11:37:18.239Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:unit -- agentos-sync",
+          "exitCode": 0,
+          "commit": "bcefc9c",
+          "testedAt": "2026-10-07T11:40:02.476Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos-sync",
+          "exitCode": 0,
+          "commit": "bcefc9c",
+          "testedAt": "2026-10-07T11:40:05.077Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos",
+          "exitCode": 0,
+          "commit": "bcefc9c",
+          "testedAt": "2026-10-07T11:40:17.242Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:unit -- agentos-sync",
+          "exitCode": 0,
+          "testedAt": "2026-10-07T11:43:37.046Z",
+          "commit": "50fe482"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos-sync",
+          "exitCode": 0,
+          "testedAt": "2026-10-07T11:43:39.582Z",
+          "commit": "50fe482"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- agentos",
+          "exitCode": 0,
+          "testedAt": "2026-10-07T11:43:51.969Z",
+          "commit": "50fe482"
+        }
+      ],
+      "notes": "HARD",
+      "dependsOn": [
+        "recon-508"
+      ],
+      "contractHash": "22d40797c4132c31"
     }
   ]
 }

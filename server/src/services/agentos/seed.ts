@@ -59,7 +59,7 @@ export async function seedAgentosTenants(pool: Pool, csv: string): Promise<SeedR
         `INSERT INTO agentos_tenants (tid, agentos_ref, crm_ref, forename, surname, managed_by, residence,
                                       tenancy_descriptor, is_head_tenant, deposit_to, tenancy_id)
          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,(SELECT id FROM tenancies WHERE tid = $1))
-         ON CONFLICT (tid) DO UPDATE SET agentos_ref = EXCLUDED.agentos_ref, crm_ref = EXCLUDED.crm_ref,
+         ON CONFLICT (tid) WHERE source = 'seed' DO UPDATE SET agentos_ref = EXCLUDED.agentos_ref, crm_ref = EXCLUDED.crm_ref,
            forename = EXCLUDED.forename, surname = EXCLUDED.surname, managed_by = EXCLUDED.managed_by,
            residence = EXCLUDED.residence, tenancy_descriptor = EXCLUDED.tenancy_descriptor,
            is_head_tenant = EXCLUDED.is_head_tenant, deposit_to = EXCLUDED.deposit_to,

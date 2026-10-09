@@ -216,3 +216,13 @@ All data in `fixtures/agentos/demo-2026-08-05/` is synthetic (fake names, ZZ pos
 Note: EMail and Mobile Phone in tenants.csv are not stored yet (no columns in agentos_tenants).
 The seed script only runs against a local database (localhost, 127.0.0.1 or ::1) unless `--allow-remote` is passed.
 The same flow runs as `server/test/int/agentos-pipeline.test.ts`.
+
+## 11. API sync (recon-509)
+Read-only GET sync from the agentOS v4 API into `agentos_tenants` (`source='api'`). Field map: `docs/agentos/api-v4-schema.json`.
+- Run: `npm run agentos:sync -- --dry-run` (rolls back, prints counts), then without `--dry-run`. `--replace-seed` deletes the seed rows first (refused if intake lines or journal entries reference them; without the flag the sync refuses while seed rows exist).
+- Env: `AGENTOS_API_KEY`, `AGENTOS_BASE_URL` (https), `AGENTOS_DEPOSIT_TO` (required, no default; must equal the bank file "Will deposit to" text). Optional: `AGENTOS_SHORT_NAME` (isl), `AGENTOS_BRANCH_ID`, `AGENTOS_MANAGED_BY`.
+- Sources: maintenance tenants (identity, TID from Forename), reporting tenancies (address, status, dates), deposits (lead tenant). Throttled to one call per 1.3 s; 429/5xx wait 60 s, 3 attempts.
+- TID rule `/^T?(\d{4,5})(\s+|$)/`. Rows may lack a TID and joint tenants may share one (migration 016 drops TID UNIQUE for api rows; seed rows stay unique).
+- `sync_flags`: no_tid, tid_only_forename, tid_5_digit, tid_shared_across_tenancies, no_reporting_tenancy, no_deposit_record, lead_inferred, gdpr_withheld.
+- Null or empty API values never overwrite stored data. Rows missing from the feed are counted, never deleted. Output is counts only (no names, emails or OIDs).
+- Each run is logged in `agentos_sync_runs`. Not signed off for real data: GDPR approval is needed before the first non-dry run.

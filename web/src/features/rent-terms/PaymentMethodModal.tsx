@@ -1,7 +1,9 @@
 import { Alert, Button, Group, Modal, NativeSelect, Stack, TextInput } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { useState } from 'react';
+import { useConfirmAction } from '../../components';
 import { errorMessage } from '../../lib/api';
+import { formatDate } from '../../lib/format';
 import { FREQUENCY_OPTIONS, PAYER_LABEL, PAY_METHOD_OPTIONS, useAddMethod, type Frequency, type Payer } from './api';
 import type { ModalProps } from './BenefitAwardModal';
 import { parsePounds } from './money';
@@ -15,6 +17,7 @@ export function PaymentMethodModal({ tid, opened, onClose }: ModalProps) {
 }
 
 function MethodForm({ tid, onDone }: { tid: string; onDone: () => void }) {
+  const confirm = useConfirmAction();
   const add = useAddMethod(tid);
   const [payer, setPayer] = useState<Payer>('tenant');
   const [method, setMethod] = useState('standing_order');
@@ -36,28 +39,31 @@ function MethodForm({ tid, onDone }: { tid: string; onDone: () => void }) {
     if (expectedDay !== null && (!Number.isInteger(expectedDay) || expectedDay < 1 || expectedDay > 31)) return setProblem('Expected day must be 1 to 31');
     if (!from) return setProblem('Choose the date the method starts');
     setProblem(null);
-    add.mutate(
-      {
-        payer,
-        method,
-        expectedPence,
-        expectedFrequency: frequency === '' ? null : frequency,
-        expectedDay,
-        referenceHint: hint.trim() || null,
-        effectiveFrom: from,
-      },
-      {
-        onSuccess: () => {
-          notifications.show({ color: 'teal', title: 'Payment method added', message: 'Saved.' });
-          onDone();
+    confirm.ask({ title: 'Add this payment method?', message: `Expected payments from ${formatDate(from)} are matched against this method.`, confirmLabel: 'Add method' }, () =>
+      add.mutate(
+        {
+          payer,
+          method,
+          expectedPence,
+          expectedFrequency: frequency === '' ? null : frequency,
+          expectedDay,
+          referenceHint: hint.trim() || null,
+          effectiveFrom: from,
         },
-      },
+        {
+          onSuccess: () => {
+            notifications.show({ color: 'teal', title: 'Payment method added', message: 'Saved.' });
+            onDone();
+          },
+        },
+      ),
     );
   };
 
   const message = problem ?? (add.isError ? errorMessage(add.error) : null);
   return (
     <form noValidate onSubmit={submit}>
+      {confirm.dialog}
       <Stack gap="md">
         <NativeSelect
           label="Payer"

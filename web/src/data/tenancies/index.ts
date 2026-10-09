@@ -1,4 +1,5 @@
 export { getTenancy, runVecoSync, searchTenancies } from './api';
+export { managementLabel, tenancyAddress, tenancyLine, tenancyTitle } from './describe';
 export { tenanciesKeys, useTenancy, useTenancySearch, useVecoSync } from './queries';
 export {
   TENANCY_QUERY_MAX,
