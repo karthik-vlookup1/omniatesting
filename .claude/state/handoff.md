@@ -5,43 +5,16 @@
 ## Verified Now
 
 - Passing features: recon-001, recon-002, recon-003, recon-004, recon-101, recon-102, recon-103, recon-104, recon-105, recon-201, recon-202, recon-203, recon-204, recon-301, recon-302, recon-303, recon-401, recon-501, recon-502, recon-503, recon-504, recon-505, recon-506, recon-507, recon-508, recon-509, recon-510, recon-601, recon-602, recon-603
-- Verification runs this session: 2
+- Verification runs this session: 0
 
 ## Changed This Session
 
-- Commit: 249c3ac
-- Files changed: server/test/int/agentos-journal-backfill.test.ts, server/test/int/receipt-operations.test.ts, server/test/int/rent-terms.test.ts, db/migrations/020_charge_generator_v2.sql, plans/money-flow-audit.md, server/test/int/money-wp1-charges.test.ts
+- Commit: b3b6c05
+- Files changed: docs/FRONTEND.md, docs/FRONTEND_REFERENCE.md, e2e/dashboard.spec.ts, e2e/property.spec.ts, e2e/rent.spec.ts, e2e/tenancies.spec.ts, plans/recon-601-frontend.md, web/src/app/layout/AppLayout.tsx, web/src/app/layout/AppNavbar.tsx, web/src/app/layout/GlobalSearch.tsx, web/src/app/layout/RecordTabs.tsx, web/src/app/layout/TopModules.tsx, web/src/app/layout/UserMenu.tsx, web/src/app/navigation.ts, web/src/app/routes.tsx, web/src/components/index.ts, web/src/components/useConfirmAction.test.tsx, web/src/components/useConfirmAction.tsx, web/src/data/tenancies/describe.ts, web/src/data/tenancies/index.ts, web/src/features/agentos/AgentosPage.tsx, web/src/features/agentos/IntakeUploadCard.tsx, web/src/features/agentos/JournalSection.tsx, web/src/features/csv-profiles/CsvProfilesPage.tsx, web/src/features/export/StatementExportPage.tsx, web/src/features/imports/RecentImportsTable.tsx, web/src/features/payer-accounts/AddPayerAccountModal.tsx, web/src/features/rent-terms/BenefitAwardModal.tsx, web/src/features/rent-terms/PayerSplitModal.tsx, web/src/features/rent-terms/PaymentMethodModal.tsx, web/src/features/tenancies/TenancyDrawer.tsx, web/src/features/tenancy-record/AccountSections.tsx, web/src/features/tenancy-record/AccountSectionsFor.tsx, web/src/features/tenancy-record/ActionModal.tsx, web/src/features/tenancy-record/AdjustmentModal.tsx, web/src/features/tenancy-record/DetailsSection.tsx, web/src/features/tenancy-record/JournalTransferModal.tsx, web/src/features/tenancy-record/OverviewSection.tsx, web/src/features/tenancy-record/RecordCard.tsx, web/src/features/tenancy-record/RecordNav.tsx, web/src/features/tenancy-record/SetRentModal.tsx, web/src/features/tenancy-record/TenancyRecordPage.tsx, web/src/features/tenancy-record/TermsStatementSections.tsx, web/src/features/tenancy-record/recordModel.ts, web/src/features/tenancy-record/tenancyRecord.test.tsx, web/src/features/vico/VicoPage.tsx, web/src/features/xero/XeroPage.tsx, web/src/lib/RecordTabsProvider.tsx, web/src/lib/recordTabs.ts, web/src/theme/global.css, web/src/theme/theme.ts, web/src/theme/tones.ts, plans/merge-final-2026-10-09.md
 
 ## Broken Or Unverified
 
 - Blocked: none
-
-### Verification failures this session
-
-- `npm run test:int -- money-wp1-charges` exited 1 (ISSUE-0013)
-
-  ```
-  |int| 
-  
-  include: server/test/int/**/*.test.ts
-  exclude:  **/node_modules/**, **/.git/**
-  
-  
-  ⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
-  error: password authentication failed for user "omnia"
-   ❯ parseErrorMessage node_modules/pg-protocol/dist/parser.js:306:11
-   ❯ Parser.handlePacket node_modules/pg-protocol/dist/parser.js:143:27
-   ❯ Parser.parse node_modules/pg-protocol/dist/parser.js:37:38
-   ❯ Socket.<anonymous> node_modules/pg-protocol/dist/index.js:12:42
-   ❯ Socket.emit node:events:514:28
-   ❯ addChunk node:internal/streams/readable:568:12
-   ❯ readableAddChunkPushByteMode node:internal/streams/readable:519:3
-   ❯ Socket.Readable.push node:internal/streams/readable:399:5
-   ❯ TCP.onStreamRead node:internal/stream_base_commons:189:23
-  
-  ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
-  Serialized Error: { length: 101, severity: 'FATAL', code: '28P01', detail: undefined, hint: undefined, position: undefined, internalPosition: undefined, internalQuery: undefined, where: undefined, schema: undefined, table: undefined, dataType: undefined, constraint: undefined, file: 'auth.c', routine: 'auth_failed' }
-  ```
 
 ## Waiting on a human
 

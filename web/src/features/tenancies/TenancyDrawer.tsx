@@ -1,5 +1,6 @@
 import { Badge, Button, Drawer, Group, SimpleGrid, Stack, Text } from '@mantine/core';
-import { IconEye, IconEyeOff } from '@tabler/icons-react';
+import { Link } from 'react-router-dom';
+import { IconEye, IconEyeOff, IconExternalLink } from '@tabler/icons-react';
 import { useState, type ReactNode } from 'react';
 import { ErrorState, LoadingState, MaskedValue, Money } from '../../components';
 import { useTenancy, type TenancyDetail } from '../../data/tenancies';
@@ -23,7 +24,8 @@ function Fact({ label, children }: { label: string; children: ReactNode }) {
  * The full NI number is only in the response for admin / accounts (the server decides). Even then
  * it stays masked until the person chooses to reveal it, and is hidden again when the drawer closes.
  */
-function NiField({ tenancy }: { tenancy: TenancyDetail }) {
+/** Full NI stays hidden until asked for (admin/accounts only); shared with the tenant record. */
+export function NiField({ tenancy }: { tenancy: TenancyDetail }) {
   const [shown, setShown] = useState(false);
   if (!tenancy.ni) return <MaskedValue kind="ni" value={tenancy.niMasked} />;
   return (
@@ -59,6 +61,9 @@ export function TenancyDrawer({ tid, onClose }: { tid: string | null; onClose: (
         <LoadingState label="Loading tenancy…" />
       ) : (
         <Stack gap="lg">
+          <Button component={Link} to={`/tenancies/${encodeURIComponent(t.tid)}`} leftSection={<IconExternalLink size={16} aria-hidden />} fullWidth>
+            Open tenant record
+          </Button>
           <Group gap="xs">
             <TenancyStatusBadge status={t.status} />
             <Badge variant="outline" color="gray">

@@ -1,7 +1,7 @@
-import { Alert, Anchor, Button, Divider, Group, Loader, SegmentedControl, Select, Stack, Text } from '@mantine/core';
+import { Alert, Anchor, Button, Card, Group, SegmentedControl, Select, Stack, Text, Title } from '@mantine/core';
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { PageHeader } from '../../components';
+import { EmptyState, LoadingState, PageHeader } from '../../components';
 import { can, useCurrentUser } from '../../data/auth';
 import { errorMessage } from '../../lib/api';
 import {
@@ -63,72 +63,87 @@ export function AgentosPage() {
   };
 
   return (
-    <Stack gap="md">
-      <PageHeader title="agentOS receipts" />
+    <Stack gap="lg">
+      <PageHeader
+        title="agentOS receipts"
+        description="LetMC / agentOS posting: upload the formatted bank record, fix lines that did not match an agentOS tenant, download the Take a Payment sheet, then tick lines as posted. Journal transfers move money between tenant accounts."
+      />
       {writer && <IntakeUploadCard onBatch={selectBatch} />}
       {batches.isError && (
         <Alert color="red" role="alert">
           {errorMessage(batches.error)}
         </Alert>
       )}
-      <Select
-        label="Batch"
-        placeholder={batches.isLoading ? 'Loading' : 'No batches uploaded yet'}
-        data={(batches.data ?? []).map((b) => ({ value: b.id, label: `${b.fileName} · ${b.uploadedAt.slice(0, 10)}` }))}
-        value={batchId}
-        onChange={(v) => v && selectBatch(v)}
-        allowDeselect={false}
-        maw={480}
-      />
-      {batchId && (
-        <>
-          <SegmentedControl
-            aria-label="Status filter"
-            value={status}
-            onChange={setStatus}
-            data={[
-              { value: 'all', label: `All (${lines.length})` },
-              ...STATUSES.map((s) => ({ value: s, label: `${STATUS_LABELS[s]} (${count(s)})` })),
-            ]}
+      <Card>
+        <Stack gap="md">
+          <Title order={2} fz="md">
+            Batch lines
+          </Title>
+          <Select
+            label="Batch"
+            placeholder={batches.isLoading ? 'Loading' : 'No batches uploaded yet'}
+            data={(batches.data ?? []).map((b) => ({ value: b.id, label: `${b.fileName} · ${b.uploadedAt.slice(0, 10)}` }))}
+            value={batchId}
+            onChange={(v) => v && selectBatch(v)}
+            allowDeselect={false}
+            maw={480}
           />
-          {writer && (
-            <Stack gap="xs">
-              <Group align="center">
-                <Button onClick={doExport} disabled={exportable === 0} loading={createExport.isPending}>
-                  Export matched lines ({exportable})
-                </Button>
-                {exportable === 0 && <Text c="dimmed">Only matched lines can be exported</Text>}
-              </Group>
-              {createExport.isError && (
+          {batchId && (
+            <>
+              <SegmentedControl
+                aria-label="Status filter"
+                value={status}
+                onChange={setStatus}
+                data={[
+                  { value: 'all', label: `All (${lines.length})` },
+                  ...STATUSES.map((s) => ({ value: s, label: `${STATUS_LABELS[s]} (${count(s)})` })),
+                ]}
+              />
+              {writer && (
+                <Stack gap="xs">
+                  <Group align="center">
+                    <Button onClick={doExport} disabled={exportable === 0} loading={createExport.isPending}>
+                      Export matched lines ({exportable})
+                    </Button>
+                    {exportable === 0 && <Text c="dimmed">Only matched lines can be exported</Text>}
+                  </Group>
+                  {createExport.isError && (
+                    <Alert color="red" role="alert">
+                      {errorMessage(createExport.error)}
+                    </Alert>
+                  )}
+                  {exported && (
+                    <Alert color="green" role="status">
+                      Exported {exported.rowsTotal} line(s){' '}
+                      <Anchor href={exportCsvUrl(exported.id)} download>
+                        Download CSV
+                      </Anchor>
+                    </Alert>
+                  )}
+                </Stack>
+              )}
+              {detail.isLoading ? (
+                <LoadingState variant="skeleton" rows={4} label="Loading batch lines…" />
+              ) : detail.isError ? (
                 <Alert color="red" role="alert">
-                  {errorMessage(createExport.error)}
+                  {errorMessage(detail.error)}
                 </Alert>
+              ) : (
+                <LinesTable lines={shown} writer={writer} onReassign={setReassigning} />
               )}
-              {exported && (
-                <Alert color="green" role="status">
-                  Exported {exported.rowsTotal} line(s){' '}
-                  <Anchor href={exportCsvUrl(exported.id)} download>
-                    Download CSV
-                  </Anchor>
-                </Alert>
-              )}
-            </Stack>
+            </>
           )}
-          {detail.isLoading ? (
-            <Loader size="sm" />
-          ) : detail.isError ? (
-            <Alert color="red" role="alert">
-              {errorMessage(detail.error)}
-            </Alert>
-          ) : (
-            <LinesTable lines={shown} writer={writer} onReassign={setReassigning} />
+          {batches.isSuccess && !batchId && (
+            <EmptyState size="sm" title="No batches yet" description="Upload a formatted bank file to start." />
           )}
-        </>
-      )}
-      <Divider />
-      <TakePaymentSection writer={accounts} />
-      <Divider />
-      <JournalSection writer={accounts} />
+        </Stack>
+      </Card>
+      <Card>
+        <TakePaymentSection writer={accounts} />
+      </Card>
+      <Card>
+        <JournalSection writer={accounts} />
+      </Card>
       <ReassignModal line={reassigning} onClose={() => setReassigning(null)} />
     </Stack>
   );

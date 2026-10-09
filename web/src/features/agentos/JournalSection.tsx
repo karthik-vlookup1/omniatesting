@@ -144,7 +144,9 @@ export function JournalSection({ writer }: { writer: boolean }) {
 
   return (
     <Stack gap="md">
-      <Title order={3}>Journal transfers</Title>
+      <Title order={2} fz="md">
+        Journal transfers
+      </Title>
       {writer && (
         <Stack gap="xs">
           <Group align="flex-end">

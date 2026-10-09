@@ -174,12 +174,36 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 
 ### Session 014
 
+<!-- hx-session: b0500be2-233d-4f50-bbc3-562ae0fa7753 -->
+
+- Date: 2026-10-07
+- Active feature: (none)
+- Passing features: 26
+- Blocked features: none
+- Verification runs this session: 0
+- Commit: 149a364
+- Next best step: (none — check feature_list.json)
+
+### Session 015
+
+<!-- hx-session: 2c21d803-de5b-4454-aea3-a0283322b5ec -->
+
+- Date: 2026-10-09
+- Active feature: (none)
+- Passing features: 26
+- Blocked features: none
+- Verification runs this session: 0
+- Commit: 149a364
+- Next best step: (none — check feature_list.json)
+
+### Session 014
+
 <!-- hx-session: 624be3ed-0ea7-4db6-8516-b3ad97326a22 -->
 
 - Date: 2026-10-09
 - Active feature: (none)
 - Passing features: 30
 - Blocked features: none
-- Verification runs this session: 2
-- Commit: 249c3ac
+- Verification runs this session: 0
+- Commit: b3b6c05
 - Next best step: (none — check feature_list.json)

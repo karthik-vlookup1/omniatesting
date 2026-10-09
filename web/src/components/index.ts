@@ -18,3 +18,4 @@ export { SearchInput, type SearchInputProps } from './SearchInput';
 export { StatCard, type StatCardProps } from './StatCard';
 export { StatusBadge, type StatusBadgeProps } from './StatusBadge';
 export { TablePagination, type TablePaginationProps } from './TablePagination';
+export { useConfirmAction, type ConfirmActionOptions } from './useConfirmAction';

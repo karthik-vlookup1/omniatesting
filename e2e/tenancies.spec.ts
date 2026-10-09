@@ -44,7 +44,7 @@ test('staff search a tenancy by TID and see only the masked NI', async ({ page }
   await expect(page.getByRole('heading', { name: 'Tenancies' })).toBeVisible();
   await expect(table(page).getByRole('row')).toHaveCount(7); // header + 6
 
-  await page.getByLabel('Search').fill('t9006');
+  await page.getByRole('searchbox', { name: 'Search', exact: true }).fill('t9006');
   const rows = table(page).getByRole('row');
   await expect(rows).toHaveCount(2);
   await expect(rows.nth(1)).toContainText('Zara Q Sample');
@@ -61,7 +61,7 @@ test('staff search a tenancy by TID and see only the masked NI', async ({ page }
 test('staff can search by full NI number', async ({ page }) => {
   await signIn(page, STAFF);
   await page.goto('/tenancies');
-  await page.getByLabel('Search').fill('CE 12 34 56 D');
+  await page.getByRole('searchbox', { name: 'Search', exact: true }).fill('CE 12 34 56 D');
   const rows = table(page).getByRole('row');
   await expect(rows).toHaveCount(2);
   await expect(rows.nth(1)).toContainText('T9006');
@@ -70,7 +70,7 @@ test('staff can search by full NI number', async ({ page }) => {
 test('admin can reveal the full NI and gets a clear message when Veco is not configured', async ({ page }) => {
   await signIn(page, ADMIN);
   await page.goto('/tenancies');
-  await page.getByLabel('Search').fill('Zara');
+  await page.getByRole('searchbox', { name: 'Search', exact: true }).fill('Zara');
   const rows = table(page).getByRole('row');
   await expect(rows).toHaveCount(2); // wait for the debounced search to apply
   await rows.nth(1).click();
