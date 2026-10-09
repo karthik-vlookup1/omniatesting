@@ -154,3 +154,28 @@ dead end a future session might otherwise walk into again.
 
 - Source: manual (recon-509)
 - recon-509 api rows can have tid NULL (no_tid flag); reassign.service.ts:26 selects all rows. Needs a follow-up before the first real sync
+
+## 2026-10-07: Mantine Textarea autosize crashes in jsdom
+
+- Source: manual (recon-601)
+- Autosize reads document.fonts, which jsdom lacks (TypeError addEventListener). Use rows={3} instead of autosize in forms that have Vitest tests.
+
+## 2026-10-07: First test of a large lazy route can exceed the 3 s query wait
+
+- Source: manual (recon-601)
+- Under a full parallel run (24 workers, low RAM) compiling a big lazy page took >3 s. Pre-import the page in beforeAll and pass { timeout: 10_000 } to the first findBy; see tenancyRecord.test.tsx.
+
+## 2026-10-07: Vite dev server must be restarted after renaming a module file
+
+- Source: manual (recon-601)
+- Renaming lib/recordTabs.tsx to .ts left Vite resolving the old path (Failed to load url). Stop the dev server (port 5173) and start npm run dev:web again.
+
+## 2026-10-07: Git Bash rewrites arguments that contain a slash
+
+- Source: manual (recon-601)
+- Args like '/' or '</Card>' were turned into Windows paths. Prefix commands with MSYS_NO_PATHCONV=1 and pass Windows-style script paths (C:/...).
+
+## 2026-10-07: npm scripts do not load .env
+
+- Source: manual (recon-601)
+- The server code reads process.env only; npm run db:migrate / dev:server fail with DATABASE_URL is not set. Use npx tsx --env-file=.env (or watch --env-file=../.env from server/).
