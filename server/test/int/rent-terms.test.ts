@@ -257,14 +257,16 @@ describe('API rules', () => {
 describe('edge cases and money invariants', () => {
   const sumOf = (p: { byPayer: Record<string, number> }) => Object.values(p.byPayer).reduce((a, b) => a + b, 0);
 
-  it('12: a backdated award applies from the next period start, not mid-period', async () => {
+  it('12: a backdated award applies from its start date, pro-rated by days within the period', async () => {
     const tid = freshTid();
     await setRent(tid, 10000, 'weekly', D);
     const res = await addAward(tid, 6000, 'weekly', 'landlord_direct', await dayOffset(D, 3));
     const periods = res.body.account.periods; // newest first
-    expect(periods).toHaveLength(4);
-    expect(periods[3].byPayer).toEqual({ tenant: 10000 });
-    for (const p of periods.slice(0, 3)) expect(p.byPayer).toEqual({ tenant: 4000, council_hb: 6000 });
+    expect(periods).toHaveLength(5); // the first week is cut at the award start: 3 days + 4 days
+    const byStart = (d: string) => periods.find((p: { periodStart: string }) => p.periodStart === d);
+    expect(byStart(D).byPayer).toEqual({ tenant: 4286 });
+    expect(byStart(await dayOffset(D, 3)).byPayer).toEqual({ tenant: 2286, council_hb: 3428 });
+    for (const p of periods.filter((x: { dueDate: string }) => x.dueDate !== D)) expect(p.byPayer).toEqual({ tenant: 4000, council_hb: 6000 });
   });
 
   it('13: an award at or above the rent leaves no tenant row, and is capped at the rent', async () => {
@@ -304,19 +306,19 @@ describe('edge cases and money invariants', () => {
     }
   });
 
-  it('16: charges_from is opt-in: nothing is charged for periods ending before it', async () => {
+  it('16: charges_from is opt-in: nothing is charged for periods starting before it', async () => {
     const tid = freshTid();
     const from = await dayOffset(today, -13);
     const none = await pool.query('SELECT 1 FROM rent_charges rc JOIN tenancies t ON t.id = rc.tenancy_id WHERE t.tid = $1', [tid]);
     expect(none.rowCount).toBe(0);
     await pool.query('UPDATE tenancies SET charges_from = $2 WHERE tid = $1', [tid, from]);
     await pool.query('SELECT refresh_rent_charges(id) FROM tenancies WHERE tid = $1', [tid]);
-    const r = await pool.query<{ n: string; first_end: string }>(
-      `SELECT count(*) AS n, min(rc.period_end)::text AS first_end FROM rent_charges rc JOIN tenancies t ON t.id = rc.tenancy_id WHERE t.tid = $1`,
+    const r = await pool.query<{ n: string; first_start: string }>(
+      `SELECT count(*) AS n, min(rc.period_start)::text AS first_start FROM rent_charges rc JOIN tenancies t ON t.id = rc.tenancy_id WHERE t.tid = $1`,
       [tid],
     );
     expect(Number(r.rows[0]!.n)).toBeGreaterThan(0);
-    expect(r.rows[0]!.first_end >= from).toBe(true);
+    expect(r.rows[0]!.first_start >= from).toBe(true);
   });
 
   it('17: running the nightly job twice after a rent change creates charges once, then nothing', async () => {
@@ -405,7 +407,8 @@ describe('edge cases and money invariants', () => {
     const d7 = await dayOffset(D, 7);
     const d14 = await dayOffset(D, 14);
     const byStart = (d: string) => acc.periods.find((p: { periodStart: string }) => p.periodStart === d);
-    expect(byStart(d7).byPayer).toEqual({ tenant: 4000, council_hb: 6000 });
+    expect(byStart(d7).byPayer).toEqual({ tenant: 2286, council_hb: 3428 }); // award ends D+10: 4 of 7 days
+    expect(byStart(await dayOffset(D, 11)).byPayer).toEqual({ tenant: 4286 });
     expect(byStart(d14).byPayer).toEqual({ tenant: 10000 });
   });
 

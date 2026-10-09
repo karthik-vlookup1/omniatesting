@@ -60,7 +60,8 @@ describe('019 backfill', () => {
       seeded.push({ id, from, to, amount, type });
     }
 
-    const res = await runMigrations(scratchUrl, { dir: MIGRATIONS_DIR });
+    await copyFile(path.join(MIGRATIONS_DIR, '019_agentos_journal_multirow.sql'), path.join(dir, '019_agentos_journal_multirow.sql'));
+    const res = await runMigrations(scratchUrl, { dir });
     expect(res.applied).toEqual(['019_agentos_journal_multirow.sql']);
 
     for (const t of seeded) {

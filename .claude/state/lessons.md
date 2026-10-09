@@ -189,3 +189,13 @@ dead end a future session might otherwise walk into again.
 
 - Source: manual (recon-603)
 - A full test:web run under load hit worker timeouts (4 failures, 1129s) but passed in 23s alone - load flakiness, not code
+
+## 2026-10-09: Never pin the latest migration name in a test; copy only the migrations the test needs into a temp dir
+
+- Source: manual (ISSUE-0013)
+- agentos-journal-backfill.test.ts applied migrations 001-020 from the working directory instead of stopping at 019. Fixed by copying 019 alone into a temp dir; runMigrations only checks dir presence, not filenames.
+
+## 2026-10-09: hx issue verify must run with TEST_DATABASE_URL on localhost:5433 and OMNIA_DB_PORT=5433 set
+
+- Source: manual (ISSUE-0013)
+- First verify failed with 28P01 (auth) hitting Windows PostgreSQL on 5432. Shell env isolation: test tools inherit OS defaults; set both vars in the same shell before hx verify.

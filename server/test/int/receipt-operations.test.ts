@@ -263,7 +263,7 @@ describe('allocation override', () => {
     expect((await receipt(id)).allocations).toHaveLength(2);
 
     // A rent refresh regenerates the schedule charges but re-applies the pin to the same periods.
-    await pool.query('UPDATE tenancies SET charges_from = $2::date - 7 WHERE tid = $1', [tid, D]);
+    await pool.query("UPDATE tenancies SET charges_from = date_trunc('month', $2::date - 7)::date WHERE tid = $1", [tid, D]);
     await pool.query('SELECT refresh_rent_charges(id) FROM tenancies WHERE tid = $1', [tid]);
     const kept = await receipt(id);
     expect(kept.allocationMode).toBe('manual');

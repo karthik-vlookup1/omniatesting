@@ -5,16 +5,43 @@
 ## Verified Now
 
 - Passing features: recon-001, recon-002, recon-003, recon-004, recon-101, recon-102, recon-103, recon-104, recon-105, recon-201, recon-202, recon-203, recon-204, recon-301, recon-302, recon-303, recon-401, recon-501, recon-502, recon-503, recon-504, recon-505, recon-506, recon-507, recon-508, recon-509, recon-510, recon-601, recon-602, recon-603
-- Verification runs this session: 1
+- Verification runs this session: 2
 
 ## Changed This Session
 
-- Commit: 0a34724
-- Files changed: (none)
+- Commit: 249c3ac
+- Files changed: server/test/int/agentos-journal-backfill.test.ts, server/test/int/receipt-operations.test.ts, server/test/int/rent-terms.test.ts, db/migrations/020_charge_generator_v2.sql, plans/money-flow-audit.md, server/test/int/money-wp1-charges.test.ts
 
 ## Broken Or Unverified
 
 - Blocked: none
+
+### Verification failures this session
+
+- `npm run test:int -- money-wp1-charges` exited 1 (ISSUE-0013)
+
+  ```
+  |int| 
+  
+  include: server/test/int/**/*.test.ts
+  exclude:  **/node_modules/**, **/.git/**
+  
+  
+  ⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+  error: password authentication failed for user "omnia"
+   ❯ parseErrorMessage node_modules/pg-protocol/dist/parser.js:306:11
+   ❯ Parser.handlePacket node_modules/pg-protocol/dist/parser.js:143:27
+   ❯ Parser.parse node_modules/pg-protocol/dist/parser.js:37:38
+   ❯ Socket.<anonymous> node_modules/pg-protocol/dist/index.js:12:42
+   ❯ Socket.emit node:events:514:28
+   ❯ addChunk node:internal/streams/readable:568:12
+   ❯ readableAddChunkPushByteMode node:internal/streams/readable:519:3
+   ❯ Socket.Readable.push node:internal/streams/readable:399:5
+   ❯ TCP.onStreamRead node:internal/stream_base_commons:189:23
+  
+  ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+  Serialized Error: { length: 101, severity: 'FATAL', code: '28P01', detail: undefined, hint: undefined, position: undefined, internalPosition: undefined, internalQuery: undefined, where: undefined, schema: undefined, table: undefined, dataType: undefined, constraint: undefined, file: 'auth.c', routine: 'auth_failed' }
+  ```
 
 ## Waiting on a human
 
