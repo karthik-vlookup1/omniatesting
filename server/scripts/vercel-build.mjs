@@ -8,10 +8,17 @@
  * One-time admin bootstrap: when OMNIA_ADMIN_EMAIL and OMNIA_NEW_USER_PASSWORD are set on the
  * project, the admin user is created (or reset). Remove both variables after one deploy, or every
  * deploy resets that user's password.
+ *
+ * Every build (preview too) first creates an empty public/ directory: Vercel requires an output
+ * directory when buildCommand is set and framework is null.
  */
 import { spawnSync } from 'node:child_process';
+import { mkdirSync } from 'node:fs';
 
 const out = (line) => process.stdout.write(`[vercel-build] ${line}\n`);
+
+// Vercel needs an output directory when buildCommand is set and framework is null; the API itself is the function in api/.
+mkdirSync('public', { recursive: true });
 
 if (process.env.VERCEL_ENV !== 'production') {
   out(`VERCEL_ENV=${process.env.VERCEL_ENV ?? 'unset'}: skipping migrations`);

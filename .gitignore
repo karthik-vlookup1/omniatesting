@@ -16,3 +16,5 @@ hx-harness-latest-v0.6.0*/
 .vite/
 # Vercel CLI link (vercel link); never commit
 .vercel
+# Empty output dir created by server/scripts/vercel-build.mjs
+server/public/
