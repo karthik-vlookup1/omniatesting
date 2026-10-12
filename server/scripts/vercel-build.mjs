@@ -9,16 +9,18 @@
  * project, the admin user is created (or reset). Remove both variables after one deploy, or every
  * deploy resets that user's password.
  *
- * Every build (preview too) first creates an empty public/ directory: Vercel requires an output
- * directory when buildCommand is set and framework is null.
+ * Every build (preview too) first creates public/ with a robots.txt: Vercel requires a non-empty
+ * output directory when buildCommand is set and framework is null, and robots.txt (which keeps
+ * crawlers off the API) fills it.
  */
 import { spawnSync } from 'node:child_process';
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
 
 const out = (line) => process.stdout.write(`[vercel-build] ${line}\n`);
 
-// Vercel needs an output directory when buildCommand is set and framework is null; the API itself is the function in api/.
+// Vercel needs a non-empty output directory when buildCommand is set and framework is null; robots.txt fills it (the API itself is the function in api/).
 mkdirSync('public', { recursive: true });
+writeFileSync('public/robots.txt', 'User-agent: *\nDisallow: /\n');
 
 if (process.env.VERCEL_ENV !== 'production') {
   out(`VERCEL_ENV=${process.env.VERCEL_ENV ?? 'unset'}: skipping migrations`);
