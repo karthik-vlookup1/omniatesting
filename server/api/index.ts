@@ -10,11 +10,13 @@ import { loadConfig } from '../src/config/env.js';
 import { createPool } from '../src/db/pool.js';
 import { createLogger } from '../src/lib/logger.js';
 
-// Vercel's Neon integration sets DATABASE_URL to the pooled endpoint. The pool sets app.hash_key
-// once per connection, which a transaction pooler can lose, so prefer the direct endpoint.
+// Vercel's Neon integration sets the pooled endpoint as DATABASE_URL (NEON_-prefixed when the
+// integration was given that prefix). The pool sets app.hash_key once per connection, which a
+// transaction pooler can lose, so prefer the direct endpoint. Same order as scripts/vercel-build.mjs.
 const config = loadConfig({
   ...process.env,
-  DATABASE_URL: process.env.DATABASE_URL_UNPOOLED || process.env.DATABASE_URL,
+  DATABASE_URL:
+    process.env.DATABASE_URL_UNPOOLED || process.env.NEON_DATABASE_URL_UNPOOLED || process.env.DATABASE_URL,
 });
 const logger = createLogger({ level: config.logLevel, pretty: false });
 const pool = createPool({ databaseUrl: config.databaseUrl, hashKey: config.hashKey, max: 3 }, logger);
