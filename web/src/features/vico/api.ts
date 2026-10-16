@@ -23,12 +23,14 @@ export interface VicoExport {
   createdAt: string;
   rows: number;
   totalAmount: string;
+  sharedPath: string | null;
 }
 
 export interface Downloaded {
   fileName: string;
   rows: number;
   totalAmount: string;
+  sharedPath: string | null;
 }
 
 const KEY = ['vico'] as const;
@@ -87,8 +89,10 @@ async function download(path: string, init: RequestInit): Promise<Downloaded> {
   a.click();
   a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
+  const rawShared = res.headers.get('X-Vico-Shared-Path');
   return {
     fileName,
+    sharedPath: rawShared ? decodeURIComponent(rawShared) : null,
     rows: Number(res.headers.get('X-Vico-Rows') ?? 0),
     totalAmount: res.headers.get('X-Vico-Total') ?? '0.00',
   };
