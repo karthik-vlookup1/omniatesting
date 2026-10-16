@@ -11,7 +11,7 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 - Repository root: {{PROJECT_ROOT}}
 - Standard startup: `hx start`
 - Standard verification: `hx verify <feature-id>`
-- Current highest-priority unfinished feature: recon-604
+- Current highest-priority unfinished feature: (none)
 - Current blocker: none
 
 ## Session Log
@@ -249,9 +249,9 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 <!-- hx-session: baea96c7-65df-4aaa-b445-ddca3092137e -->
 
 - Date: 2026-10-16
-- Active feature: recon-604
-- Passing features: 30
+- Active feature: (none)
+- Passing features: 31
 - Blocked features: none
-- Verification runs this session: 0
-- Commit: 4ca0938
-- Next best step: finish recon-604
+- Verification runs this session: 2
+- Commit: 2596adc
+- Next best step: (none — check feature_list.json)

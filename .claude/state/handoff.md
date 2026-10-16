@@ -4,17 +4,21 @@
 
 ## Verified Now
 
-- Passing features: recon-001, recon-002, recon-003, recon-004, recon-101, recon-102, recon-103, recon-104, recon-105, recon-201, recon-202, recon-203, recon-204, recon-301, recon-302, recon-303, recon-401, recon-501, recon-502, recon-503, recon-504, recon-505, recon-506, recon-507, recon-508, recon-509, recon-510, recon-601, recon-602, recon-603
-- Verification runs this session: 0
+- Passing features: recon-001, recon-002, recon-003, recon-004, recon-101, recon-102, recon-103, recon-104, recon-105, recon-201, recon-202, recon-203, recon-204, recon-301, recon-302, recon-303, recon-401, recon-501, recon-502, recon-503, recon-504, recon-505, recon-506, recon-507, recon-508, recon-509, recon-510, recon-601, recon-602, recon-603, recon-604
+- Verification runs this session: 2
 
 ## Changed This Session
 
-- Commit: 4ca0938
-- Files changed: plans/recon-604-plan.md, plans/recon-604-veco-direct-push.md
+- Commit: 2596adc
+- Files changed: (none)
 
 ## Broken Or Unverified
 
 - Blocked: none
+
+### Verification failures this session
+
+- `(command not recorded)` exited ? (recon-604)
 
 ## Waiting on a human
 
@@ -22,13 +26,13 @@
 
 ## Next Best Step
 
-- Highest-priority unfinished feature: recon-604
-- Why it is next: feature "recon-604" is already active (WIP=1) — finish or block it first
+- Highest-priority unfinished feature: (none)
+- Why it is next: (no unstarted feature found)
 - What counts as passing: (n/a)
 - What must not change: (n/a)
 
 ## Commands
 
 - Startup: `hx start`
-- Verification: `hx verify recon-604`
+- Verification: `hx verify <feature-id>`
 - Focused debug: `hx logs diagnose`
