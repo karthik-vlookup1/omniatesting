@@ -6,6 +6,8 @@
  *   POST /exports               export pending receipts (all, or { receiptIds }) → CSV download
  *   GET  /exports               export history
  *   GET  /exports/:id/file      download an earlier export again
+ * File responses carry X-Vico-Export-Id, X-Vico-Rows, X-Vico-Total and, when the shared folder holds a copy,
+ * X-Vico-Shared-Path (URI-encoded display path).
  */
 import { Router, type Response } from 'express';
 import { z } from 'zod';
@@ -20,6 +22,7 @@ import {
   type VicoFile,
 } from '../../services/vico/vico.service.js';
 import { AppError } from '../../lib/errors.js';
+import type { VicoSharedDir } from '../../services/vico/shared-folder.js';
 import { requireAuth, requireRole } from '../auth/middleware.js';
 
 const SettingsBody = z.object({ sortCode: z.string().max(20), accountNumber: z.string().max(20) }).strict();
@@ -32,11 +35,15 @@ function sendFile(res: Response, file: VicoFile) {
   res.setHeader('X-Vico-Export-Id', file.exportId);
   res.setHeader('X-Vico-Rows', String(file.rows));
   res.setHeader('X-Vico-Total', file.totalAmount);
-  res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition, X-Vico-Export-Id, X-Vico-Rows, X-Vico-Total');
+  if (file.sharedPath) res.setHeader('X-Vico-Shared-Path', encodeURIComponent(file.sharedPath));
+  res.setHeader(
+    'Access-Control-Expose-Headers',
+    'Content-Disposition, X-Vico-Export-Id, X-Vico-Rows, X-Vico-Total, X-Vico-Shared-Path',
+  );
   res.send(file.csv);
 }
 
-export function vicoRouter({ pool }: { pool: Pool }): Router {
+export function vicoRouter({ pool, shared }: { pool: Pool; shared: VicoSharedDir }): Router {
   const router = Router();
   router.use(requireAuth, requireRole('accounts'));
 
@@ -54,17 +61,17 @@ export function vicoRouter({ pool }: { pool: Pool }): Router {
 
   router.post('/exports', async (req, res) => {
     const { receiptIds } = ExportBody.parse(req.body ?? {});
-    sendFile(res, await createExport(req.db, receiptIds));
+    sendFile(res, await createExport(req.db, receiptIds, { shared }));
   });
 
   router.get('/exports', async (_req, res) => {
-    res.json({ exports: await listExports(pool) });
+    res.json({ exports: await listExports(pool, shared) });
   });
 
   router.get('/exports/:id/file', async (req, res) => {
     const id = Id.safeParse(req.params.id);
     if (!id.success) throw new AppError('not_found', 'No such Vico export');
-    sendFile(res, await getExportFile(pool, id.data));
+    sendFile(res, await getExportFile(pool, id.data, shared));
   });
 
   return router;

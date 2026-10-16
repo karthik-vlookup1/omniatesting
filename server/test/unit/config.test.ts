@@ -59,4 +59,15 @@ describe('loadConfig', () => {
     expect(loadConfig({ ...VALID, NODE_ENV: 'production' }).cookieSecure).toBe(true);
     expect(loadConfig({ ...VALID, NODE_ENV: 'production', COOKIE_SECURE: 'false' }).cookieSecure).toBe(false);
   });
+
+  it('reads the Vico shared folder settings', () => {
+    const off = loadConfig({ ...VALID, VICO_EXPORT_DIR: ' ', VICO_EXPORT_DISPLAY_DIR: '' });
+    expect([off.vicoExportDir, off.vicoExportDisplayDir]).toEqual([null, null]);
+    const unset = loadConfig({ ...VALID });
+    expect([unset.vicoExportDir, unset.vicoExportDisplayDir]).toEqual([null, null]);
+    const on = loadConfig({ ...VALID, VICO_EXPORT_DIR: '/srv/vico', VICO_EXPORT_DISPLAY_DIR: ' \\\\fs\\vico ' });
+    expect([on.vicoExportDir, on.vicoExportDisplayDir]).toEqual(['/srv/vico', '\\\\fs\\vico']);
+    expect(loadConfig({ ...VALID, VICO_EXPORT_DISPLAY_DIR: '/x' }).vicoExportDisplayDir).toBeNull();
+    expect(problems({ ...VALID, VICO_EXPORT_DIR: 'relative/dir' })).toContain('VICO_EXPORT_DIR must be an absolute path');
+  });
 });

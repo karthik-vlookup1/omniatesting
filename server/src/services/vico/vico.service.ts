@@ -7,9 +7,17 @@
  * export id, so an export's file can be downloaded again later.
  */
 import { createHash, randomUUID } from 'node:crypto';
+import { promises as fs } from 'node:fs';
 import type { Pool, PoolClient } from '../../db/pool.js';
 import type { ActorDb } from '../../db/context.js';
 import { AppError } from '../../lib/errors.js';
+import {
+  NO_SHARED_DIR,
+  sharedDisplayPath,
+  sharedPathIfPresent,
+  writeSharedFile,
+  type VicoSharedDir,
+} from './shared-folder.js';
 
 export interface VicoSettings {
   sortCode: string | null;
@@ -32,6 +40,8 @@ export interface VicoExport {
   createdAt: string;
   rows: number;
   totalAmount: string;
+  /** Full path of the copy in the shared folder, as staff see it; null when off or absent. */
+  sharedPath: string | null;
 }
 
 export interface VicoFile extends VicoExport {
@@ -175,49 +185,63 @@ function requireSettings(s: VicoSettings): { sortCode: string; accountNumber: st
  * Exports every pending receipt (or just `receiptIds`) to a new Vico file and marks each one exported.
  * Asking for a receipt that isn't pending (already exported, reversed, unknown) refuses the whole export.
  */
-export async function createExport(db: ActorDb, receiptIds?: string[]): Promise<VicoFile> {
-  return db.tx(async (c) => {
-    await c.query('SELECT pg_advisory_xact_lock($1)', [EXPORT_LOCK]);
-    const settings = requireSettings(await getVicoSettings(c));
-    const ids = receiptIds ? [...new Set(receiptIds)] : null;
-    const { rows } = await c.query<PendingRow>(
-      `${PENDING_SELECT} ${ids ? 'WHERE v.receipt_id = ANY($1::uuid[])' : ''} ORDER BY v.date, v.tid, v.receipt_id`,
-      ids ? [ids] : [],
-    );
-    if (ids && rows.length !== ids.length) {
-      const found = new Set(rows.map((r) => r.receipt_id));
-      throw new AppError('conflict', 'Some receipts are already exported to Vico or are not confirmed receipts', {
-        notPending: ids.filter((id) => !found.has(id)),
-      });
-    }
-    if (rows.length === 0) throw new AppError('conflict', 'Nothing to export: every confirmed receipt is already in Vico');
+export async function createExport(
+  db: ActorDb,
+  receiptIds?: string[],
+  opts: { shared?: VicoSharedDir; now?: () => Date } = {},
+): Promise<VicoFile> {
+  const shared = opts.shared ?? NO_SHARED_DIR;
+  let written: string | null = null;
+  try {
+    return await db.tx(async (c) => {
+      await c.query('SELECT pg_advisory_xact_lock($1)', [EXPORT_LOCK]);
+      const settings = requireSettings(await getVicoSettings(c));
+      const ids = receiptIds ? [...new Set(receiptIds)] : null;
+      const { rows } = await c.query<PendingRow>(
+        `${PENDING_SELECT} ${ids ? 'WHERE v.receipt_id = ANY($1::uuid[])' : ''} ORDER BY v.date, v.tid, v.receipt_id`,
+        ids ? [ids] : [],
+      );
+      if (ids && rows.length !== ids.length) {
+        const found = new Set(rows.map((r) => r.receipt_id));
+        throw new AppError('conflict', 'Some receipts are already exported to Vico or are not confirmed receipts', {
+          notPending: ids.filter((id) => !found.has(id)),
+        });
+      }
+      if (rows.length === 0) throw new AppError('conflict', 'Nothing to export: every confirmed receipt is already in Vico');
 
-    const exportId = randomUUID();
-    const createdAt = new Date();
-    const csv = buildVicoCsv(rows.map(toPending), settings);
-    await c.query(
-      `INSERT INTO external_refs (system, entity_type, entity_id, external_id, external_key2, last_synced_at, last_synced_hash)
-       SELECT 'vico', 'receipt', r.id, $1 || ':' || r.id, $1, $2, r.hash
-         FROM unnest($3::uuid[], $4::text[]) AS r(id, hash)`,
-      [
+      const exportId = randomUUID();
+      const createdAt = (opts.now ?? (() => new Date()))();
+      const csv = buildVicoCsv(rows.map(toPending), settings);
+      const name = fileName(createdAt);
+      await c.query(
+        `INSERT INTO external_refs (system, entity_type, entity_id, external_id, external_key2, last_synced_at, last_synced_hash)
+         SELECT 'vico', 'receipt', r.id, $1 || ':' || r.id, $1, $2, r.hash
+           FROM unnest($3::uuid[], $4::text[]) AS r(id, hash)`,
+        [
+          exportId,
+          createdAt,
+          rows.map((r) => r.receipt_id),
+          rows.map((r) => createHash('sha256').update(`${r.tid}|${twoDp(r.amount)}`).digest('hex')),
+        ],
+      );
+      if (shared.exportDir) written = await writeSharedFile(shared, name, csv);
+      return {
         exportId,
-        createdAt,
-        rows.map((r) => r.receipt_id),
-        rows.map((r) => createHash('sha256').update(`${r.tid}|${twoDp(r.amount)}`).digest('hex')),
-      ],
-    );
-    return {
-      exportId,
-      fileName: fileName(createdAt),
-      createdAt: createdAt.toISOString(),
-      rows: rows.length,
-      totalAmount: sumPounds(rows.map((r) => r.amount)),
-      csv,
-    };
-  });
+        fileName: name,
+        createdAt: createdAt.toISOString(),
+        rows: rows.length,
+        totalAmount: sumPounds(rows.map((r) => r.amount)),
+        csv,
+        sharedPath: sharedDisplayPath(name, shared),
+      };
+    });
+  } catch (err) {
+    if (written) await fs.unlink(written).catch(() => {});
+    throw err;
+  }
 }
 
-export async function listExports(pool: Pool): Promise<VicoExport[]> {
+export async function listExports(pool: Pool, shared: VicoSharedDir = NO_SHARED_DIR): Promise<VicoExport[]> {
   const { rows } = await pool.query<{ export_id: string; created_at: Date; rows: number; total: string }>(
     `SELECT e.external_key2 AS export_id, min(e.last_synced_at) AS created_at, count(*)::int AS rows,
             sum(r.amount)::text AS total
@@ -227,17 +251,23 @@ export async function listExports(pool: Pool): Promise<VicoExport[]> {
       ORDER BY min(e.last_synced_at) DESC
       LIMIT 100`,
   );
-  return rows.map((r) => ({
-    exportId: r.export_id,
-    fileName: fileName(r.created_at),
-    createdAt: r.created_at.toISOString(),
-    rows: r.rows,
-    totalAmount: twoDp(r.total),
-  }));
+  return Promise.all(
+    rows.map(async (r) => {
+      const name = fileName(r.created_at);
+      return {
+        exportId: r.export_id,
+        fileName: name,
+        createdAt: r.created_at.toISOString(),
+        rows: r.rows,
+        totalAmount: twoDp(r.total),
+        sharedPath: await sharedPathIfPresent(shared, name),
+      };
+    }),
+  );
 }
 
 /** The file of an earlier export, rebuilt from the receipts it marked (same rows, current sort code/account). */
-export async function getExportFile(pool: Pool, exportId: string): Promise<VicoFile> {
+export async function getExportFile(pool: Pool, exportId: string, shared: VicoSharedDir = NO_SHARED_DIR): Promise<VicoFile> {
   const settings = requireSettings(await getVicoSettings(pool));
   const { rows } = await pool.query<VicoRow & { synced_at: Date }>(
     `SELECT t.tid, r.amount::text AS amount, e.last_synced_at AS synced_at,
@@ -251,12 +281,14 @@ export async function getExportFile(pool: Pool, exportId: string): Promise<VicoF
   );
   if (rows.length === 0) throw new AppError('not_found', 'No such Vico export');
   const createdAt = rows[0]!.synced_at;
+  const name = fileName(createdAt);
   return {
     exportId,
-    fileName: fileName(createdAt),
+    fileName: name,
     createdAt: createdAt.toISOString(),
     rows: rows.length,
     totalAmount: sumPounds(rows.map((r) => r.amount)),
+    sharedPath: await sharedPathIfPresent(shared, name),
     csv: buildVicoCsv(rows, settings),
   };
 }

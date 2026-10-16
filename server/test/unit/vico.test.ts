@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { sharedDisplayPath } from '../../src/services/vico/shared-folder.js';
 import { buildVicoCsv, normaliseSortCode, sumPounds } from '../../src/services/vico/vico.service.js';
 
 const BANK = { sortCode: '00-00-99', accountNumber: '00009999' };
@@ -35,5 +36,21 @@ describe('Vico file helpers', () => {
   it('never lets a cell be read as a spreadsheet formula', () => {
     const csv = buildVicoCsv([{ tid: '=HYPERLINK("x")', amount: '1', receivedOn: '2026-09-30', managementType: 'MG' }], BANK);
     expect(csv.split('\r\n')[1]).toBe(`000099,00009999,30/09/2026,1.00,"'=HYPERLINK(""x"")",MG`);
+  });
+});
+
+describe('sharedDisplayPath', () => {
+  const f = 'f.csv';
+  const p = (exportDir: string | null, displayDir: string | null = null) => sharedDisplayPath(f, { exportDir, displayDir });
+  it('joins with the separator style of the directory', () => {
+    expect(p('/srv/vico')).toBe('/srv/vico/f.csv');
+    expect(p('/srv/vico/')).toBe('/srv/vico/f.csv');
+    expect(p('/srv/vico', '\\\\fileserver\\vico')).toBe('\\\\fileserver\\vico\\f.csv');
+    expect(p('/srv/vico', '\\\\fileserver\\vico\\')).toBe('\\\\fileserver\\vico\\f.csv');
+    expect(p('/srv/vico', 'Z:\\Vico')).toBe('Z:\\Vico\\f.csv');
+    expect(p('/')).toBe('/f.csv');
+  });
+  it('is null when the feature is off', () => {
+    expect(p(null, '/shown')).toBeNull();
   });
 });

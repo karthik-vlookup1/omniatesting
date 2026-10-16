@@ -2,6 +2,7 @@
  * Environment configuration. Read and validated once at startup; the app fails fast with a
  * message naming every missing or invalid variable. Keys come from the environment only.
  */
+import path from 'node:path';
 import { z } from 'zod';
 
 export class ConfigError extends Error {
@@ -37,6 +38,8 @@ const EnvSchema = z
     SESSION_SECRET: z.string().min(32, 'must be at least 32 characters'),
     AUTO_MATCH_THRESHOLD: z.coerce.number().min(0).max(1).default(0.95),
     COOKIE_SECURE: booleanString.optional(),
+    VICO_EXPORT_DIR: z.string().optional(),
+    VICO_EXPORT_DISPLAY_DIR: z.string().optional(),
   })
   .superRefine((env, ctx) => {
     for (const key of ['HASH_KEY', 'ENCRYPTION_KEY', 'SESSION_SECRET'] as const) {
@@ -46,6 +49,10 @@ const EnvSchema = z
     }
     if (env.NODE_ENV !== 'test' && env.HASH_KEY.length < 32) {
       ctx.addIssue({ code: 'custom', path: ['HASH_KEY'], message: 'must be at least 32 characters' });
+    }
+    const dir = env.VICO_EXPORT_DIR?.trim();
+    if (dir && !path.isAbsolute(dir)) {
+      ctx.addIssue({ code: 'custom', path: ['VICO_EXPORT_DIR'], message: 'must be an absolute path' });
     }
   });
 
@@ -62,6 +69,10 @@ export interface AppConfig {
   sessionSecret: string;
   autoMatchThreshold: number;
   cookieSecure: boolean;
+  /** Absolute folder each Vico export CSV is also written into; null = off. */
+  vicoExportDir: string | null;
+  /** The same folder as staff/VECO see it; null when off or unset. */
+  vicoExportDisplayDir: string | null;
 }
 
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
@@ -80,6 +91,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
 
   const e = parsed.data;
   const isProduction = e.NODE_ENV === 'production';
+  const vicoExportDir = e.VICO_EXPORT_DIR?.trim() || null;
+  const vicoExportDisplayDir = (vicoExportDir && e.VICO_EXPORT_DISPLAY_DIR?.trim()) || null;
   return {
     nodeEnv: e.NODE_ENV,
     isProduction,
@@ -91,5 +104,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     sessionSecret: e.SESSION_SECRET,
     autoMatchThreshold: e.AUTO_MATCH_THRESHOLD,
     cookieSecure: e.COOKIE_SECURE ?? isProduction,
+    vicoExportDir,
+    vicoExportDisplayDir,
   };
 }

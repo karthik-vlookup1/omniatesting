@@ -1,4 +1,4 @@
-import { Alert, Button, Card, Group, Modal, Paper, Stack, Table, Text, TextInput, Title } from '@mantine/core';
+import { Alert, Button, Card, Code, CopyButton, Group, Modal, Paper, Stack, Table, Text, TextInput, Title } from '@mantine/core';
 import { IconDownload, IconFileExport } from '@tabler/icons-react';
 import { useState } from 'react';
 import { EmptyState, ErrorState, LoadingState, PageHeader } from '../../components';
@@ -58,8 +58,10 @@ function VicoExportView({ isAdmin }: { isAdmin: boolean }) {
       {settings.data && <BankDetails settings={settings.data} canEdit={isAdmin} />}
 
       {create.isSuccess && (
-        <Alert color="green" role="status" title="File downloaded">
+        <Alert color="green" role="status" title={create.data.sharedPath ? 'File downloaded and saved to the shared folder' : 'File downloaded'}
+        >
           {create.data.fileName}: {create.data.rows} receipts, {money(create.data.totalAmount)}. Upload it to Vico.
+          {create.data.sharedPath && <SharedPath path={create.data.sharedPath} />}
         </Alert>
       )}
       {create.isError && (
@@ -147,7 +149,10 @@ function VicoExportView({ isAdmin }: { isAdmin: boolean }) {
               {exports.data?.map((e) => (
                 <Table.Tr key={e.exportId}>
                   <Table.Td>{new Date(e.createdAt).toLocaleString('en-GB')}</Table.Td>
-                  <Table.Td>{e.fileName}</Table.Td>
+                  <Table.Td>
+                    {e.fileName}
+                    {e.sharedPath && <SharedPath path={e.sharedPath} />}
+                  </Table.Td>
                   <Table.Td ta="right">{e.rows}</Table.Td>
                   <Table.Td ta="right">{money(e.totalAmount)}</Table.Td>
                   <Table.Td>
@@ -188,6 +193,25 @@ function VicoExportView({ isAdmin }: { isAdmin: boolean }) {
           </Group>
         </Stack>
       </Modal>
+    </Stack>
+  );
+}
+
+/** The shared-folder path with a Copy button, to paste into VECO. */
+function SharedPath({ path }: { path: string }) {
+  return (
+    <Stack gap={4} mt={4}>
+      <Group gap="xs">
+        <Code>{path}</Code>
+        <CopyButton value={path}>
+          {({ copied, copy }) => (
+            <Button size="xs" variant="light" onClick={copy}>
+              {copied ? 'Copied' : 'Copy'}
+            </Button>
+          )}
+        </CopyButton>
+      </Group>
+      <Text size="sm">Paste this into VECO: Import Receipts → Import → Process</Text>
     </Stack>
   );
 }
