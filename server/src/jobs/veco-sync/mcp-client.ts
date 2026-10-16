@@ -36,7 +36,23 @@ interface JsonRpcResponse {
   error?: { code: number; message: string };
 }
 
-export function createMcpSqlSource({ url, timeoutMs = 120_000, fetchImpl = fetch }: McpSqlSourceOptions): SqlSource {
+export interface SqlBatchRunner {
+  /** Runs a SQL batch unwrapped and returns the tool's text. Used only by the VECO push (test database). */
+  executeBatch(batchSql: string): Promise<string>;
+}
+
+/** The read-only sync keeps its own client name and behaviour. */
+export function createMcpSqlSource(options: McpSqlSourceOptions): SqlSource {
+  const client = createMcpSqlClient({ ...options, clientName: 'omnia-recon-veco-sync' });
+  return { queryRows: (sql) => client.queryRows(sql) };
+}
+
+export function createMcpSqlClient({
+  url,
+  timeoutMs = 120_000,
+  fetchImpl = fetch,
+  clientName = 'omnia-recon-veco-sync',
+}: McpSqlSourceOptions & { clientName?: string }): SqlSource & SqlBatchRunner {
   let nextId = 1;
 
   async function post(body: object, sessionId?: string): Promise<{ res: Response; text: string }> {
@@ -69,19 +85,31 @@ export function createMcpSqlSource({ url, timeoutMs = 120_000, fetchImpl = fetch
     return { result: message.result, sessionId: res.headers.get('mcp-session-id') ?? sessionId };
   }
 
+  async function openSession(): Promise<string | undefined> {
+    const init = await call('initialize', {
+      protocolVersion: PROTOCOL_VERSION,
+      capabilities: {},
+      clientInfo: { name: clientName, version: '1.0.0' },
+    });
+    const sessionId = init.sessionId;
+    await post({ jsonrpc: '2.0', method: 'notifications/initialized' }, sessionId);
+    return sessionId;
+  }
+
+  async function execute(sql: string): Promise<string> {
+    const sessionId = await openSession();
+    const { result } = await call('tools/call', { name: 'execute_sql', arguments: { query: sql } }, sessionId);
+    return toolText(result);
+  }
+
   return {
     async queryRows(selectSql) {
-      const init = await call('initialize', {
-        protocolVersion: PROTOCOL_VERSION,
-        capabilities: {},
-        clientInfo: { name: 'omnia-recon-veco-sync', version: '1.0.0' },
-      });
-      const sessionId = init.sessionId;
-      await post({ jsonrpc: '2.0', method: 'notifications/initialized' }, sessionId);
-
       const sql = `${selectSql.trim().replace(/;$/, '')} FOR JSON PATH, INCLUDE_NULL_VALUES`;
-      const { result } = await call('tools/call', { name: 'execute_sql', arguments: { query: sql } }, sessionId);
-      return parseJsonRows(toolText(result));
+      return parseJsonRows(await execute(sql));
+    },
+    /** Sends a (write) batch exactly as given: no FOR JSON wrapper. Throws VecoSourceError on a tool error. */
+    async executeBatch(batchSql) {
+      return execute(batchSql.trim());
     },
   };
 }

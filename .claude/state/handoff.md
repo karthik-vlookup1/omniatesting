@@ -9,8 +9,8 @@
 
 ## Changed This Session
 
-- Commit: 56f7805
-- Files changed: server/api/index.ts, server/vercel.json, server/scripts/vercel-build.mjs
+- Commit: 4ca0938
+- Files changed: plans/recon-604-plan.md, plans/recon-604-veco-direct-push.md
 
 ## Broken Or Unverified
 
@@ -22,13 +22,13 @@
 
 ## Next Best Step
 
-- Highest-priority unfinished feature: (none)
-- Why it is next: (no unstarted feature found)
+- Highest-priority unfinished feature: recon-604
+- Why it is next: feature "recon-604" is already active (WIP=1) — finish or block it first
 - What counts as passing: (n/a)
 - What must not change: (n/a)
 
 ## Commands
 
 - Startup: `hx start`
-- Verification: `hx verify <feature-id>`
+- Verification: `hx verify recon-604`
 - Focused debug: `hx logs diagnose`

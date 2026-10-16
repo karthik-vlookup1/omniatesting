@@ -9,8 +9,10 @@ import type { AuthUser, Role } from './types';
  * - viewFullNi:  full NI shown only to admin / accounts
  * - finance:     Vico export and Xero posting are requireRole('accounts') = admin, accounts
  * - settings:    bank, Vico and Xero settings are requireRole() = admin only
+ * - vecoPush:    the Push to VECO area is admin + accounts; each person's own permission (a linked VECO user with
+ *                can_push) comes from GET /api/veco-push/status, not from the role
  */
-export type Capability = 'write' | 'manageUsers' | 'viewFullNi' | 'finance' | 'settings';
+export type Capability = 'write' | 'manageUsers' | 'viewFullNi' | 'finance' | 'settings' | 'vecoPush';
 
 const CAPABILITIES: Record<Capability, readonly Role[]> = {
   write: ['admin', 'accounts', 'staff'],
@@ -18,6 +20,7 @@ const CAPABILITIES: Record<Capability, readonly Role[]> = {
   viewFullNi: ['admin', 'accounts'],
   finance: ['admin', 'accounts'],
   settings: ['admin'],
+  vecoPush: ['admin', 'accounts'],
 };
 
 export function can(user: Pick<AuthUser, 'role'> | null | undefined, capability: Capability): boolean {

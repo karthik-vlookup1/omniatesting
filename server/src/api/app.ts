@@ -36,10 +36,13 @@ import { propertiesRouter } from './property/routes.js';
 import { statementExportRouter } from './export/statement.routes.js';
 import { reportsRouter } from './reports/routes.js';
 import { vicoRouter } from './vico/routes.js';
+import { vecoPushRouter } from './veco-push/routes.js';
 import { xeroRouter } from './xero/routes.js';
 import { createHttpBridge, loadXeroConfig, type XeroBridge, type XeroConfig } from '../services/xero/bridge.js';
 import { scheduleXeroWorker } from '../jobs/xero/worker.js';
-import type { SqlSource } from '../jobs/veco-sync/mcp-client.js';
+import { createMcpSqlClient, type SqlSource } from '../jobs/veco-sync/mcp-client.js';
+import { loadVecoPushConfig } from '../services/veco-push/config.js';
+import { createSqlGateway, type VecoGateway } from '../services/veco-push/gateway.js';
 import { matchingRouter } from './matching/routes.js';
 import { receiptRouter } from './receipt/routes.js';
 import { remittanceRouter } from './remittance/routes.js';
@@ -58,9 +61,11 @@ export interface AppDeps {
   xero?: { bridge: XeroBridge | null; config: XeroConfig };
   /** Veco read source for the Xero property map; defaults to none. */
   vecoSource?: SqlSource | null;
+  /** Push to the VECO test database; defaults to not configured (no VECO_RW_MCP_URL). */
+  vecoPush?: { gateway: VecoGateway | null; now?: () => Date };
 }
 
-export function createApp({ config, pool, logger, vecoSync, xero, vecoSource }: AppDeps): Express {
+export function createApp({ config, pool, logger, vecoSync, xero, vecoSource, vecoPush }: AppDeps): Express {
   const keys = { hashKey: config.hashKey, encryptionKey: config.encryptionKey };
   const app = express();
   app.disable('x-powered-by');
@@ -121,6 +126,10 @@ export function createApp({ config, pool, logger, vecoSync, xero, vecoSource }: 
   app.use('/api/remittances', remittanceRouter({ pool }));
   app.use('/api/adjustments', adjustmentRouter({ pool }));
   app.use('/api/vico', vicoRouter({ pool }));
+  app.use(
+    '/api/veco-push',
+    vecoPushRouter({ pool, gateway: vecoPush?.gateway ?? null, now: vecoPush?.now ?? (() => new Date()) }),
+  );
   app.use('/api/export', statementExportRouter({ pool }));
   app.use('/api/reports', reportsRouter({ pool }));
   app.use(
@@ -189,7 +198,13 @@ async function main(): Promise<void> {
   const stopXeroWorker = scheduleXeroWorker(pool, bridge, xeroConfig, logger);
   const stopChargeGeneration = scheduleChargeGeneration(pool, logger);
 
-  const app = createApp({ config, pool, logger, vecoSync, xero: { bridge, config: xeroConfig }, vecoSource: sourceFromConfig(veco) });
+  const vecoPushConfig = loadVecoPushConfig();
+  const vecoPushGateway = vecoPushConfig.rwMcpUrl
+    ? createSqlGateway(createMcpSqlClient({ url: vecoPushConfig.rwMcpUrl, clientName: 'omnia-recon-veco-push' }))
+    : null;
+  logger.info({ configured: Boolean(vecoPushGateway) }, 'veco push (test database)');
+
+  const app = createApp({ config, pool, logger, vecoSync, xero: { bridge, config: xeroConfig }, vecoSource: sourceFromConfig(veco), vecoPush: { gateway: vecoPushGateway } });
   const server: Server = app.listen(config.port, () => {
     logger.info({ port: config.port, env: config.nodeEnv }, 'omnia-recon API listening');
   });

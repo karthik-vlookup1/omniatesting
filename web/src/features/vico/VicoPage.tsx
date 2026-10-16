@@ -13,6 +13,9 @@ import {
   useVicoSettings,
   type VicoSettings,
 } from './api';
+import { EarlierVecoPushes } from './EarlierVecoPushes';
+import { VecoPushButton } from './VecoPushButton';
+import { VecoStaffLinks } from './VecoStaffLinks';
 
 const GBP = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' });
 const money = (amount: string) => GBP.format(Number(amount));
@@ -77,13 +80,16 @@ function VicoExportView({ isAdmin }: { isAdmin: boolean }) {
             <Text data-testid="vico-pending-summary">
               {total} {total === 1 ? 'receipt' : 'receipts'} waiting for Vico · {money(pending.data?.totalAmount ?? '0')}
             </Text>
-            <Button
-              leftSection={<IconFileExport size={16} />}
-              disabled={total === 0 || !configured}
-              onClick={() => setConfirming(true)}
-            >
-              Download Vico file
-            </Button>
+            <Group gap="xs" align="flex-start">
+              <Button
+                leftSection={<IconFileExport size={16} />}
+                disabled={total === 0 || !configured}
+                onClick={() => setConfirming(true)}
+              >
+                Download Vico file
+              </Button>
+              <VecoPushButton receiptIds={pending.data?.rows.map((r) => r.receiptId) ?? []} />
+            </Group>
           </Group>
 
           <Table striped aria-label="Receipts waiting for Vico">
@@ -171,6 +177,9 @@ function VicoExportView({ isAdmin }: { isAdmin: boolean }) {
           {exports.isSuccess && exports.data.length === 0 && <EmptyState size="sm" title="No exports yet" description="Files you download from Vico export are listed here." />}
         </Stack>
       </Card>
+
+      <EarlierVecoPushes />
+      {isAdmin && <VecoStaffLinks />}
 
       <Modal opened={confirming} onClose={() => setConfirming(false)} title="Export to Vico">
         <Stack>

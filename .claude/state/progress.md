@@ -11,7 +11,7 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 - Repository root: {{PROJECT_ROOT}}
 - Standard startup: `hx start`
 - Standard verification: `hx verify <feature-id>`
-- Current highest-priority unfinished feature: (none)
+- Current highest-priority unfinished feature: recon-604
 - Current blocker: none
 
 ## Session Log
@@ -231,3 +231,27 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 - Verification runs this session: 0
 - Commit: 56f7805
 - Next best step: (none — check feature_list.json)
+
+### Session 018
+
+<!-- hx-session: 42a513e7-6d90-4750-922b-05e9caddfecf -->
+
+- Date: 2026-10-16
+- Active feature: (none)
+- Passing features: 30
+- Blocked features: none
+- Verification runs this session: 0
+- Commit: 4ca0938
+- Next best step: recon-604 — Push to VECO (test database): second option on the Vico export page that writes matched receipts as full VECO rows (dbo.[Transaction] 79 cols: 30 filled/49 NULL, + 1 dbo.Allocation row each) into 'Test Database Read Write' via the RW MCP, with read-only preview (per-bank totals, ready/held-back), all-or-nothing push, read-back cross-check, 'Earlier VECO pushes' history (view/download/delete own rows) and per-user VECO staff mapping. Spec: plans/recon-604-veco-direct-push.md
+
+### Session 019
+
+<!-- hx-session: baea96c7-65df-4aaa-b445-ddca3092137e -->
+
+- Date: 2026-10-16
+- Active feature: recon-604
+- Passing features: 30
+- Blocked features: none
+- Verification runs this session: 0
+- Commit: 4ca0938
+- Next best step: finish recon-604
