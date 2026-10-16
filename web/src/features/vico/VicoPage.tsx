@@ -7,15 +7,18 @@ import { errorMessage } from '../../lib/api';
 import {
   useCreateVicoExport,
   useDownloadVicoExport,
+  useRunLandedCheck,
   useSaveVicoSettings,
   useVicoExports,
   useVicoPending,
   useVicoSettings,
+  type LandedCheck,
   type VicoSettings,
 } from './api';
 
 const GBP = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' });
 const money = (amount: string) => GBP.format(Number(amount));
+const ukStamp = (s: string) => `${s.slice(8, 10)}/${s.slice(5, 7)}/${s.slice(0, 4)} ${s.slice(11, 16)}`;
 const ukDate = (iso: string) => iso.split('-').reverse().join('/');
 
 /** Confirmed receipts waiting for Vico, the one-click export file, and earlier exports. */
@@ -38,9 +41,14 @@ function VicoExportView({ isAdmin }: { isAdmin: boolean }) {
   const exports = useVicoExports();
   const create = useCreateVicoExport();
   const redownload = useDownloadVicoExport();
+  const landed = useRunLandedCheck();
   const [confirming, setConfirming] = useState(false);
   const configured = Boolean(settings.data?.sortCode && settings.data.accountNumber);
   const total = pending.data?.total ?? 0;
+  const latest = (exports.data ?? [])
+    .flatMap((e) => (e.landedCheck ? [e.landedCheck] : []))
+    .reduce<LandedCheck | null>((a, c) => (a && a.checkedAt >= c.checkedAt ? a : c), null);
+  const refreshed = latest?.snapshotRefreshedAt ? ukStamp(latest.snapshotRefreshedAt) : 'not yet checked';
 
   const runExport = () =>
     create.mutate(pending.data?.rows.map((r) => r.receiptId) ?? [], {
@@ -128,6 +136,14 @@ function VicoExportView({ isAdmin }: { isAdmin: boolean }) {
           <Text size="xs" c="dimmed">
             Downloading again rebuilds the file with today's bank details above.
           </Text>
+          <Text size="xs" c="dimmed">
+            VECO data is a nightly snapshot (last refreshed {refreshed}). Receipts processed in VECO today show after tonight's refresh.
+          </Text>
+          {landed.isError && (
+            <Alert color="red" role="alert">
+              {errorMessage(landed.error)}
+            </Alert>
+          )}
           {redownload.isError && (
             <Alert color="red" role="alert">
               {errorMessage(redownload.error)}
@@ -140,6 +156,7 @@ function VicoExportView({ isAdmin }: { isAdmin: boolean }) {
                 <Table.Th>File</Table.Th>
                 <Table.Th ta="right">Receipts</Table.Th>
                 <Table.Th ta="right">Total</Table.Th>
+                <Table.Th>In VECO</Table.Th>
                 <Table.Th />
               </Table.Tr>
             </Table.Thead>
@@ -150,6 +167,14 @@ function VicoExportView({ isAdmin }: { isAdmin: boolean }) {
                   <Table.Td>{e.fileName}</Table.Td>
                   <Table.Td ta="right">{e.rows}</Table.Td>
                   <Table.Td ta="right">{money(e.totalAmount)}</Table.Td>
+                  <Table.Td>
+                    <LandedCell
+                      check={e.landedCheck}
+                      fileName={e.fileName}
+                      busy={landed.isPending && landed.variables === e.exportId}
+                      onCheck={() => landed.mutate(e.exportId)}
+                    />
+                  </Table.Td>
                   <Table.Td>
                     <Button
                       size="xs"
@@ -188,6 +213,34 @@ function VicoExportView({ isAdmin }: { isAdmin: boolean }) {
           </Group>
         </Stack>
       </Modal>
+    </Stack>
+  );
+}
+
+function LandedCell({ check, fileName, busy, onCheck }: { check: LandedCheck | null; fileName: string; busy: boolean; onCheck: () => void }) {
+  if (!check) {
+    return (
+      <Button size="xs" variant="light" aria-label={`Check ${fileName} in VECO`} loading={busy} onClick={onCheck}>
+        Check VECO
+      </Button>
+    );
+  }
+  return (
+    <Stack gap={2}>
+      <Text size="sm" fw={600} c={check.landed === check.rows ? 'green' : 'orange'}>
+        Landed {check.landed} of {check.rows}
+      </Text>
+      <Text size="xs">
+        {money(check.landedAmount)} of {money(check.totalAmount)}
+      </Text>
+      {check.banks.map((b) => (
+        <Text size="xs" c="dimmed" key={b.bankCode ?? 'none'}>
+          {b.bankCode ?? 'No bank line'}: {b.landed} of {b.rows}, {money(b.landedAmount)} of {money(b.totalAmount)}
+        </Text>
+      ))}
+      <Button size="xs" variant="subtle" loading={busy} onClick={onCheck}>
+        Check again
+      </Button>
     </Stack>
   );
 }

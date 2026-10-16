@@ -120,7 +120,7 @@ export function createApp({ config, pool, logger, vecoSync, xero, vecoSource }: 
   app.use('/api/receipts', receiptRouter({ pool }));
   app.use('/api/remittances', remittanceRouter({ pool }));
   app.use('/api/adjustments', adjustmentRouter({ pool }));
-  app.use('/api/vico', vicoRouter({ pool }));
+  app.use('/api/vico', vicoRouter({ pool, vecoSource: vecoSource ?? null }));
   app.use('/api/export', statementExportRouter({ pool }));
   app.use('/api/reports', reportsRouter({ pool }));
   app.use(

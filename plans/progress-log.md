@@ -55,3 +55,11 @@
 **What changed:** Built Dashboard page (/dashboard, all roles) showing today's imports per bank, auto-match rate, review backlog with oldest item, balances per payer type, and arrears ageing (0–30/31–60/61–90/91+ days). Staff (admin, accounts, staff) download tenant rent statements as CSV or PDF with opening/closing balances, charges, payments, reversals, and adjustments per payer. UK time throughout. All downloads audit-logged. Home remains landing page. Migration 011 creates report_downloads table with audit trigger. pdfkit added to server. Tested: reports int 37/37 (22 coder + 15 senior-tester), dashboard e2e 3/3, full int 378/378 (24 files), unit 99/99, db:test 2/2, lint/typecheck clean.
 
 **Next:** Phase 1 complete; user manual testing of dashboard, then Phase 1 open questions.
+
+## 2026-10-16: ISSUE-0014 (HARD) — passing
+
+**Files changed:** 4 new files (migration 021_vico_landed_checks.sql, server/src/services/vico/landed.ts, server/test/unit/vico-landed.test.ts, server/test/int/vico-landed.test.ts); 4 modified (routes.ts, app.ts, web/api.ts, VicoPage.tsx).
+
+**What changed:** Built read-only VECO landed check: staff export Vico receipts, app queries VECO's nightly SLP snapshot (count-based matching on tid/date/amount exact pence), saves result in vico_landed_checks. POST /exports/:id/landed-check runs check, GET /exports includes landedCheck field (null or full result with per-bank breakdown). UI: Earlier exports card adds "In VECO" column with Check button; when checked, shows "Landed X of Y" (green all/orange partial) and per-bank detail. Migration 021 adds table with id (audit trigger requirement), export_id (upsert target), snapshot_refreshed_at as text (UK wall-clock 'YYYY-MM-DD HH:MM', not UTC), rows/landed counts, amounts in pence via sumPounds, banks as JSON. Re-plan 1: audit_row() needs id column. Tested: unit 17/17 vico; int 20/20 vico (504/505 full, 1 unrelated rent-terms failure on base too); typecheck/eslint clean. VECO SELECTs run read-only against real snapshot.
+
+**Next:** Phase 1 complete; user manual testing of dashboard, then Phase 1 open questions.

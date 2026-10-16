@@ -9,8 +9,8 @@
 
 ## Changed This Session
 
-- Commit: 6cd73e9
-- Files changed: (none)
+- Commit: 56f7805
+- Files changed: server/src/api/app.ts, server/src/api/vico/routes.ts, web/src/features/vico/VicoPage.tsx, web/src/features/vico/api.ts, db/migrations/021_vico_landed_checks.sql, plans/ISSUE-0014.coder-report.md, plans/ISSUE-0014.md, server/src/services/vico/landed.ts, server/test/int/vico-landed.test.ts, server/test/unit/vico-landed.test.ts
 
 ## Broken Or Unverified
 
