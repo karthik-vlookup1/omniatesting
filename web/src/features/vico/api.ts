@@ -17,12 +17,32 @@ export interface PendingReceipt {
   managementType: string;
 }
 
+export interface BankLanded {
+  bankCode: string | null;
+  rows: number;
+  landed: number;
+  totalAmount: string;
+  landedAmount: string;
+}
+
+export interface LandedCheck {
+  checkedAt: string;
+  /** 'YYYY-MM-DD HH:MM' in UK local time. */
+  snapshotRefreshedAt: string | null;
+  rows: number;
+  landed: number;
+  totalAmount: string;
+  landedAmount: string;
+  banks: BankLanded[];
+}
+
 export interface VicoExport {
   exportId: string;
   fileName: string;
   createdAt: string;
   rows: number;
   totalAmount: string;
+  landedCheck: LandedCheck | null;
 }
 
 export interface Downloaded {
@@ -60,6 +80,15 @@ export function useVicoExports() {
   return useQuery({
     queryKey: [...KEY, 'exports'],
     queryFn: () => apiRequest<{ exports: VicoExport[] }>('/vico/exports').then((r) => r.exports),
+  });
+}
+
+export function useRunLandedCheck() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (exportId: string) =>
+      apiRequest<{ landedCheck: LandedCheck }>(`/vico/exports/${exportId}/landed-check`, { method: 'POST' }).then((r) => r.landedCheck),
+    onSuccess: () => void qc.invalidateQueries({ queryKey: [...KEY, 'exports'] }),
   });
 }
 

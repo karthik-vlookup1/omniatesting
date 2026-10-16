@@ -4,7 +4,8 @@
  *   PUT  /settings              (admin) set them
  *   GET  /pending               confirmed receipts not yet in Vico
  *   POST /exports               export pending receipts (all, or { receiptIds }) → CSV download
- *   GET  /exports               export history
+ *   GET  /exports               export history, each with its latest VECO landed check (or null)
+ *   POST /exports/:id/landed-check  read-only check of the export's receipts against VECO SLP rows
  *   GET  /exports/:id/file      download an earlier export again
  */
 import { Router, type Response } from 'express';
@@ -14,11 +15,12 @@ import {
   createExport,
   getExportFile,
   getVicoSettings,
-  listExports,
   listPending,
   saveVicoSettings,
   type VicoFile,
 } from '../../services/vico/vico.service.js';
+import { listExportsWithLanded, runLandedCheck } from '../../services/vico/landed.js';
+import { VecoSourceError, type SqlSource } from '../../jobs/veco-sync/mcp-client.js';
 import { AppError } from '../../lib/errors.js';
 import { requireAuth, requireRole } from '../auth/middleware.js';
 
@@ -36,7 +38,7 @@ function sendFile(res: Response, file: VicoFile) {
   res.send(file.csv);
 }
 
-export function vicoRouter({ pool }: { pool: Pool }): Router {
+export function vicoRouter({ pool, vecoSource = null }: { pool: Pool; vecoSource?: SqlSource | null }): Router {
   const router = Router();
   router.use(requireAuth, requireRole('accounts'));
 
@@ -58,7 +60,22 @@ export function vicoRouter({ pool }: { pool: Pool }): Router {
   });
 
   router.get('/exports', async (_req, res) => {
-    res.json({ exports: await listExports(pool) });
+    res.json({ exports: await listExportsWithLanded(pool) });
+  });
+
+  router.post('/exports/:id/landed-check', async (req, res) => {
+    const id = Id.safeParse(req.params.id);
+    if (!id.success) throw new AppError('not_found', 'No such Vico export');
+    if (!vecoSource) throw new AppError('conflict', 'VECO is not configured on this server', { reason: 'veco_not_configured' });
+    try {
+      res.json({ landedCheck: await runLandedCheck(req.db, pool, vecoSource, id.data) });
+    } catch (err) {
+      if (err instanceof VecoSourceError) {
+        res.status(502).json({ error: { code: 'veco_unavailable', message: err.message } });
+        return;
+      }
+      throw err;
+    }
   });
 
   router.get('/exports/:id/file', async (req, res) => {
