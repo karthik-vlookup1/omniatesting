@@ -1959,22 +1959,43 @@
           "kind": "cmd",
           "cmd": "npm run test:unit -- veco-push",
           "exitCode": 0,
-          "testedAt": "2026-10-19T12:27:44.985Z",
-          "commit": "5d036a8"
+          "commit": "5d036a8",
+          "testedAt": "2026-10-19T12:27:44.985Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:web -- vico",
           "exitCode": 0,
-          "testedAt": "2026-10-19T12:27:53.457Z",
-          "commit": "5d036a8"
+          "commit": "5d036a8",
+          "testedAt": "2026-10-19T12:27:53.457Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:int -- veco-push",
           "exitCode": 0,
-          "testedAt": "2026-10-19T12:28:04.914Z",
-          "commit": "5d036a8"
+          "commit": "5d036a8",
+          "testedAt": "2026-10-19T12:28:04.914Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:unit -- veco-push",
+          "exitCode": 0,
+          "testedAt": "2026-10-19T12:29:03.591Z",
+          "commit": "df413cd"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:web -- vico",
+          "exitCode": 0,
+          "testedAt": "2026-10-19T12:29:14.230Z",
+          "commit": "df413cd"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- veco-push",
+          "exitCode": 0,
+          "testedAt": "2026-10-19T12:29:25.681Z",
+          "commit": "df413cd"
         }
       ],
       "notes": "HARD (migration, multiple modules, secret handling). Added with user approval as a one-time harness change on 2026-10-16. Tests use fakes only: no writes to any VECO database.",
