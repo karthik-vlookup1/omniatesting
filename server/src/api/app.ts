@@ -42,6 +42,8 @@ import { createHttpBridge, loadXeroConfig, type XeroBridge, type XeroConfig } fr
 import { scheduleXeroWorker } from '../jobs/xero/worker.js';
 import { createMcpSqlClient, type SqlSource } from '../jobs/veco-sync/mcp-client.js';
 import { loadVecoPushConfig } from '../services/veco-push/config.js';
+import { DEMO_FAKE_SEED } from '../services/veco-push/demo-data.js';
+import { createFakeVecoSql } from '../services/veco-push/fake-veco-sql.js';
 import { createSqlGateway, type VecoGateway } from '../services/veco-push/gateway.js';
 import { matchingRouter } from './matching/routes.js';
 import { receiptRouter } from './receipt/routes.js';
@@ -199,10 +201,13 @@ async function main(): Promise<void> {
   const stopChargeGeneration = scheduleChargeGeneration(pool, logger);
 
   const vecoPushConfig = loadVecoPushConfig();
-  const vecoPushGateway = vecoPushConfig.rwMcpUrl
-    ? createSqlGateway(createMcpSqlClient({ url: vecoPushConfig.rwMcpUrl, clientName: 'omnia-recon-veco-push' }))
-    : null;
-  logger.info({ configured: Boolean(vecoPushGateway) }, 'veco push (test database)');
+  const vecoPushGateway =
+    vecoPushConfig.mode === 'mcp'
+      ? createSqlGateway(createMcpSqlClient({ url: vecoPushConfig.rwMcpUrl, clientName: 'omnia-recon-veco-push' }))
+      : vecoPushConfig.mode === 'fake'
+        ? createSqlGateway(createFakeVecoSql(DEMO_FAKE_SEED))
+        : null;
+  logger.info({ mode: vecoPushConfig.mode, configured: Boolean(vecoPushGateway) }, 'veco push (test database)');
 
   const app = createApp({ config, pool, logger, vecoSync, xero: { bridge, config: xeroConfig }, vecoSource: sourceFromConfig(veco), vecoPush: { gateway: vecoPushGateway } });
   const server: Server = app.listen(config.port, () => {

@@ -57,26 +57,32 @@ function chunk<T>(items: T[], size: number): T[][] {
   return out;
 }
 
+/** Every VECO read must start with SELECT: the RW MCP returns rows only then. */
+export function assertSelect(sql: string): string {
+  if (!/^SELECT\s/i.test(sql)) throw new Error('VECO read must start with SELECT');
+  return sql;
+}
+
 export function createSqlGateway(sql: SqlSource & SqlBatchRunner, targetDb: string = TARGET_DB): VecoGateway {
   if (targetDb !== TARGET_DB) throw new Error('VECO push can only be pointed at the test database');
   return {
     async assertTargetDb() {
-      const rows = await sql.queryRows(dbNameSql());
+      const rows = await sql.queryRows(assertSelect(dbNameSql()));
       const db = rows[0]?.db;
       if (db !== targetDb) throw wrongDatabase(typeof db === 'string' ? db : 'unknown');
     },
     async findStaffByEmail(email) {
-      const rows = await sql.queryRows(staffByEmailSql(email));
+      const rows = await sql.queryRows(assertSelect(staffByEmailSql(email)));
       return rows.map((r) => str(r.staffPk, 'StaffPK').toUpperCase());
     },
     async staffExists(staffPk) {
-      const rows = await sql.queryRows(staffExistsSql(staffPk));
+      const rows = await sql.queryRows(assertSelect(staffExistsSql(staffPk)));
       return int(rows[0]?.n, 'count') > 0;
     },
     async lookupTenants(tids) {
       const out: TenantLookupRow[] = [];
       for (const group of chunk([...new Set(tids)], 500)) {
-        const rows = await sql.queryRows(lookupSql(group));
+        const rows = await sql.queryRows(assertSelect(lookupSql(group)));
         for (const r of rows) {
           const up = (v: unknown, what: string) => strOrNull(v, what)?.toUpperCase() ?? null;
           out.push({
@@ -99,16 +105,18 @@ export function createSqlGateway(sql: SqlSource & SqlBatchRunner, targetDb: stri
       return out;
     },
     async insertReceipts(rows) {
+      // The batch returns no rows: success is proved only by readBack, never by this call.
       await sql.executeBatch(insertBatchSql(rows));
     },
     async readBack(tx, al) {
-      return sql.queryRows(readBackSql(tx, al));
+      return sql.queryRows(assertSelect(readBackSql(tx, al)));
     },
     async deleteReceipts(tx, al) {
+      // The batch returns no rows: success is proved only by countRemaining, never by this call.
       await sql.executeBatch(deleteBatchSql(tx, al));
     },
     async countRemaining(tx, al) {
-      const r = (await sql.queryRows(remainingSql(tx, al)))[0] ?? {};
+      const r = (await sql.queryRows(assertSelect(remainingSql(tx, al))))[0] ?? {};
       return {
         transactions: int(r.transactions, 'count'),
         allocations: int(r.allocations, 'count'),

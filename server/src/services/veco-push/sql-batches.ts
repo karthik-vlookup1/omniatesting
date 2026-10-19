@@ -1,6 +1,8 @@
 /**
- * Pure string builders for every VECO statement. Reads are single SELECTs; the two write batches
- * (insert, delete) are guarded by DB_NAME() and run in one transaction. SQL Server 2016, possibly
+ * Pure string builders for every VECO statement. Reads are single SELECTs that start with SELECT (the RW MCP
+ * returns rows only then). The two write batches (insert, delete) are guarded by DB_NAME() and contain no
+ * BEGIN TRAN / COMMIT / plain ROLLBACK: the MCP owns the transaction, so we only SAVE TRANSACTION and let
+ * THROW re-raise (the MCP rolls everything back). A write returns no rows. SQL Server 2016, possibly
  * compatibility level 100: no OPENJSON, STRING_SPLIT or STRING_AGG, only plain INSERT ... VALUES.
  * Every value goes through sql-literal.ts, which throws instead of guessing.
  */
@@ -21,13 +23,13 @@ export const MAX_TUPLES_PER_INSERT = 500;
 const TX = 'dbo.[Transaction]';
 const AL = 'dbo.Allocation';
 
-export const dbNameSql = (): string => '/* omnia:db */ SELECT DB_NAME() AS db';
+export const dbNameSql = (): string => 'SELECT /* omnia:db */ DB_NAME() AS db';
 
 export const staffByEmailSql = (email: string): string =>
-  `/* omnia:staff */ SELECT StaffPK AS staffPk FROM dbo.Staff WHERE strEmailAddress1 = ${nstr(email)}`;
+  `SELECT /* omnia:staff */ StaffPK AS staffPk FROM dbo.Staff WHERE strEmailAddress1 = ${nstr(email)}`;
 
 export const staffExistsSql = (staffPk: string): string =>
-  `/* omnia:staff-exists */ SELECT COUNT(*) AS n FROM dbo.Staff WHERE StaffPK = ${guid(staffPk)}`;
+  `SELECT /* omnia:staff-exists */ COUNT(*) AS n FROM dbo.Staff WHERE StaffPK = ${guid(staffPk)}`;
 
 export function lookupSql(tids: string[]): string {
   const ownerWhere = 'o.PropertyFK = ty.PropertyFK AND o.blnCurrentOwner = 1';
@@ -35,7 +37,7 @@ export function lookupSql(tids: string[]): string {
   const prev =
     "t.strType = 'SLP' AND t.strBatchReference IS NOT NULL AND t.memDescription LIKE N'Rent Received  From %'";
   return (
-    '/* omnia:lookup */ SELECT tn.strStandingOrderReference AS tid, tn.TenancyFK AS tenancyFk, tn.ContactFK AS contactFk, ' +
+    'SELECT /* omnia:lookup */ tn.strStandingOrderReference AS tid, tn.TenancyFK AS tenancyFk, tn.ContactFK AS contactFk, ' +
     'ty.PropertyFK AS propertyFk, ty.strTenancyOfficeName AS officeName, ' +
     `(SELECT COUNT(*) FROM dbo.Owns o WHERE ${ownerWhere}) AS ownerCount, ` +
     `(SELECT TOP 1 o.OwnerFK FROM dbo.Owns o WHERE ${ownerWhere}) AS ownerFk, ` +
@@ -53,11 +55,18 @@ export function lookupSql(tids: string[]): string {
   );
 }
 
-const GUARD =
+export const GUARD =
   `IF DB_NAME() <> ${nstr(TARGET_DB)} THROW 50001, N'Omnia Recon refuses to write outside ${TARGET_DB}', 1;`;
-const HEAD = `SET XACT_ABORT ON; SET NOCOUNT ON; ${GUARD} BEGIN TRY BEGIN TRAN;`;
-const TAIL =
-  "COMMIT TRAN; END TRY BEGIN CATCH IF @@TRANCOUNT > 0 ROLLBACK TRAN; THROW; END CATCH; SELECT N'OMNIA_PUSH_OK' AS outcome;";
+const writeHead = (tag: string): string[] => [
+  GUARD,
+  `/* omnia:${tag} */`,
+  'SET XACT_ABORT ON;',
+  'SAVE TRANSACTION recon_push;',
+  'BEGIN TRY',
+];
+// IF XACT_STATE() = 1: under XACT_ABORT the transaction may be doomed (-1) in CATCH, and a savepoint rollback
+// would raise 3931 and hide the original error.
+export const WRITE_TAIL = 'END TRY BEGIN CATCH IF XACT_STATE() = 1 ROLLBACK TRANSACTION recon_push; THROW; END CATCH;';
 
 function chunks<T>(items: T[], size: number): T[][] {
   const out: T[][] = [];
@@ -71,8 +80,7 @@ export function insertBatchSql(rows: BuiltRow[]): string {
   const al = rows.map((r) => r.allocationPk);
   const refs = rows.map((r) => String(r.tx.strReference));
   const parts: string[] = [
-    '/* omnia:insert */',
-    HEAD,
+    ...writeHead('insert'),
     `IF EXISTS (SELECT 1 FROM ${TX} WHERE TransactionPK IN (${guidList(tx)})) THROW 50002, N'A TransactionPK already exists', 1;`,
     `IF EXISTS (SELECT 1 FROM ${AL} WHERE AllocationPK IN (${guidList(al)})) THROW 50003, N'An AllocationPK already exists', 1;`,
     `IF EXISTS (SELECT 1 FROM ${TX} WHERE strReference IN (${nstrList(refs)})) THROW 50004, N'A strReference already exists', 1;`,
@@ -104,7 +112,7 @@ export function insertBatchSql(rows: BuiltRow[]): string {
   parts.push(
     `IF (SELECT COUNT(*) FROM ${TX} WHERE TransactionPK IN (${guidList(tx)})) <> ${rows.length} THROW 50005, N'Transaction row count is wrong', 1;`,
     `IF (SELECT COUNT(*) FROM ${AL} WHERE AllocationPK IN (${guidList(al)})) <> ${rows.length} THROW 50005, N'Allocation row count is wrong', 1;`,
-    TAIL,
+    WRITE_TAIL,
   );
   return parts.join('\n');
 }
@@ -116,7 +124,7 @@ export function readBackSql(tx: string[], al: string[]): string {
   );
   const alCols = ALLOCATION_FILLED_COLUMNS.map((c) => `a.${c} AS a_${c}`);
   return (
-    `/* omnia:readback */ SELECT ${[...txCols, ...alCols, 'CAST(c.strAddressTitle AS nvarchar(max)) AS tenantName'].join(', ')} ` +
+    `SELECT /* omnia:readback */ ${[...txCols, ...alCols, 'CAST(c.strAddressTitle AS nvarchar(max)) AS tenantName'].join(', ')} ` +
     `FROM ${TX} t ` +
     `LEFT JOIN ${AL} a ON a.DebitTransactionFK = t.TransactionPK AND a.AllocationPK IN (${guidList(al)}) ` +
     'LEFT JOIN dbo.Contacts c ON c.ContactPK = t.ContactFK ' +
@@ -129,18 +137,17 @@ export function deleteBatchSql(tx: string[], al: string[]): string {
   const txIn = guidList(tx);
   const alIn = guidList(al);
   return [
-    '/* omnia:delete */',
-    HEAD,
+    ...writeHead('delete'),
     `IF EXISTS (SELECT 1 FROM ${AL} WHERE (DebitTransactionFK IN (${txIn}) OR CreditTransactionFK IN (${txIn})) AND AllocationPK NOT IN (${alIn})) THROW 50006, N'Other VECO rows now reference these receipts; delete refused', 1;`,
     `DELETE FROM ${AL} WHERE AllocationPK IN (${alIn});`,
     `DELETE FROM ${TX} WHERE TransactionPK IN (${txIn});`,
-    TAIL.replace('OMNIA_PUSH_OK', 'OMNIA_DELETE_OK'),
+    WRITE_TAIL,
   ].join('\n');
 }
 
 export function remainingSql(tx: string[], al: string[]): string {
   return (
-    `/* omnia:remaining */ SELECT (SELECT COUNT(*) FROM ${TX} WHERE TransactionPK IN (${guidList(tx)})) AS transactions, ` +
+    `SELECT /* omnia:remaining */ (SELECT COUNT(*) FROM ${TX} WHERE TransactionPK IN (${guidList(tx)})) AS transactions, ` +
     `(SELECT COUNT(*) FROM ${AL} WHERE AllocationPK IN (${guidList(al)})) AS allocations, ` +
     `(SELECT CAST(ISNULL(SUM(dblAmount), 0) AS decimal(18,2)) FROM ${TX} WHERE TransactionPK IN (${guidList(tx)})) AS total`
   );

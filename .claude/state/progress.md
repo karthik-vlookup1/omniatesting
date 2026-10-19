@@ -66,18 +66,6 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 - Commit: c05d131
 - Next best step: recon-003 — Config + crypto lib: env validation (Zod), HMAC hash matching secure_hash(), AES-256-GCM encrypt/decrypt, masking helpers
 
-### Session 002
-
-<!-- hx-session: hx-doctor-probe -->
-
-- Date: 2026-10-05
-- Active feature: (none)
-- Passing features: 10
-- Blocked features: none
-- Verification runs this session: 0
-- Commit: e0fa164
-- Next best step: recon-101 — Branches, bank accounts, landlords, properties: API + UI (list, search, create, edit)
-
 ### Session 007
 
 <!-- hx-session: 5e014fd9-144f-4c0f-82d6-42d605ad4dc1 -->
@@ -252,6 +240,30 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 - Active feature: (none)
 - Passing features: 31
 - Blocked features: none
-- Verification runs this session: 2
-- Commit: 2596adc
+- Verification runs this session: 3
+- Commit: 5d036a8
+- Next best step: (none — check feature_list.json)
+
+### Session 002
+
+<!-- hx-session: hx-doctor-probe -->
+
+- Date: 2026-10-19
+- Active feature: (none)
+- Passing features: 31
+- Blocked features: none
+- Verification runs this session: 0
+- Commit: 5d036a8
+- Next best step: (none — check feature_list.json)
+
+### Session 020
+
+<!-- hx-session: 398a289a-36c2-4b96-b95c-d9d9b3c4b091 -->
+
+- Date: 2026-10-19
+- Active feature: (none)
+- Passing features: 31
+- Blocked features: none
+- Verification runs this session: 1
+- Commit: 5d036a8
 - Next best step: (none — check feature_list.json)

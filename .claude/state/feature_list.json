@@ -1,6 +1,6 @@
 {
   "project": "omnia-recon",
-  "last_updated": "2026-10-16",
+  "last_updated": "2026-10-19",
   "rules": {
     "single_active_feature": true,
     "passing_requires_evidence": true,
@@ -1917,22 +1917,64 @@
           "kind": "cmd",
           "cmd": "npm run test:unit -- veco-push",
           "exitCode": 0,
-          "testedAt": "2026-10-16T14:53:33.632Z",
-          "commit": "2596adc"
+          "commit": "2596adc",
+          "testedAt": "2026-10-16T14:53:33.632Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:web -- vico",
           "exitCode": 0,
-          "testedAt": "2026-10-16T14:53:39.475Z",
-          "commit": "2596adc"
+          "commit": "2596adc",
+          "testedAt": "2026-10-16T14:53:39.475Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:int -- veco-push",
           "exitCode": 0,
-          "testedAt": "2026-10-16T14:53:46.528Z",
-          "commit": "2596adc"
+          "commit": "2596adc",
+          "testedAt": "2026-10-16T14:53:46.528Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:unit -- veco-push",
+          "exitCode": 0,
+          "commit": "5d036a8",
+          "testedAt": "2026-10-19T12:15:33.621Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:web -- vico",
+          "exitCode": 0,
+          "commit": "5d036a8",
+          "testedAt": "2026-10-19T12:15:42.340Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- veco-push",
+          "exitCode": 0,
+          "commit": "5d036a8",
+          "testedAt": "2026-10-19T12:15:52.538Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:unit -- veco-push",
+          "exitCode": 0,
+          "testedAt": "2026-10-19T12:27:44.985Z",
+          "commit": "5d036a8"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:web -- vico",
+          "exitCode": 0,
+          "testedAt": "2026-10-19T12:27:53.457Z",
+          "commit": "5d036a8"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- veco-push",
+          "exitCode": 0,
+          "testedAt": "2026-10-19T12:28:04.914Z",
+          "commit": "5d036a8"
         }
       ],
       "notes": "HARD (migration, multiple modules, secret handling). Added with user approval as a one-time harness change on 2026-10-16. Tests use fakes only: no writes to any VECO database.",

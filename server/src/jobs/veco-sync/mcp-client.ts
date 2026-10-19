@@ -96,10 +96,10 @@ export function createMcpSqlClient({
     return sessionId;
   }
 
-  async function execute(sql: string): Promise<string> {
+  async function execute(sql: string, allowEmpty = false): Promise<string> {
     const sessionId = await openSession();
     const { result } = await call('tools/call', { name: 'execute_sql', arguments: { query: sql } }, sessionId);
-    return toolText(result);
+    return toolText(result, allowEmpty);
   }
 
   return {
@@ -109,7 +109,7 @@ export function createMcpSqlClient({
     },
     /** Sends a (write) batch exactly as given: no FOR JSON wrapper. Throws VecoSourceError on a tool error. */
     async executeBatch(batchSql) {
-      return execute(batchSql.trim());
+      return execute(batchSql.trim(), true);
     },
   };
 }
@@ -133,7 +133,7 @@ export function parseRpcMessage(body: string, id: number): JsonRpcResponse {
   throw new VecoSourceError('Veco MCP sent a response that could not be read');
 }
 
-function toolText(result: unknown): string {
+function toolText(result: unknown, allowEmpty = false): string {
   const r = result as {
     isError?: boolean;
     structuredContent?: { result?: unknown };
@@ -144,6 +144,7 @@ function toolText(result: unknown): string {
       ? r.structuredContent.result
       : r?.content?.find((c) => c.type === 'text')?.text;
   if (r?.isError) throw new VecoSourceError(`Veco query failed: ${(text ?? 'unknown error').slice(0, 300)}`);
+  if (allowEmpty && typeof text !== 'string' && !r?.isError) return '';
   if (typeof text !== 'string') throw new VecoSourceError('Veco query returned no result text');
   return text;
 }

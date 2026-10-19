@@ -5,20 +5,16 @@
 ## Verified Now
 
 - Passing features: recon-001, recon-002, recon-003, recon-004, recon-101, recon-102, recon-103, recon-104, recon-105, recon-201, recon-202, recon-203, recon-204, recon-301, recon-302, recon-303, recon-401, recon-501, recon-502, recon-503, recon-504, recon-505, recon-506, recon-507, recon-508, recon-509, recon-510, recon-601, recon-602, recon-603, recon-604
-- Verification runs this session: 2
+- Verification runs this session: 1
 
 ## Changed This Session
 
-- Commit: 2596adc
-- Files changed: (none)
+- Commit: 5d036a8
+- Files changed: .env.example, server/src/api/app.ts, server/src/jobs/veco-sync/mcp-client.ts, server/src/services/veco-push/config.ts, server/src/services/veco-push/gateway.ts, server/src/services/veco-push/sql-batches.ts, server/test/unit/veco-push-gateway.test.ts, plans/recon-604-test-ready.md, server/src/services/veco-push/demo-data.ts, server/src/services/veco-push/demo-seed.ts, server/src/services/veco-push/fake-veco-sql.ts, server/test/int/veco-push-demo.test.ts, server/test/unit/veco-push-fake.test.ts
 
 ## Broken Or Unverified
 
 - Blocked: none
-
-### Verification failures this session
-
-- `(command not recorded)` exited ? (recon-604)
 
 ## Waiting on a human
 

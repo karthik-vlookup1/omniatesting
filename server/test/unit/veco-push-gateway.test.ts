@@ -6,9 +6,20 @@ import { describe, expect, it } from 'vitest';
 import { createMcpSqlClient, VecoSourceError, type SqlBatchRunner, type SqlSource } from '../../src/jobs/veco-sync/mcp-client.js';
 import { classify, type Candidate, type TenantLookupRow } from '../../src/services/veco-push/classify.js';
 import { loadVecoPushConfig } from '../../src/services/veco-push/config.js';
-import { createSqlGateway } from '../../src/services/veco-push/gateway.js';
+import { forbiddenTransactionSql } from '../../src/services/veco-push/fake-veco-sql.js';
+import { assertSelect, createSqlGateway } from '../../src/services/veco-push/gateway.js';
 import { buildRows } from '../../src/services/veco-push/row-builder.js';
-import { deleteBatchSql, insertBatchSql, lookupSql, readBackSql } from '../../src/services/veco-push/sql-batches.js';
+import {
+  dbNameSql,
+  deleteBatchSql,
+  insertBatchSql,
+  lookupSql,
+  readBackSql,
+  remainingSql,
+  staffByEmailSql,
+  staffExistsSql,
+  WRITE_TAIL,
+} from '../../src/services/veco-push/sql-batches.js';
 
 const STAFF = '11111111-2222-3333-4444-555555555555';
 const hex = (n: number) => n.toString(16).toUpperCase().padStart(12, '0');
@@ -53,15 +64,21 @@ describe('insert batch SQL', () => {
   const rows = makeRows(3);
   const sql = insertBatchSql(rows);
 
-  it('puts the database guard first, inside one TRY/TRAN with rollback', () => {
-    expect(sql.indexOf('DB_NAME() <> N\'Test Database Read Write\'')).toBeGreaterThan(-1);
-    expect(sql.indexOf('DB_NAME()')).toBeLessThan(sql.indexOf('BEGIN TRAN'));
-    expect(sql.indexOf('DB_NAME()')).toBeLessThan(sql.indexOf('INSERT INTO'));
-    expect(sql.match(/BEGIN TRAN;/g)).toHaveLength(1);
-    expect(sql.match(/COMMIT TRAN;/g)).toHaveLength(1);
-    expect(sql).toContain('BEGIN TRY');
-    expect(sql).toContain('BEGIN CATCH IF @@TRANCOUNT > 0 ROLLBACK TRAN; THROW; END CATCH');
-    expect(sql).toContain('SET XACT_ABORT ON');
+  it('insert batch starts with the DB_NAME() guard, then SET XACT_ABORT ON and SAVE TRANSACTION recon_push', () => {
+    expect(sql.startsWith("IF DB_NAME() <> N'Test Database Read Write' THROW 50001")).toBe(true);
+    const order = ['DB_NAME()', 'SET XACT_ABORT ON;', 'SAVE TRANSACTION recon_push;', 'BEGIN TRY', 'INSERT INTO'].map((t) => sql.indexOf(t));
+    expect(order.every((n) => n > -1)).toBe(true);
+    expect([...order].sort((x, y) => x - y)).toEqual(order);
+    expect(sql).toContain(WRITE_TAIL);
+  });
+
+  it('write batches contain no BEGIN TRAN, COMMIT or plain ROLLBACK and select nothing', () => {
+    const del = deleteBatchSql(['AAAAAAAA-0000-4000-8000-000000000001'], ['BBBBBBBB-0000-4000-8000-000000000001']);
+    for (const batch of [sql, del]) {
+      expect(forbiddenTransactionSql(batch)).toBe(false);
+      expect(batch).not.toMatch(/OMNIA_PUSH_OK|OMNIA_DELETE_OK/);
+      expect(batch).not.toMatch(/\bBEGIN\s+TRAN|\bCOMMIT\b/i);
+    }
   });
 
   it('checks the keys do not exist before the first INSERT', () => {
@@ -97,10 +114,25 @@ describe('insert batch SQL', () => {
 describe('read SQL', () => {
   it('the lookup is one SELECT with no write keywords', () => {
     const sql = lookupSql(['T1', 'T2']);
-    expect(sql).toMatch(/^\/\* omnia:lookup \*\/ SELECT /);
+    expect(sql).toMatch(/^SELECT \/\* omnia:lookup \*\/ /);
     expect(sql.match(/;/g) ?? []).toHaveLength(0);
     expect(sql).not.toMatch(/\b(INSERT|UPDATE|DELETE|DROP|ALTER|CREATE|EXEC|MERGE|TRUNCATE)\b/i);
     expect(sql).toContain("IN (N'T1', N'T2')");
+  });
+
+  it('every read starts with SELECT', () => {
+    const g = 'AAAAAAAA-0000-4000-8000-000000000001';
+    const reads = [dbNameSql(), staffByEmailSql('a@b.c'), staffExistsSql(g), lookupSql(['T1']), readBackSql([g], [g]), remainingSql([g], [g])];
+    expect(reads).toHaveLength(6);
+    for (const q of reads) {
+      expect(q).toMatch(/^SELECT\s/);
+      expect(assertSelect(q)).toBe(q);
+    }
+  });
+
+  it('assertSelect refuses SQL that does not start with SELECT', () => {
+    expect(() => assertSelect('/* omnia:db */ SELECT 1')).toThrow('VECO read must start with SELECT');
+    expect(() => assertSelect('DELETE FROM x')).toThrow('VECO read must start with SELECT');
   });
 
   it('the read-back selects the 30 + 7 values and the tenant name', () => {
@@ -121,6 +153,13 @@ describe('delete SQL', () => {
     expect(sql.indexOf('DELETE FROM dbo.Allocation')).toBeLessThan(sql.indexOf('DELETE FROM dbo.[Transaction]'));
     expect(sql).toContain('50006');
     expect(sql).toContain('AllocationPK NOT IN');
+  });
+
+  it('delete batch starts with the same guard and savepoint', () => {
+    expect(sql.startsWith("IF DB_NAME() <> N'Test Database Read Write' THROW 50001")).toBe(true);
+    expect(sql.indexOf('SET XACT_ABORT ON;')).toBeLessThan(sql.indexOf('SAVE TRANSACTION recon_push;'));
+    expect(sql.indexOf('SAVE TRANSACTION recon_push;')).toBeLessThan(sql.indexOf('DELETE FROM'));
+    expect(sql).toContain(WRITE_TAIL);
   });
 
   it('only mentions GUIDs that came from the inputs', () => {
@@ -179,6 +218,14 @@ describe('MCP client batch method', () => {
     expect(seen.names).toEqual(['omnia-recon-veco-push']);
   });
 
+  it('executeBatch returns an empty string when the tool sends no text', async () => {
+    const client = createMcpSqlClient({
+      url: 'https://example.invalid/mcp',
+      fetchImpl: fakeFetch({ content: [] }, { queries: [], names: [] }),
+    });
+    expect(await client.executeBatch('SELECT 1')).toBe('');
+  });
+
   it('a tool error becomes a VecoSourceError, and queryRows still appends FOR JSON', async () => {
     const failing = createMcpSqlClient({
       url: 'https://example.invalid/mcp',
@@ -197,10 +244,28 @@ describe('MCP client batch method', () => {
 });
 
 describe('loadVecoPushConfig', () => {
-  it('treats empty as not configured and never echoes a bad value', () => {
-    expect(loadVecoPushConfig({})).toEqual({ rwMcpUrl: null });
-    expect(loadVecoPushConfig({ VECO_RW_MCP_URL: '' })).toEqual({ rwMcpUrl: null });
-    expect(loadVecoPushConfig({ VECO_RW_MCP_URL: 'https://example.invalid/mcp?key=abc' }).rwMcpUrl).toContain('example.invalid');
+  const URL_OK = 'https://example.invalid/mcp?key=abc';
+
+  it('defaults to fake outside production', () => {
+    expect(loadVecoPushConfig({})).toEqual({ mode: 'fake', rwMcpUrl: null });
+    expect(loadVecoPushConfig({ NODE_ENV: 'development', VECO_RW_MCP_URL: URL_OK })).toMatchObject({ mode: 'fake' });
+    expect(loadVecoPushConfig({ VECO_PUSH_MODE: '', VECO_RW_MCP_URL: '' })).toEqual({ mode: 'fake', rwMcpUrl: null });
+  });
+
+  it('production defaults to mcp with a URL, off without', () => {
+    expect(loadVecoPushConfig({ NODE_ENV: 'production', VECO_RW_MCP_URL: URL_OK })).toEqual({ mode: 'mcp', rwMcpUrl: URL_OK });
+    expect(loadVecoPushConfig({ NODE_ENV: 'production' })).toEqual({ mode: 'off', rwMcpUrl: null });
+  });
+
+  it('mcp without a URL is refused', () => {
+    expect(() => loadVecoPushConfig({ VECO_PUSH_MODE: 'mcp' })).toThrow('VECO_PUSH_MODE=mcp needs VECO_RW_MCP_URL');
+  });
+
+  it('fake in production is refused', () => {
+    expect(() => loadVecoPushConfig({ NODE_ENV: 'production', VECO_PUSH_MODE: 'fake' })).toThrow('not allowed in production');
+  });
+
+  it('a bad URL is never echoed', () => {
     let message = '';
     try {
       loadVecoPushConfig({ VECO_RW_MCP_URL: 'not-a-url-SECRETKEY123' });
