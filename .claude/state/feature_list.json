@@ -2052,15 +2052,29 @@
           "kind": "cmd",
           "cmd": "npm run test:unit -- veco-push",
           "exitCode": 0,
-          "testedAt": "2026-10-20T10:09:24.214Z",
-          "commit": "1bc215a"
+          "commit": "1bc215a",
+          "testedAt": "2026-10-20T10:09:24.214Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:int -- veco-push",
           "exitCode": 0,
-          "testedAt": "2026-10-20T10:09:31.932Z",
-          "commit": "1bc215a"
+          "commit": "1bc215a",
+          "testedAt": "2026-10-20T10:09:31.932Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:unit -- veco-push",
+          "exitCode": 0,
+          "testedAt": "2026-10-20T10:11:06.222Z",
+          "commit": "e810c93"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- veco-push",
+          "exitCode": 0,
+          "testedAt": "2026-10-20T10:11:13.872Z",
+          "commit": "e810c93"
         }
       ],
       "notes": "HARD",
