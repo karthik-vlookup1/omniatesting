@@ -2066,15 +2066,15 @@
           "kind": "cmd",
           "cmd": "npm run test:unit -- veco-push",
           "exitCode": 0,
-          "testedAt": "2026-10-20T10:11:06.222Z",
-          "commit": "e810c93"
+          "commit": "e810c93",
+          "testedAt": "2026-10-20T10:11:06.222Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:int -- veco-push",
           "exitCode": 0,
-          "testedAt": "2026-10-20T10:11:13.872Z",
-          "commit": "e810c93"
+          "commit": "e810c93",
+          "testedAt": "2026-10-20T10:11:13.872Z"
         }
       ],
       "notes": "HARD",
@@ -2082,6 +2082,52 @@
         "recon-604"
       ],
       "contractHash": "4e012fa70c07372e"
+    },
+    {
+      "id": "recon-606",
+      "priority": 1106,
+      "area": "phase-6-letmc-parity",
+      "title": "VECO push demo seed can target the cloud database: demo-seed.ts gains --cloud (explicit opt-in; DATABASE_URL_UNPOOLED > NEON_DATABASE_URL_UNPOOLED > DATABASE_URL; URL never printed), --staff <StaffPK>, --receipts \"TID=amount,...\" and a users command; remove deletes only seed-made rows and refuses receipts still pushed to VECO; scripts/cloud-demo-seed.ps1 prompts for secrets in the user's own terminal; defaults unchanged",
+      "user_visible_behavior": "In their own PowerShell the user runs scripts\\cloud-demo-seed.ps1 seed and types the Neon direct URL and the 3 keys at masked prompts. Chosen receipts then wait on the cloud Vico export page, and the script prints the counts and the login email it linked to the given VECO StaffPK. 'remove' deletes exactly what seed created. Running locally without flags behaves as before.",
+      "scope": [
+        "server/src/services/veco-push/demo-seed.ts",
+        "scripts/cloud-demo-seed.ps1",
+        "server/test/unit/veco-push*.test.ts",
+        "server/test/int/veco-push-demo.test.ts",
+        "plans/**"
+      ],
+      "verification": [
+        {
+          "level": "unit",
+          "cmd": "npm run test:unit -- veco-push"
+        },
+        {
+          "level": "integration",
+          "cmd": "npm run test:int -- veco-push"
+        }
+      ],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:unit -- veco-push",
+          "exitCode": 0,
+          "testedAt": "2026-10-20T11:36:11.216Z",
+          "commit": "f69831c"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- veco-push",
+          "exitCode": 0,
+          "testedAt": "2026-10-20T11:36:19.522Z",
+          "commit": "f69831c"
+        }
+      ],
+      "notes": "HARD",
+      "dependsOn": [
+        "recon-605"
+      ],
+      "contractHash": "5d7cdcb1e37ee5ff"
     }
   ]
 }

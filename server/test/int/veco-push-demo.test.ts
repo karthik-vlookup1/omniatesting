@@ -12,7 +12,7 @@ import { createPool, type Pool } from '../../src/db/pool.js';
 import { createLogger } from '../../src/lib/logger.js';
 import { upsertUser } from '../../src/services/auth.service.js';
 import { DEMO_AMOUNT, DEMO_DATE, DEMO_FAKE_SEED, DEMO_MARKER, DEMO_TIDS } from '../../src/services/veco-push/demo-data.js';
-import { removeVecoPushDemo, seedVecoPushDemo } from '../../src/services/veco-push/demo-seed.js';
+import { listDemoUsers, removeVecoPushDemo, seedVecoPushDemo } from '../../src/services/veco-push/demo-seed.js';
 import { createFakeVecoSql, type FakeVecoSql } from '../../src/services/veco-push/fake-veco-sql.js';
 import { createSqlGateway } from '../../src/services/veco-push/gateway.js';
 
@@ -124,5 +124,91 @@ describe('VECO push demo data', () => {
     expect((await pool.query('SELECT 1 FROM veco_staff_link WHERE updated_by = $1', [DEMO_MARKER])).rowCount).toBe(0);
     expect((await pool.query("SELECT 1 FROM properties WHERE property_ref LIKE 'DEMO-VECO-%'")).rowCount).toBe(0);
     expect((await pool.query("SELECT 1 FROM branches WHERE code = 'DEMO-VECO'")).rowCount).toBe(0);
+  });
+});
+
+describe('VECO push demo data, custom staff and receipts', () => {
+  const STAFF = '0D0D0D0D-0000-4000-8000-0000000000AA';
+  const OTHER_STAFF = '0D0D0D0D-0000-4000-8000-0000000000BB';
+  const userId = async () => (await pool.query<{ id: string }>('SELECT id FROM app_users WHERE email = $1', [email])).rows[0]!.id;
+  const linkOf = async () =>
+    (await pool.query('SELECT upper(staff_fk::text) AS staff, source, can_push, updated_by FROM veco_staff_link WHERE user_id = $1', [await userId()]))
+      .rows[0];
+
+  it('seeds custom amounts and staff, and remove restores the snapshot', async () => {
+    const before = await counts();
+    const summary = await seedVecoPushDemo(pool, {
+      userEmail: email,
+      staffPk: STAFF,
+      receipts: [
+        { tid: 'T5755', amount: '997.27' },
+        { tid: 'T9901', amount: '12.34' },
+      ],
+    });
+    expect(summary).toMatchObject({ receiptsCreated: 2, receiptsWaiting: 2, staffLink: 'created', linkedUser: email });
+    const amounts = (await pool.query<{ tid: string; amount: string }>(
+      `SELECT t.tid, r.amount::text AS amount FROM receipts r JOIN tenancies t ON t.id = r.tenancy_id WHERE r.notes = $1 ORDER BY t.tid`,
+      [DEMO_MARKER],
+    )).rows;
+    expect(amounts).toEqual([
+      { tid: 'T5755', amount: '997.27' },
+      { tid: 'T9901', amount: '12.34' },
+    ]);
+    expect(await linkOf()).toMatchObject({ staff: STAFF, can_push: true });
+    await expect(seedVecoPushDemo(pool, { userEmail: email, receipts: [{ tid: 'T5755', amount: '5.00' }] })).rejects.toThrow(
+      'Demo receipt for T5755 is already waiting at 997.27; run remove first',
+    );
+    const removed = await removeVecoPushDemo(pool);
+    expect(removed).toMatchObject({ receiptsRemoved: 2, staffLinksRemoved: 1 });
+    expect(await counts()).toEqual(before);
+  });
+
+  it('refuses an admin link to another staff, keeps one for the same staff', async () => {
+    const id = await userId();
+    await pool.query(
+      "INSERT INTO veco_staff_link (user_id, staff_fk, source, can_push, updated_by) VALUES ($1, $2, 'admin', true, 'someone@example.test')",
+      [id, OTHER_STAFF],
+    );
+    try {
+      await expect(seedVecoPushDemo(pool, { userEmail: email, staffPk: STAFF })).rejects.toThrow('already has a VECO staff link set in the app');
+      const kept = await seedVecoPushDemo(pool, { userEmail: email, staffPk: OTHER_STAFF });
+      expect(kept.staffLink).toBe('kept');
+      await removeVecoPushDemo(pool);
+      expect(await linkOf()).toMatchObject({ staff: OTHER_STAFF, updated_by: 'someone@example.test' });
+    } finally {
+      await pool.query('DELETE FROM veco_staff_link WHERE user_id = $1', [id]);
+      await removeVecoPushDemo(pool);
+    }
+  });
+
+  it('replaces an unconfirmed email auto-link, and remove deletes it', async () => {
+    const id = await userId();
+    await pool.query("INSERT INTO veco_staff_link (user_id, staff_fk, source, can_push, updated_by) VALUES ($1, $2, 'email', false, $3)", [id, OTHER_STAFF, email]);
+    try {
+      const summary = await seedVecoPushDemo(pool, { userEmail: email, staffPk: STAFF });
+      expect(summary.staffLink).toBe('updated');
+      expect(await linkOf()).toMatchObject({ staff: STAFF, source: 'admin', can_push: true });
+      await removeVecoPushDemo(pool);
+      expect(await linkOf()).toBeUndefined();
+    } finally {
+      await pool.query('DELETE FROM veco_staff_link WHERE user_id = $1', [id]);
+      await removeVecoPushDemo(pool);
+    }
+  });
+
+  it('remove refuses receipts still pushed to VECO', async () => {
+    const before = await counts();
+    await seedVecoPushDemo(pool, { userEmail: email });
+    const ids = (await demoPending()).map((r) => r.receiptId);
+    const pushed = await send('post', '/api/veco-push/pushes').send({ idempotencyKey: randomUUID(), receiptIds: ids, departments: {} });
+    expect(pushed.status).toBe(201);
+    await expect(removeVecoPushDemo(pool)).rejects.toThrow('3 demo receipts are still pushed to VECO');
+    expect((await send('delete', `/api/veco-push/batches/${pushed.body.batch.id as string}`)).status).toBe(200);
+    await removeVecoPushDemo(pool);
+    expect(await counts()).toEqual(before);
+  });
+
+  it('lists the active admin and accounts logins', async () => {
+    expect(await listDemoUsers(pool)).toContain(email);
   });
 });
