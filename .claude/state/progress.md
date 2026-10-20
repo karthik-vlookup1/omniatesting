@@ -11,7 +11,7 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 - Repository root: {{PROJECT_ROOT}}
 - Standard startup: `hx start`
 - Standard verification: `hx verify <feature-id>`
-- Current highest-priority unfinished feature: (none)
+- Current highest-priority unfinished feature: recon-605
 - Current blocker: none
 
 ## Session Log
@@ -244,16 +244,14 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 - Commit: 5d036a8
 - Next best step: (none — check feature_list.json)
 
-### Session 002
-
-<!-- hx-session: hx-doctor-probe -->
+### Session 021
 
 - Date: 2026-10-19
 - Active feature: (none)
 - Passing features: 31
 - Blocked features: none
-- Verification runs this session: 0
-- Commit: 5d036a8
+- Verification runs this session: 3
+- Commit: df413cd
 - Next best step: (none — check feature_list.json)
 
 ### Session 020
@@ -264,16 +262,42 @@ this file, but nothing updates it automatically outside of `hx handoff`.
 - Active feature: (none)
 - Passing features: 31
 - Blocked features: none
-- Verification runs this session: 2
-- Commit: df413cd
+- Verification runs this session: 0
+- Commit: 1bc215a
 - Next best step: (none — check feature_list.json)
 
-### Session 021
+### Session 022
+
+<!-- hx-session: 9a007c84-5552-457b-9065-d3f134168296 -->
 
 - Date: 2026-10-19
 - Active feature: (none)
 - Passing features: 31
 - Blocked features: none
-- Verification runs this session: 3
-- Commit: df413cd
+- Verification runs this session: 0
+- Commit: 1bc215a
 - Next best step: (none — check feature_list.json)
+
+### Session 002
+
+<!-- hx-session: hx-doctor-probe -->
+
+- Date: 2026-10-20
+- Active feature: (none)
+- Passing features: 31
+- Blocked features: none
+- Verification runs this session: 0
+- Commit: 1bc215a
+- Next best step: (none — check feature_list.json)
+
+### Session 023
+
+<!-- hx-session: a31ccdf3-4755-4fed-aa36-83393a222bff -->
+
+- Date: 2026-10-20
+- Active feature: recon-605
+- Passing features: 31
+- Blocked features: none
+- Verification runs this session: 1
+- Commit: 1bc215a
+- Next best step: finish recon-605

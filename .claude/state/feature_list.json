@@ -1,6 +1,6 @@
 {
   "project": "omnia-recon",
-  "last_updated": "2026-10-19",
+  "last_updated": "2026-10-20",
   "rules": {
     "single_active_feature": true,
     "passing_requires_evidence": true,
@@ -1980,27 +1980,94 @@
           "kind": "cmd",
           "cmd": "npm run test:unit -- veco-push",
           "exitCode": 0,
-          "testedAt": "2026-10-19T12:29:03.591Z",
-          "commit": "df413cd"
+          "commit": "df413cd",
+          "testedAt": "2026-10-19T12:29:03.591Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:web -- vico",
           "exitCode": 0,
-          "testedAt": "2026-10-19T12:29:14.230Z",
-          "commit": "df413cd"
+          "commit": "df413cd",
+          "testedAt": "2026-10-19T12:29:14.230Z"
         },
         {
           "kind": "cmd",
           "cmd": "npm run test:int -- veco-push",
           "exitCode": 0,
-          "testedAt": "2026-10-19T12:29:25.681Z",
-          "commit": "df413cd"
+          "commit": "df413cd",
+          "testedAt": "2026-10-19T12:29:25.681Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:unit -- veco-push",
+          "exitCode": 0,
+          "commit": "1bc215a",
+          "testedAt": "2026-10-20T10:01:52.109Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:web -- vico",
+          "exitCode": 0,
+          "commit": "1bc215a",
+          "testedAt": "2026-10-20T10:01:58.954Z"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- veco-push",
+          "exitCode": 0,
+          "commit": "1bc215a",
+          "testedAt": "2026-10-20T10:02:07.444Z"
         }
       ],
       "notes": "HARD (migration, multiple modules, secret handling). Added with user approval as a one-time harness change on 2026-10-16. Tests use fakes only: no writes to any VECO database.",
       "dependsOn": [],
       "contractHash": "8d17704a83f7664a"
+    },
+    {
+      "id": "recon-605",
+      "priority": 1105,
+      "area": "phase-6-letmc-parity",
+      "title": "VECO push on Vercel: one shared helper (services/veco-push/wiring.ts) builds the push gateway for both app.ts main() and the Vercel function server/api/index.ts; VECO_RW_MCP_URL set -> mcp, unset or invalid -> off; URL never logged or returned; no local behaviour change",
+      "user_visible_behavior": "On the Vercel deployment, the Vico export page's Push to VECO is available when VECO_RW_MCP_URL is set, and says 'not configured' when it is unset or the VECO push settings are invalid. Locally nothing changes.",
+      "scope": [
+        "server/src/services/veco-push/wiring.ts",
+        "server/src/api/app.ts",
+        "server/api/index.ts",
+        "server/test/unit/veco-push*.test.ts",
+        "plans/**"
+      ],
+      "verification": [
+        {
+          "level": "unit",
+          "cmd": "npm run test:unit -- veco-push"
+        },
+        {
+          "level": "integration",
+          "cmd": "npm run test:int -- veco-push"
+        }
+      ],
+      "status": "passing",
+      "evidence": [
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:unit -- veco-push",
+          "exitCode": 0,
+          "testedAt": "2026-10-20T10:09:24.214Z",
+          "commit": "1bc215a"
+        },
+        {
+          "kind": "cmd",
+          "cmd": "npm run test:int -- veco-push",
+          "exitCode": 0,
+          "testedAt": "2026-10-20T10:09:31.932Z",
+          "commit": "1bc215a"
+        }
+      ],
+      "notes": "HARD",
+      "dependsOn": [
+        "recon-604"
+      ],
+      "contractHash": "4e012fa70c07372e"
     }
   ]
 }

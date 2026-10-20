@@ -3,12 +3,14 @@
  *
  * Builds the app without app.listen() and without the scheduled jobs that src/api/app.ts main()
  * starts (Veco sync, Xero worker, charge generation, session purge); a function instance does
- * not live long enough to run them.
+ * not live long enough to run them. The VECO push gateway is wired, because its MCP client is
+ * stateless HTTP per call.
  */
 import { createApp } from '../src/api/app.js';
 import { loadConfig } from '../src/config/env.js';
 import { createPool } from '../src/db/pool.js';
 import { createLogger } from '../src/lib/logger.js';
+import { loadVecoPushWiring } from '../src/services/veco-push/wiring.js';
 
 // Vercel's Neon integration sets the pooled endpoint as DATABASE_URL (NEON_-prefixed when the
 // integration was given that prefix). The pool sets app.hash_key once per connection, which a
@@ -21,4 +23,7 @@ const config = loadConfig({
 const logger = createLogger({ level: config.logLevel, pretty: false });
 const pool = createPool({ databaseUrl: config.databaseUrl, hashKey: config.hashKey, max: 3 }, logger);
 
-export default createApp({ config, pool, logger });
+// 'off': a bad optional VECO setting must not turn every API route into a cold-start 500.
+const vecoPush = loadVecoPushWiring(process.env, logger, { onInvalid: 'off' });
+
+export default createApp({ config, pool, logger, vecoPush: { gateway: vecoPush.gateway } });
